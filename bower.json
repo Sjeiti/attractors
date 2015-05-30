@@ -1,0 +1,22 @@
+{
+  "name": "Attractors",
+  "version": "0.0.1",
+  "authors": [
+    "Ron Valstar <sjeiti@gmail.com>"
+  ],
+  "componentsDirectory": "src/js/vendor",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "dist"
+  ],
+  "dependencies": {
+    "es5-shim": "~2.3.0",
+    "lodash": "~3.6.0",
+    "gsap": "~1.16.1",
+    "signals": "~1.0.0",
+    "classlist": "~2014.7.23"
+  }
+}

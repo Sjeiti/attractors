@@ -1,0 +1,15 @@
+/.idea/workspace.xml
+/.idea/watcherTasks.xml
+/.sass-cache
+/_backup
+/dist
+/src/env/.env.local
+/src/vendor
+/src/style/*.css
+/src/wordpress/wp-content/uploads
+/src/wordpress/wp-content/upgrade
+/temp
+/test
+/supplies
+/node_modules
+/npm-debug.log
