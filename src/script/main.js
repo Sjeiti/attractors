@@ -60,6 +60,9 @@ function init() {
 		changes.push({name:'size',values:[e.target.value]});
 	});
 	//
+	changes.push({name:'pointss',values:getPoints(lorenz84,99)});
+	//changes.push({name:'pointsNum',values:[9]});
+	//
 	animate();
 }
 
@@ -122,8 +125,11 @@ function render() {
 				,values = change.values
 				,params = values.length;
 		values.unshift(uniformLocation);
-		if (params===1) gl.uniform1f.apply(gl,values);
-		if (params===2) gl.uniform2f.apply(gl,values);
+		if (params===1)			gl.uniform1f.apply(gl,values);
+		else if (params===2)	gl.uniform2f.apply(gl,values);
+		else if (params===3)	gl.uniform3f.apply(gl,values);
+		else					gl.uniform3f.apply(gl,values);
+
 	}
 	changes.length = 0;
 	//
@@ -133,4 +139,34 @@ function render() {
 	gl.enableVertexAttribArray(vertex_position);
 	gl.drawArrays(gl.TRIANGLES,0,6);
 	gl.disableVertexAttribArray(vertex_position);
+}
+
+var lorenz84Pos = {x:1.1,y:1.2,z:1.3};
+var c0 = -1.2346115;
+var c1 = 0.6818416;
+var c2 = -0.9457178;
+var c3 = 0.48372614;
+var c4 = -0.355516;
+function lorenz84(){
+	var scale = 0.30;
+	var x = lorenz84Pos.x;
+	var y = lorenz84Pos.y;
+	var z = lorenz84Pos.z;
+	var xx = x + c4*(-c0*x-Math.pow(y,2.0)-Math.pow(z,2.0)+c0*c2);
+	var yy = y + c4*(-y+x*y-c1*x*z+c3);
+	var zz = z + c4*(-z+c1*x*y+x*z);
+	lorenz84Pos.x = xx;
+	lorenz84Pos.y = yy;
+	lorenz84Pos.z = zz;
+	//checkPoint();
+	return [scale*lorenz84Pos.x,scale*lorenz84Pos.y,scale*lorenz84Pos.z];
+	//////////
+}
+function getPoints(fnc,num){
+	var points = [];
+	while (num--){
+		Array.prototype.push.apply(points,fnc());
+	}
+	console.log('getPoints',num,points); // log
+	return points;
 }
