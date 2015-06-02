@@ -60,8 +60,92 @@ function init() {
 		changes.push({name:'size',values:[e.target.value]});
 	});
 	//
-	changes.push({name:'pointss',values:getPoints(lorenz84,99)});
-	//changes.push({name:'pointsNum',values:[9]});
+	////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+
+	//canvas.addEventListener('mousedown',dragging,false);
+	//canvas.addEventListener('mouseup',dragging,false);
+	//canvas.addEventListener('drag',dragging,false);
+
+	var mouseLast = {x:0,y:0};
+	var lookAtRadius = 2;
+	var lookAtRadians = {x:79,y:-168};
+	var lookAtVec3 = [0,0,0];
+	calcLookat();
+
+	document.addEventListener('dragstart',function (event) {
+		document.addEventListener('drag',dragging,false);
+	},false);
+
+	document.addEventListener('dragend',function (event) {
+		document.removeEventListener('drag',dragging,false);
+		mouseLast.x = 0;
+		mouseLast.y = 0;
+	},false);
+
+	function calcLookat(){
+		var radiansX = 0.01*lookAtRadians.x
+			,radiansY = 0.01*lookAtRadians.y
+			,sinY = Math.sin(radiansY)
+		;
+		lookAtVec3[0] = lookAtRadius*Math.sin(radiansX)*sinY;
+		lookAtVec3[2] = lookAtRadius*Math.cos(radiansX)*sinY;
+		lookAtVec3[1] = lookAtRadius*Math.cos(radiansY);
+		changes.push({name:'lookAt',values:lookAtVec3});
+	}
+
+	function dragging(e){
+		var dragX = e.pageX
+			,dragY = e.pageY
+			,lastX = mouseLast.x
+			,lastY = mouseLast.y
+			,isFirst = lastX===0&&lastY===0
+			,isLast = dragX===0&&dragY===0
+		;
+		if (!isFirst&&!isLast) {
+			lookAtRadians.x += dragX-lastX;
+			lookAtRadians.y += dragY-lastY;
+			calcLookat();
+		}
+		mouseLast.x = dragX;
+		mouseLast.y = dragY;
+	}
+
+	////////////////////////////////////////////////////
+
+	var campPVec3 = [1.5,1.5,1.5]
+		,keys = (function(a,i){
+			while (i--) a.push(false);
+			return a;
+		})([],99)
+	;
+	checkKeys();//changes.push({name:'camP',values:campPVec3});
+	//changes.push({name:'motion',values:motionVec2});
+	document.addEventListener('keydown',function(e){
+		keys[e.keyCode] = true;
+		//checkKeys();
+	});
+	document.addEventListener('keyup',function(e){
+		keys[e.keyCode] = false;
+		//console.log('e.keyCode',e.keyCode); // log
+		//checkKeys();
+	});//udlr:87,83,65,68
+
+	function checkKeys(){
+		var fw = keys[87]?1:(keys[83]?-1:0);
+		if (fw!==0) {
+			campPVec3[0] += fw*0.1*lookAtVec3[0];
+			campPVec3[1] += fw*0.1*lookAtVec3[1];
+			campPVec3[2] += fw*0.1*lookAtVec3[2];
+		}
+		changes.push({name:'camP',values:campPVec3});
+		//changes.push({name:'motion',values:motionVec2});
+	}
+	window.checkKeys = checkKeys;
+
+	////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	//
 	//
 	animate();
 }
@@ -110,7 +194,8 @@ function animate() {
 
 function render() {
 	if (!currentProgram) return;
-	parameters.time = new Date().getTime() - parameters.start_time;
+	//
+	parameters.time = Date.now() - parameters.start_time;
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	// Load program into GPU
 	gl.useProgram(currentProgram);
@@ -118,11 +203,17 @@ function render() {
 	gl.uniform1f(gl.getUniformLocation(currentProgram,'time'),parameters.time / 1000);
 	gl.uniform2f(gl.getUniformLocation(currentProgram,'resolution'),parameters.screenWidth,parameters.screenHeight);
 	//
+	//
+	//////
+	window.checkKeys();
+	//////
+	//
+	//
 	var numChanges = changes.length;
 	while (numChanges--) {
 		var change = changes[numChanges]
 				,uniformLocation = gl.getUniformLocation(currentProgram,change.name)
-				,values = change.values
+				,values = change.values.slice(0)
 				,params = values.length;
 		values.unshift(uniformLocation);
 		if (params===1)			gl.uniform1f.apply(gl,values);
@@ -139,34 +230,4 @@ function render() {
 	gl.enableVertexAttribArray(vertex_position);
 	gl.drawArrays(gl.TRIANGLES,0,6);
 	gl.disableVertexAttribArray(vertex_position);
-}
-
-var lorenz84Pos = {x:1.1,y:1.2,z:1.3};
-var c0 = -1.2346115;
-var c1 = 0.6818416;
-var c2 = -0.9457178;
-var c3 = 0.48372614;
-var c4 = -0.355516;
-function lorenz84(){
-	var scale = 0.30;
-	var x = lorenz84Pos.x;
-	var y = lorenz84Pos.y;
-	var z = lorenz84Pos.z;
-	var xx = x + c4*(-c0*x-Math.pow(y,2.0)-Math.pow(z,2.0)+c0*c2);
-	var yy = y + c4*(-y+x*y-c1*x*z+c3);
-	var zz = z + c4*(-z+c1*x*y+x*z);
-	lorenz84Pos.x = xx;
-	lorenz84Pos.y = yy;
-	lorenz84Pos.z = zz;
-	//checkPoint();
-	return [scale*lorenz84Pos.x,scale*lorenz84Pos.y,scale*lorenz84Pos.z];
-	//////////
-}
-function getPoints(fnc,num){
-	var points = [];
-	while (num--){
-		Array.prototype.push.apply(points,fnc());
-	}
-	console.log('getPoints',num,points); // log
-	return points;
 }
