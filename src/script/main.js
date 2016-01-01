@@ -69,7 +69,7 @@ function init() {
 
 	var mouseLast = {x:0,y:0};
 	var lookAtRadius = 2;
-	var lookAtRadians = {x:79,y:-168};
+	var lookAtRadians = {x:82,y:-219};
 	var lookAtVec3 = [0,0,0];
 	calcLookat();
 
@@ -91,6 +91,7 @@ function init() {
 		lookAtVec3[0] = lookAtRadius*Math.sin(radiansX)*sinY;
 		lookAtVec3[2] = lookAtRadius*Math.cos(radiansX)*sinY;
 		lookAtVec3[1] = lookAtRadius*Math.cos(radiansY);
+		console.log('lookAtRadians',lookAtRadians); // log
 		changes.push({name:'lookAt',values:lookAtVec3});
 	}
 
@@ -113,16 +114,20 @@ function init() {
 
 	////////////////////////////////////////////////////
 
-	var campPVec3 = [1.5,1.5,1.5]
+	var campPVec3 = [1,2,1]
 		,keys = (function(a,i){
 			while (i--) a.push(false);
 			return a;
 		})([],99)
+		,speed = 0.001
 	;
 	checkKeys();//changes.push({name:'camP',values:campPVec3});
 	//changes.push({name:'motion',values:motionVec2});
 	document.addEventListener('keydown',function(e){
-		keys[e.keyCode] = true;
+		var keyCode = e.keyCode;
+		if (!keys[keyCode]) speed = 0.01;
+		keys[keyCode] = true;
+
 		//checkKeys();
 	});
 	document.addEventListener('keyup',function(e){
@@ -132,22 +137,36 @@ function init() {
 	});//udlr:87,83,65,68
 
 	function checkKeys(){
-		var fw = keys[87]?1:(keys[83]?-1:0);
+		var fw = keys[87]?1:(keys[83]?-1:0)
+			,lr = keys[65]?1:(keys[68]?-1:0);
+		if (speed<1) speed *= 1.3;
 		if (fw!==0) {
-			campPVec3[0] += fw*0.1*lookAtVec3[0];
-			campPVec3[1] += fw*0.1*lookAtVec3[1];
-			campPVec3[2] += fw*0.1*lookAtVec3[2];
+			campPVec3[0] += fw*speed*lookAtVec3[0];
+			campPVec3[1] += fw*speed*lookAtVec3[1];
+			campPVec3[2] += fw*speed*lookAtVec3[2];
+			console.log('campPVec3',campPVec3); // log
+		}
+		if (lr!==0) {
+			var up = [0,1,0]
+				,cr = crossProduct(campPVec3,up);
+			campPVec3[0] += lr*speed*cr[0];
+			campPVec3[1] += lr*speed*cr[1];
+			campPVec3[2] += lr*speed*cr[2];
 		}
 		changes.push({name:'camP',values:campPVec3});
 		//changes.push({name:'motion',values:motionVec2});
 	}
 	window.checkKeys = checkKeys;
 
-	////////////////////////////////////////////////////
+	///////////////////////////////////////////////////
 	////////////////////////////////////////////////////
 	//
 	//
 	animate();
+}
+
+function crossProduct(a,b){
+	return [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]];
 }
 
 function createProgram(vertex,fragment) {
