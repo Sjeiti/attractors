@@ -5,6 +5,7 @@
 	var signal = iddqd.signal
 		,isFinite = Number.isFinite
 		,random = Math.random
+		,xhttp = iddqd.pattern.callbackToPromise(iddqd.network.xhttp)
 		,attractor
 		//
 		,container
@@ -14,24 +15,25 @@
 		,camera
 		,scene
 		,renderer
+		,geometry = new THREE.BufferGeometry()
 		,cameraCenter = new THREE.Vector3(0,0,0)
 		,cameraRotationX = 111
 		,cameraRotationY = 111
 		,cameraDistance = 2750
 	;
 
-	iddqd.network.xhttp('js/lorenz84.js',function(request){
-		console.log('xhttp',arguments); // todo: remove log
-		var module = {};
-		eval(request.response);
-		attractor = module.exports;
-		init();
-		console.log('module',module); // todo: remove log
-	},console.warn.bind(console));
+	xhttp('js/lorenz84.js')
+		.then(function(request){
+			var module = {};
+			eval(request.response);
+			attractor = module.exports;
+		})
+		.then(init);
 
 	function init() {
 		initVariables();
 		initThreejs();
+		initUI();
 		initStats();
 		initEvents();
 	}
@@ -60,42 +62,20 @@
 
 	function initThreejsParticles(){
 		var particles = 500000
-			,geometry = new THREE.BufferGeometry()
-			,positions = new Float32Array( particles * 3 )
-			,colors = new Float32Array( particles * 3 )
-			,color = new THREE.Color()
-			,n = 200
-			,n2 = n / 2 // particles spread in the cube
-			//
-			,p = new THREE.Vector3(random(),0,0)
-			,l = positions.length
-		;
-		for ( var i = 0; i < l; i += 3 ) {
-			attractor(p);
-			if (!isFinite(p.x)) p.x = random();
-			if (!isFinite(p.y)) p.y = random();
-			if (!isFinite(p.z)) p.z = random();
-			var x = p.x*n - n2;
-			var y = p.y*n - n2;
-			var z = p.z*n - n2;
-			// positions
-			positions[ i ]     = x;
-			positions[ i + 1 ] = y;
-			positions[ i + 2 ] = z;
-			// colors
-			var vx = ( x / n ) + 0.5;
-			var vy = ( y / n ) + 0.5;
-			var vz = ( z / n ) + 0.5;
-
-			color.setRGB( vx, vy, vz );
-
-			colors[ i ]     = color.r;
-			colors[ i + 1 ] = color.g;
-			colors[ i + 2 ] = color.b;
+			,len = 3*particles
+			,positions = new Float32Array(len)
+			,colors = new Float32Array(len)
+			,i = len
+		;i
+		while (i-=3) {
+			positions[i]   = colors[i]   = 0;
+			positions[i+1] = colors[i+1] = 0;
+			positions[i+2] = colors[i+2] = 0;
 		}
 		geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
 		geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 		geometry.computeBoundingSphere();
+		redrawAttractor();
 		//
 		var material = new THREE.PointsMaterial( { size: 1, vertexColors: THREE.VertexColors } );
 		var particleSystem = new THREE.Points( geometry, material );
@@ -110,9 +90,66 @@
 		container.appendChild( renderer.domElement );
 	}
 
+	function initUI(){
+		var constants = attractor.constants
+			,constantsWrapper = document.getElementById('constants')
+			,resetConstants = document.getElementById('resetConstants');
+		constants.forEach(function(val,i){
+			var input = document.createElement('input');
+			input.type = 'number';
+			input.step = 0.0100001;
+			input.value = val;
+			input.index = i;
+			input.classList.add('form-control');
+			constantsWrapper.appendChild(input);
+			input.addEventListener('change',function(e){
+				var input = e.currentTarget
+					,index = input.index;
+				constants[index] = input.value;
+				e.preventDefault();//todo:fix
+				redrawAttractor();
+			});
+		});
+		resetConstants.addEventListener('click',function(e){
+			constants.reset();
+			redrawAttractor();
+		});
+	}
+
+	function redrawAttractor(){
+		var positionAttr = geometry.attributes.position
+			,positions = positionAttr.array
+			,colorAttr = geometry.attributes.color
+			,colors = colorAttr.array
+			,color = new THREE.Color()
+			,n = 200
+			,n2 = n / 2
+			,p = new THREE.Vector3(random(),0,0)
+			,i = positions.length;
+		while (i-=3) {
+			attractor(p);
+			if (!isFinite(p.x)) p.x = random();
+			if (!isFinite(p.y)) p.y = random();
+			if (!isFinite(p.z)) p.z = random();
+			var x = positions[i]   = p.x*n - n2;
+			var y = positions[i+1] = p.y*n - n2;
+			var z = positions[i+2] = p.z*n - n2;
+			color.setRGB(
+				 x/n + 0.5
+				,y/n + 0.5
+				,z/n + 0.5
+			);
+			colors[i]   = color.r;
+			colors[i+1] = color.g;
+			colors[i+2] = color.b;
+		}
+		positionAttr.needsUpdate = true;
+		colorAttr.needsUpdate = true;
+	}
+
 	function initStats(){
 			stats = new Stats();
-			ui.appendChild( stats.domElement );
+			document.getElementById('stats').appendChild( stats.domElement );
 	}
 
 	function initEvents(){
@@ -193,6 +230,11 @@
 
 	function onClick(){
 		console.log('onClick'); // todo: remove log
+		var p = new THREE.Vector3(0,0,0);
+		var vector = p.project(camera);
+		vector.x = (vector.x + 1) / 2 * window.innerWidth;
+		vector.y = -(vector.y - 1) / 2 * window.innerHeight;
+		console.log('v',vector.x,vector.y); // todo: remove log
 	}
 
 	/*function createVector(x, y, z, camera, width, height) {
