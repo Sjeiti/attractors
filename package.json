@@ -23,6 +23,7 @@
     "load-grunt-tasks": "~0.6.0",
     "pngjs2": "^2.0.0",
     "request": "~2.55.0",
+    "three": "^0.73.0",
     "uglify-files": "~0.1.1",
     "xml2js": "~0.4.6"
   },
@@ -32,7 +33,8 @@
     "uglify-js": "~2.3.6"
   },
   "scripts": {
-    "test": "node src/js/test.js"
+    "test": "node src/js/test.js",
+    "ttt": "node src/js/testThree.js"
   },
   "keywords": [],
   "author": "Ron Valstar (http://www.sjeiti.com/)"

@@ -17,6 +17,8 @@
     "lodash": "~3.6.0",
     "gsap": "~1.16.1",
     "signals": "~1.0.0",
-    "classlist": "~2014.7.23"
+    "classlist": "~2014.7.23",
+    "three.js": "threejs#*",
+    "iddqd": "2.5.9"
   }
 }
