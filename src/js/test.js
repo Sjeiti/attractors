@@ -5,7 +5,7 @@ var fs = require('fs')
 	,random = Math.random
 	,pow = Math.pow
 	,vector = require('./vector.js')
-	,attractor = require('./lorenz84.js')
+	,attractor = require('./attractors.type.lorenz84.js')
 	,p = vector(1E9,0,0)
 	//
 	,imageName = 'foo.png'
@@ -39,6 +39,7 @@ console.log(
 //distribute(pixels,10.6,20.2);
 
 // iterate
+var t = Date.now();
 while (i--) {
 	attractor(p);
 	distribute(
@@ -48,6 +49,7 @@ while (i--) {
 	);
 	p.size>maxDistance&&p.set(random(),random(),random());
 }
+console.log('redraw',Date.now()-t); // todo: remove log
 
 // write
 gm(w,h,'#000000').write(imageName,function(err){

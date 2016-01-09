@@ -1,42 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js webgl - buffergeometry [particles]</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-		<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css" />
-		<link rel="stylesheet" href="/style/screen.css" />
-	</head>
-	<body>
+<head>
+	<title>three.js webgl - buffergeometry [particles]</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+	<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css"/>
+	<link rel="stylesheet" href="/style/screen.css"/>
+</head>
+<body>
 
-		<div id="container"></div>
+<div id="container"></div>
 
-		<div id="ui">
-			<div id="constants"></div>
-			<p><a class="btn btn-secondary btn-sm" id="resetConstants">reset</a></p>
-			<p><a class="btn btn-primary">render</a></p>
-			<div id="stats"></div>
-		</div>
+<div id="ui">
+	<fieldset class="form-group">
+		<select name="type" id="type" class="form-control"></select>
+	</fieldset>
+	<div id="constants">
+		<script type="text/html" id="constant">
+			<fieldset class="form-group form-inline">
+				<!--<label for="exampleInputEmail1">Email address</label>-->
+				<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+				<input type="number" class="form-control constant" value="<%=value%>" data-index="<%=index%>" id="constant<%=index%>" />
+			</fieldset>
+		</script>
+	</div>
+	<fieldset class="form-group">
+		<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
+		<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
+	</fieldset>
+	<fieldset class="form-group">
+		<a class="btn btn-primary" id="render"><div class="progress"></div><div>render</div></a>
+	</fieldset>
+	<div id="stats"></div>
+</div>
 
-		<script src="/vendor/signals/dist/signals.js"></script>
+<div id="image" class="hidden-xs-up">
+	<a class="btn btn-primary btn-sm">x</a>
+</div>
 
-		<script src="/vendor/iddqd/src/iddqd.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.pattern.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.math.vector.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.capabilities.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.requestAnimationFrame.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.signal.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.signal.animate.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.signal.key.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.signal.mouseWheel.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.signal.drag.js"></script>
-		<script src="/vendor/iddqd/src/iddqd.network.xhttp.js"></script>
+<script src="/vendor/signals/dist/signals.js"></script>
 
-		<script src="/vendor/three.js/build/three.min.js"></script>
-		<script src="/vendor/three.js/examples/js/Detector.js"></script>
-		<script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
+<script src="/js/pnglib.js"></script>
 
-		<script src="/js/threeAttractor.js"></script>
+<script src="/vendor/iddqd/src/iddqd.js"></script>
+<script src="/vendor/iddqd/src/iddqd.pattern.js"></script>
+<script src="/vendor/iddqd/src/iddqd.math.vector.js"></script>
+<script src="/vendor/iddqd/src/iddqd.capabilities.js"></script>
+<script src="/vendor/iddqd/src/iddqd.requestAnimationFrame.js"></script>
+<script src="/vendor/iddqd/src/iddqd.signal.js"></script>
+<script src="/vendor/iddqd/src/iddqd.signal.animate.js"></script>
+<script src="/vendor/iddqd/src/iddqd.signal.key.js"></script>
+<script src="/vendor/iddqd/src/iddqd.signal.mouseWheel.js"></script>
+<script src="/vendor/iddqd/src/iddqd.signal.drag.js"></script>
+<script src="/vendor/iddqd/src/iddqd.utils.tmpl.js"></script>
 
-	</body>
+<script src="/vendor/three.js/build/three.min.js"></script>
+<script src="/vendor/three.js/examples/js/Detector.js"></script>
+<script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
+
+<script src="/js/attractors.js"></script>
+<script src="/js/attractors.event.js"></script>
+<script src="/js/attractors.type.lorenz.js"></script>
+<script src="/js/attractors.type.lorenz84.js"></script>
+<script src="/js/attractors.type.peterdejong.js"></script>
+<script src="/js/attractors.three.js"></script>
+<script src="/js/attractors.ui.js"></script>
+<script>attractors();</script>
+
+</body>
 </html>
