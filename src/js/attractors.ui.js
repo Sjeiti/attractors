@@ -1,6 +1,10 @@
 /* globals iddqd, attractor */
 iddqd.ns('attractors.ui',(function(){
-	var getElementById = document.getElementById.bind(document)
+	var warn = console.warn.bind(console)
+		,three = attractors.three
+		,animate = attractors.animate
+		,setFrame = animate.setFrame
+		,getElementById = document.getElementById.bind(document)
 		,signal = iddqd.signal
 		,event = attractors.event
 		,REDRAW = event.REDRAW
@@ -16,7 +20,6 @@ iddqd.ns('attractors.ui',(function(){
 		initVariables();
 		initUI();
 		initStats();
-		signal.animate.add(onAnimate);
 	}
 
 	function initVariables(){
@@ -32,11 +35,13 @@ iddqd.ns('attractors.ui',(function(){
 	}*/
 
 	function initUI(){
-		initUIType();
-		initUIConstants();
-		initUIButtons();
+		initUIAttractor();
+		initUIAnimate();
+		initUIRender();
+		initUIImage();
 	}
-	function initUIType(){
+	function initUIAttractor(){
+		// type
 		var select = getElementById('type')
 			,fragment = document.createDocumentFragment();
 		attractors.list.forEach(function(attractor,i){
@@ -48,8 +53,7 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		select.appendChild(fragment);
 		select.addEventListener('change',onTypeChange);
-	}
-	function initUIConstants(){
+		// constants
 		//var wrapper = redrawConstants();
 		var wrapper = getElementById('constants')
 			,html = '';
@@ -63,19 +67,36 @@ iddqd.ns('attractors.ui',(function(){
 		wrapper.addEventListener('change',onInputChange);
 		wrapper.addEventListener('mousewheel',onInputChange);
 		//signal.drag.add(onDrag);
-	}
-	function initUIButtons(){
+		// buttons
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
 		getElementById('constantsReset').addEventListener('click',onResetClick);
+	}
+	function initUIRender(){
 		getElementById('render').addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
+	}
+	function initUIImage(){
 		getElementById('image').querySelector('.btn').addEventListener('click',onImageHide);
+	}
+
+	function initUIAnimate(){
+		getElementById('animate').querySelector('.animate').addEventListener('click',function(){
+			var position = { x: three.cameraRotationX }
+				,onUpdate = function(position){
+					three.cameraRotationX = position.x;
+				}.bind(null,position);
+			new TWEEN.Tween(position)
+				.to({x:position.x+360}, 2000)
+				.onUpdate(onUpdate)
+				.start();
+		});
+		//signal.animate.add(TWEEN.update.bind(TWEEN));
 	}
 
 	function onRenderProgress(progress){
 		var render = getElementById('render')
 			,indicator = render.querySelector('.progress');
-		indicator.style.width = progress+'%';
+		indicator.style.width = 100-progress+'%';
 	}
 
 	function stopPropagation(e){
@@ -84,8 +105,9 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function initStats(){
-			stats = new Stats();
-			getElementById('stats').appendChild( stats.domElement );
+		stats = new Stats();
+		getElementById('stats').appendChild( stats.domElement );
+		signal.animate.add(stats.update.bind(stats));
 	}
 
 	/*function onDrag(o,e){
@@ -126,7 +148,7 @@ iddqd.ns('attractors.ui',(function(){
 			console.log('event',event); // todo: remove log*/
 		} else if (type==='range') {
 			if (event==='mousedown') {
-				asdf = onAnimateConstant.bind(null,input);
+				asdf = onMoveConstant.bind(null,input);
 				console.log('attractor.name',attractor.name); // todo: remove log
 				signal.animate.add(asdf);
 			} else {
@@ -141,7 +163,7 @@ iddqd.ns('attractors.ui',(function(){
 		//console.log('signal.key',signal.key); // todo: remove log
 	}
 
-	function onAnimateConstant(input) {
+	function onMoveConstant(input) {
 		var index = parseInt(input.getAttribute('data-index'),10)
 			,value = input.value
 			,constants = attractor.constants
@@ -149,10 +171,6 @@ iddqd.ns('attractors.ui',(function(){
 		;
 		getElementById('constant'+index).value = constants[index] = constant + value*value*value*value*value*value*value;
 		redraw();
-	}
-
-	function onAnimate() {
-		stats.update();
 	}
 
 	function onRandomizeClick(e){
@@ -191,12 +209,46 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRenderClick(e){
-		var w = 640
-			,h = 480
-			,iterations = 1E7
+		var size = (function(s){
+				return s.split('-').map(function(s){
+					return parseInt(s,10);
+				});
+			})(getElementById('image-size').value)
+			,w = size[0]
+			,h = size[1]
+			,iterations = 1E6
+			,frames = 25
+			,doAnimate = getElementById('render-animate').checked
+			,render = attractors.three.render.bind(null,w,h,iterations)
 		;
-		attractors.three.render(w,h,iterations)
-			.then(onRendered.bind(null,w,h),console.warn.bind(console));
+		if (doAnimate) {
+			var rendered = onRendered.bind(null,w,h)
+				,i = frames
+				,cameraRotationX = three.cameraRotationX
+				,propstart = {cameraRotationX:cameraRotationX}
+				,propend = {cameraRotationX:cameraRotationX+(360-360/(frames+1))}
+				,promise;
+			animate.start();
+			while (i--) {
+				if (!promise) {
+					promise = render();
+				} else {
+					promise = promise
+						//.then(console.log.bind(console,'step frame',frames-i))
+						.then(setFrame.bind(null,frames-i,frames,propstart,propend))
+						.then(render);
+				}
+				promise = promise
+					.then(rendered,warn)
+					.then(animate.storeFrame,warn);
+			}
+			promise
+				.then(console.log.bind(console,'pack frames into animation'))
+				.then(animate.end.bind(null,w,h))
+			;
+		} else {
+			render().then(onRendered.bind(null,w,h),warn);
+		}
 	}
 
 	function onRendered(w,h,pixels){
@@ -209,7 +261,7 @@ iddqd.ns('attractors.ui',(function(){
 			})(document.createElement('img'))
 			,max = 0
 			,i
-			,w = 640;
+			,src;
 		imageWrapper.classList.remove('hidden-xs-up');
 		png.color(0, 0, 0, 0); // set the background transparent
 		//
@@ -225,7 +277,9 @@ iddqd.ns('attractors.ui',(function(){
 			var color = Math.pow(pixels[i]/max,0.3)*0xFF<<0;
 			png.buffer[png.index(x,y)] = png.color(color,color,color);
 		}
-		img.setAttribute('src','data:image/png;base64,'+png.getBase64());
+		src = 'data:image/png;base64,'+png.getBase64();
+		img.setAttribute('src',src);
+		return src;
 	}
 
 	function onImageHide(){

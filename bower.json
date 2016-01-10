@@ -19,6 +19,9 @@
     "signals": "~1.0.0",
     "classlist": "~2014.7.23",
     "three.js": "threejs#*",
-    "iddqd": "2.5.9"
+    "iddqd": "2.5.9",
+    "jszip": "~2.5.0",
+    "tween.js": "tweenjs#~16.3.1",
+    "gifshot": "~0.3.2"
   }
 }

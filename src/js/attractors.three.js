@@ -22,6 +22,8 @@ iddqd.ns('attractors.three',(function(){
 		,vecY = new THREE.Vector3(0,1,0)
 		,vecZ = new THREE.Vector3(0,0,1)
 		//
+		,axis
+		//
 		,point = new THREE.Vector3(0,0,0)
 		,n = 200
 		,n2 = n / 2
@@ -38,6 +40,7 @@ iddqd.ns('attractors.three',(function(){
 	function initThreejs(){
 		initThreejsScene();
 		initThreejsCameras();
+		initThreejsAxis();
 		initThreejsParticles();
 		initThreejsRenderer();
 	}
@@ -48,9 +51,27 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function initThreejsCameras(){
-		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
+		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 1, 3500 );
 		cameraRender = camera.clone();//new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
 		setCamera();
+	}
+
+	function initThreejsAxis(){
+		var size = 1E4;
+		axis = new THREE.Group();
+		[vecX,vecY,vecZ].forEach(function(v){
+			var material = new THREE.LineBasicMaterial({color: 0xffffff})
+				,geometry = new THREE.Geometry()
+				,vertices = geometry.vertices
+				,vec1 = v.clone().setLength(size)
+				,vec2 = v.clone().setLength(-size)
+				,line;
+			vertices.push(vec1);
+			vertices.push(vec2);
+			line = new THREE.Line(geometry, material);
+			axis.add(line);
+		});
+		scene.add(axis);
 	}
 
 	function initThreejsParticles(){
@@ -92,31 +113,38 @@ iddqd.ns('attractors.three',(function(){
 		event.REDRAW.add(redraw);
 	}
 
+	var foo = 1;
 	function onKeyPress(keys){
 		var step = 1.1E1
 			,pos = camera.position
 			,vecCam = cameraCenter.clone().sub(pos)
 			,sideVec = vecCam.clone().cross(vecZ)
 			,stepVec;
+		//console.log('keys',keys); // todo: remove log
 		if (keys[87]) stepVec = sideVec.cross(vecCam).setLength(-step); // up
 		if (keys[83]) stepVec = sideVec.cross(vecCam).setLength(step); // down
 		if (keys[65]) stepVec = sideVec.setLength(step); // left
 		if (keys[68]) stepVec = sideVec.setLength(-step); // right
 		if (keys[81]) stepVec = vecCam.setLength(step); // forward
 		if (keys[69]) stepVec = vecCam.setLength(-step); // backward
+		if (keys[90]) camera.setLens(22,foo+=.1); // forward
+		if (keys[67]) camera.setLens(22,foo-=.1); // backward
 		if (stepVec) {
-			pos.add(stepVec);
-			cameraCenter.add(stepVec);
+			pos.sub(stepVec);
+			cameraCenter.sub(stepVec);
+			axis.position.x = cameraCenter.x;
+			axis.position.y = cameraCenter.y;
+			axis.position.z = cameraCenter.z;
 		}
 	}
 
 	function onMouseWheel(i){
-		cameraDistance += i/10;
+		cameraDistance -= i/10;
 		setCamera();
 	}
 
 	function onDrag(touches){
-		console.log('onDrag',touches); // todo: remove log
+		//console.log('onDrag',touches); // todo: remove log
 		for (var id in touches) {
 			if (/^\d+$/.test(id)) {
 				var touch = touches[id]
@@ -124,8 +152,8 @@ iddqd.ns('attractors.three',(function(){
 					,pos = touch.pos
 					,offsetX = last.getX() - pos.getX()
 					,offsetY = last.getY() - pos.getY();
-				cameraRotationX += offsetX;
-				cameraRotationY += offsetY;
+				cameraRotationX += 0.3*offsetX;
+				cameraRotationY += 0.3*offsetY;
 				setCamera();
 			}
 		}
@@ -326,7 +354,12 @@ iddqd.ns('attractors.three',(function(){
 		init: init
 		,render: render
 		,redraw: redraw
-		,get instance() { return attractor; }
-		,get constants() { return attractor.constants; }
+		,get cameraRotationX() { return cameraRotationX; }
+		,set cameraRotationX(f) {
+			cameraRotationX = f;
+			setCamera();
+		}
+		//,get instance() { return attractor; }
+		//,get constants() { return attractor.constants; }
 	};
 })());

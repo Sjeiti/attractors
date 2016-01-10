@@ -2,6 +2,7 @@
     "globals": {
 		"iddqd": true
 		,"attractors": true
+		,"TWEEN": true
 
 		,"module": true
 		,"require": true
