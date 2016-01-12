@@ -14,6 +14,7 @@ iddqd.ns('attractors.animate',(function() {
 	}
 
 	function setFrame(frame,frames,propstart,propend) {
+			console.log('setFrame',frame,frames); // todo: remove log
 		var part = frame/frames;
 		for (var key in propstart) {
 			var valStart = propstart[key]
@@ -28,19 +29,6 @@ iddqd.ns('attractors.animate',(function() {
 	}
 
 	function end(w,h){
-		/*var ag = new Animated_GIF({
-			workerPath: '/vendor/Animated_GIF/dist/Animated_GIF.worker.js'
-		});
-		ag.setSize(w,h);
-		frames.forEach(function(src){
-			var img = document.createElement('img');
-			img.setAttribute('src',src);
-			ag.addFrame(img);
-		});
-		ag.getBase64GIF(function(image) {
-			document.getElementById('image').querySelector('img').setAttribute('src',image);
-		});*/
-		/////////////////////////////////////////////
 		gifshot.createGIF({
 			gifWidth: w,gifHeight: h,images: (function (a) {
 				frames.forEach(function (src) {

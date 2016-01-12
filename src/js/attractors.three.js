@@ -9,6 +9,7 @@ iddqd.ns('attractors.three',(function(){
 		,attractor = attractors.attractor
 		// threejs
 		,camera
+		,cameraFrameSize = 1
 		,cameraRender
 		,scene
 		,renderer
@@ -18,9 +19,13 @@ iddqd.ns('attractors.three',(function(){
 		,cameraRotationY = 111
 		,cameraDistance = 2750
 		//
+		,elmContainer = document.getElementById('container')
+		//
 		,vecX = new THREE.Vector3(1,0,0)
 		,vecY = new THREE.Vector3(0,1,0)
 		,vecZ = new THREE.Vector3(0,0,1)
+		//
+		,vecMouse = new THREE.Vector3(0,0,0)
 		//
 		,axis
 		//
@@ -51,7 +56,7 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function initThreejsCameras(){
-		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 1, 3500 );
+		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 3500 );
 		cameraRender = camera.clone();//new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
 		setCamera();
 	}
@@ -99,21 +104,49 @@ iddqd.ns('attractors.three',(function(){
 		renderer.setClearColor( scene.fog.color );
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize( window.innerWidth, window.innerHeight );
-		document.getElementById('container').appendChild( renderer.domElement );
+		elmContainer.appendChild( renderer.domElement );
 	}
 
 	function initEvents(){
+		elmContainer.addEventListener('mousedown',onMouseDown);
+		document.addEventListener('mouseup',onMouseUp);
+
 		signal.key.press.add(onKeyPress);
 		signal.mouseWheel.add(onMouseWheel);
-		signal.drag.add(onDrag);
 		signal.animate.add(onAnimate);
 		window.addEventListener( 'resize', onWindowResize, false );
-		//window.addEventListener( 'click', onClick, false );
 		event.TYPE_CHANGED.add(onTypeChanged);
 		event.REDRAW.add(redraw);
 	}
 
-	var foo = 1;
+	function onMouseDown(e){
+		document.removeEventListener('mousemove',onMouseMove);
+		document.addEventListener('mousemove',onMouseMove);
+		onMouseMove(e);
+	}
+
+	function onMouseUp(){
+		document.removeEventListener('mousemove',onMouseMove);
+		vecMouse.z = 0;
+	}
+
+	function onMouseMove(e){
+		console.log('checkMove',e.pageX,e.pageY); // todo: remove log
+		var x = e.pageX
+			,y = e.pageY
+			,offsetX = x - vecMouse.x
+			,offsetY = y - vecMouse.y;
+		vecMouse.x = x;
+		vecMouse.y = y;
+		if (vecMouse.z===0) {
+			vecMouse.z = 1;
+		} else {
+			cameraRotationX += 0.3*offsetX;
+			cameraRotationY -= 0.3*offsetY;
+			setCamera();
+		}
+	}
+
 	function onKeyPress(keys){
 		var step = 1.1E1
 			,pos = camera.position
@@ -127,8 +160,8 @@ iddqd.ns('attractors.three',(function(){
 		if (keys[68]) stepVec = sideVec.setLength(-step); // right
 		if (keys[81]) stepVec = vecCam.setLength(step); // forward
 		if (keys[69]) stepVec = vecCam.setLength(-step); // backward
-		if (keys[90]) camera.setLens(22,foo+=.1); // forward
-		if (keys[67]) camera.setLens(22,foo-=.1); // backward
+		if (keys[90]) camera.setLens(22,cameraFrameSize+=0.1); // forward
+		if (keys[67]) camera.setLens(22,cameraFrameSize-=0.1); // backward
 		if (stepVec) {
 			pos.sub(stepVec);
 			cameraCenter.sub(stepVec);
@@ -141,22 +174,6 @@ iddqd.ns('attractors.three',(function(){
 	function onMouseWheel(i){
 		cameraDistance -= i/10;
 		setCamera();
-	}
-
-	function onDrag(touches){
-		//console.log('onDrag',touches); // todo: remove log
-		for (var id in touches) {
-			if (/^\d+$/.test(id)) {
-				var touch = touches[id]
-					,last = touch.last
-					,pos = touch.pos
-					,offsetX = last.getX() - pos.getX()
-					,offsetY = last.getY() - pos.getY();
-				cameraRotationX += 0.3*offsetX;
-				cameraRotationY += 0.3*offsetY;
-				setCamera();
-			}
-		}
 	}
 
 	function onWindowResize() {

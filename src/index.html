@@ -40,6 +40,12 @@
 		</fieldset>
 	</div>
 
+	<h2><label for="tabs-position">position</label></h2>
+	<input type="radio" name="tabs" id="tabs-position" class="tabs" />
+	<div id="position">
+		<a class="btn btn-secondary btn-sm center">center</a>
+	</div>
+
 	<h2><label for="tabs-animation">animation</label></h2>
 	<input type="radio" name="tabs" id="tabs-animation" class="tabs" />
 	<div id="animate">
@@ -55,14 +61,19 @@
 	<div>
 		<fieldset class="form-group">
 			<label for="exampleInputEmail1">Iterations</label>
+			<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+
 		</fieldset>
 		<fieldset class="form-group">
 			<label for="exampleInputEmail1">Gamma</label>
+			<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+
 		</fieldset>
 		<fieldset class="form-group">
 			<label>image size</label>
 			<select name="image-size" id="image-size" class="form-control-sm">
 				<option value="128-128">128-128</option>
+				<option value="256-256">256-256</option>
 				<option value="320-240" selected>320-240</option>
 				<option value="640-480">640-480</option>
 				<option value="800-600">800-600</option>
@@ -80,10 +91,12 @@
 	</div>
 </div>
 
-<div id="image" class="hidden-xs-up">
-	<div class="ui">
-		<a class="btn btn-primary btn-sm">x</a>
-		<a class="btn btn-primary btn-sm">download</a>
+<div id="result" class="hidden-xs-up">
+	<div id="image">
+		<div class="ui">
+			<a class="btn btn-primary btn-sm">x</a>
+			<a class="btn btn-primary btn-sm">download</a>
+		</div>
 	</div>
 </div>
 

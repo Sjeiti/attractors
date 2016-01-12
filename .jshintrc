@@ -2,7 +2,9 @@
     "globals": {
 		"iddqd": true
 		,"attractors": true
+		,"THREE": true
 		,"TWEEN": true
+		,"PNGlib": true
 
 		,"module": true
 		,"require": true
