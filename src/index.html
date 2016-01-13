@@ -12,82 +12,85 @@
 <div id="container"></div>
 
 <div id="ui">
-	<h1>Strange attractors</h1>
+	<h1><label for="tabs-main">Strange attractors</label></h1>
+	<input type="checkbox" name="main-tab" id="tabs-main" class="tabs" checked />
+	<div class="tab">
 
-	<h2><label for="tabs-about">about</label></h2>
-	<input type="radio" name="tabs" id="tabs-about" class="tabs" />
-	<div>
-		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
-	</div>
-
-	<h2><label for="tabs-attractor">attractor</label></h2>
-	<input type="radio" name="tabs" id="tabs-attractor" class="tabs" checked />
-	<div>
-		<fieldset class="form-group">
-			<select name="type" id="type" class="form-control"></select>
-		</fieldset>
-		<div id="constants">
-			<script type="text/html" id="constant">
-				<fieldset class="form-group form-inline">
-					<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
-					<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-index="<%=index%>" id="constant<%=index%>" />
-				</fieldset>
-			</script>
+		<h2 class="tab-title"><label for="tabs-about">about</label></h2>
+		<input type="radio" name="tabs" id="tabs-about" class="tabs" />
+		<div class="tab">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
 		</div>
-		<fieldset class="form-group">
-			<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
-			<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
-		</fieldset>
-	</div>
 
-	<h2><label for="tabs-position">position</label></h2>
-	<input type="radio" name="tabs" id="tabs-position" class="tabs" />
-	<div id="position">
-		<a class="btn btn-secondary btn-sm center">center</a>
-	</div>
+		<h2 class="tab-title"><label for="tabs-attractor">attractor</label></h2>
+		<input type="radio" name="tabs" id="tabs-attractor" class="tabs" checked />
+		<div class="tab"
+			<fieldset class="form-group">
+				<select name="type" id="type" class="form-control"></select>
+			</fieldset>
+			<div id="constants">
+				<script type="text/html" id="constant">
+					<fieldset class="form-group form-inline">
+						<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-index="<%=index%>" id="constant<%=index%>" />
+					</fieldset>
+				</script>
+			</div>
+			<fieldset class="form-group">
+				<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
+				<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
+			</fieldset>
+		</div>
 
-	<h2><label for="tabs-animation">animation</label></h2>
-	<input type="radio" name="tabs" id="tabs-animation" class="tabs" />
-	<div id="animate">
-		<fieldset class="form-group form-inline">
-			<label for="frames" class="form-control-label">frames</label>
-			<input type="number" value="60" id="frames" class="form-control form-control-sm" />
-		</fieldset>
-		<a class="btn btn-secondary btn-sm animate">animate</a>
-	</div>
+		<h2 class="tab-title"><label for="tabs-position">position</label></h2>
+		<input type="radio" name="tabs" id="tabs-position" class="tabs" />
+		<div id="position" class="tab">
+			<a class="btn btn-secondary btn-sm center">center</a>
+		</div>
 
-	<h2><label for="tabs-render">render</label></h2>
-	<input type="radio" name="tabs" id="tabs-render" class="tabs" />
-	<div>
-		<fieldset class="form-group">
-			<label for="exampleInputEmail1">Iterations</label>
-			<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
+		<input type="radio" name="tabs" id="tabs-animation" class="tabs" />
+		<div id="animate">
+			<fieldset class="form-group form-inline">
+				<label for="frames" class="form-control-label">frames</label>
+				<input type="number" value="60" id="frames" class="form-control form-control-sm" />
+			</fieldset>
+			<a class="btn btn-secondary btn-sm animate">animate</a>
+		</div>
 
-		</fieldset>
-		<fieldset class="form-group">
-			<label for="exampleInputEmail1">Gamma</label>
-			<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+		<h2 class="tab-title"><label for="tabs-render">render</label></h2>
+		<!--<input type="radio" name="tabs" id="tabs-render" class="tabs" />-->
+		<div class="tab">
+			<fieldset class="form-group">
+				<label for="exampleInputEmail1">Iterations</label>
+				<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
 
-		</fieldset>
-		<fieldset class="form-group">
-			<label>image size</label>
-			<select name="image-size" id="image-size" class="form-control-sm">
-				<option value="128-128">128-128</option>
-				<option value="256-256">256-256</option>
-				<option value="320-240" selected>320-240</option>
-				<option value="640-480">640-480</option>
-				<option value="800-600">800-600</option>
-			</select>
-		</fieldset>
-		<fieldset class="form-group">
-			<label>
-				<input type="checkbox" id="render-animate" />
-				animate
-			</label>
-		</fieldset>
-		<fieldset class="form-group">
-			<a class="btn btn-primary" id="render"><div class="progress"></div><div>render</div></a>
-		</fieldset>
+			</fieldset>
+			<fieldset class="form-group">
+				<label for="exampleInputEmail1">Gamma</label>
+				<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+
+			</fieldset>
+			<fieldset class="form-group">
+				<label>image size</label>
+				<select name="image-size" id="image-size" class="form-control-sm">
+					<option value="128-128">128-128</option>
+					<option value="256-256">256-256</option>
+					<option value="320-240" selected>320-240</option>
+					<option value="640-480">640-480</option>
+					<option value="800-600">800-600</option>
+				</select>
+			</fieldset>
+			<fieldset class="form-group">
+				<label>
+					<input type="checkbox" id="render-animate" />
+					animate
+				</label>
+			</fieldset>
+			<fieldset class="form-group">
+				<a class="btn btn-primary" id="render"><div class="progress"></div><div>render</div></a>
+			</fieldset>
+		</div>
 	</div>
 </div>
 
@@ -131,6 +134,7 @@
 <script src="/js/attractors.type.lorenz.js"></script>
 <script src="/js/attractors.type.peterdejong.js"></script>
 <script src="/js/attractors.type.lorenz84.js"></script>
+<script src="/js/attractors.type.pickover.js"></script>
 <script src="/js/attractors.three.js"></script>
 <script src="/js/attractors.animate.js"></script>
 <script src="/js/attractors.ui.js"></script>
