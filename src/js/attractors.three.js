@@ -18,6 +18,7 @@ iddqd.ns('attractors.three',(function(){
 		,cameraRotationX = 111
 		,cameraRotationY = 111
 		,cameraDistance = 2750
+		,colorBg = 0x222222
 		//
 		,elmContainer = document.getElementById('container')
 		//
@@ -52,11 +53,11 @@ iddqd.ns('attractors.three',(function(){
 
 	function initThreejsScene(){
 		scene = new THREE.Scene();
-		scene.fog = new THREE.Fog( 0x222222, 2000, 3500 );
+		//scene.fog = new THREE.Fog( colorBg, 2000, 3500 );
 	}
 
 	function initThreejsCameras(){
-		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 3500 );
+		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 1E4 );
 		cameraRender = camera.clone();//new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
 		setCamera();
 	}
@@ -101,7 +102,7 @@ iddqd.ns('attractors.three',(function(){
 
 	function initThreejsRenderer(){
 		renderer = new THREE.WebGLRenderer( { antialias: false } );
-		renderer.setClearColor( scene.fog.color );
+		renderer.setClearColor( colorBg );
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		elmContainer.appendChild( renderer.domElement );
@@ -361,7 +362,9 @@ iddqd.ns('attractors.three',(function(){
 	function center(){
 		var positionAttr = geometry.attributes.position
 			,positions = positionAttr.array
-			,i = Math.min(positions.length,100)
+			,positionsLen = positions.length
+			,i = Math.min(positionsLen,100)
+			,start = 30//positionsLen - 3*(i+1)
 			, xmin = Infinity
 			,xmax = -Infinity
 			,ymin = Infinity
@@ -370,9 +373,9 @@ iddqd.ns('attractors.three',(function(){
 			,zmax = -Infinity
 			,vecOffset;
 		while (i--) {
-			var x = 3*i
-				,y = 3*i+1
-				,z = 3*i+2;
+			var x = start + 3*i
+				,y = start + 3*i+1
+				,z = start + 3*i+2;
 			if (x<xmin) xmin = x;
 			if (x>xmax) xmax = x;
 			if (y<ymin) ymin = y;
