@@ -131,7 +131,6 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function onMouseMove(e){
-		console.log('checkMove',e.pageX,e.pageY); // todo: remove log
 		var x = e.pageX
 			,y = e.pageY
 			,offsetX = x - vecMouse.x
@@ -359,6 +358,41 @@ iddqd.ns('attractors.three',(function(){
 		}
 	}
 
+	function center(){
+		var positionAttr = geometry.attributes.position
+			,positions = positionAttr.array
+			,i = Math.min(positions.length,100)
+			, xmin = Infinity
+			,xmax = -Infinity
+			,ymin = Infinity
+			,ymax = -Infinity
+			,zmin = Infinity
+			,zmax = -Infinity
+			,vecOffset;
+		while (i--) {
+			var x = 3*i
+				,y = 3*i+1
+				,z = 3*i+2;
+			if (x<xmin) xmin = x;
+			if (x>xmax) xmax = x;
+			if (y<ymin) ymin = y;
+			if (y>ymax) ymax = y;
+			if (z<zmin) zmin = z;
+			if (z>zmax) zmax = z;
+		}
+		vecOffset = cameraCenter.clone();
+		cameraCenter.x = -(xmin+xmax)/2;
+		cameraCenter.y = -(ymin+ymax)/2;
+		cameraCenter.z = -(zmin+zmax)/2;
+		//
+		vecOffset.sub(cameraCenter);
+		camera.position.sub(vecOffset);
+		//
+		axis.position.x = cameraCenter.x;
+		axis.position.y = cameraCenter.y;
+		axis.position.z = cameraCenter.z;
+	}
+
 	/*function createVector(x, y, z, camera, width, height) {
 		var p = new THREE.Vector3(x, y, z);
 		var vector = p.project(camera);
@@ -371,6 +405,7 @@ iddqd.ns('attractors.three',(function(){
 		init: init
 		,render: render
 		,redraw: redraw
+		,center: center
 		,get cameraRotationX() { return cameraRotationX; }
 		,set cameraRotationX(f) {
 			cameraRotationX = f;

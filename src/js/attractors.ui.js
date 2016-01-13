@@ -8,6 +8,7 @@ iddqd.ns('attractors.ui',(function(){
 		,signal = iddqd.signal
 		,event = attractors.event
 		,REDRAW = event.REDRAW
+		,center = three.center
 		,redraw = REDRAW.dispatch.bind(REDRAW)//attractors.three.redraw//
 		//,xhttp = iddqd.pattern.callbackToPromise(iddqd.network.xhttp)
 		//
@@ -23,6 +24,7 @@ iddqd.ns('attractors.ui',(function(){
 		attractor = attractors.attractor;
 		initUIAttractor();
 		initUIAnimate();
+		initUIPosition();
 		initUIRender();
 		initUIResult();
 		initStats();
@@ -64,6 +66,10 @@ iddqd.ns('attractors.ui',(function(){
 	}
 	function initUIResult(){
 		elmImage.querySelector('.btn').addEventListener('click',onImageHide);
+	}
+
+	function initUIPosition(){
+		getElementById('position').querySelector('.btn').addEventListener('click',center);
 	}
 
 	function initUIAnimate(){
@@ -175,6 +181,7 @@ iddqd.ns('attractors.ui',(function(){
 			size = p.distanceTo(pp);
 		}
 		redraw();
+		center();
 	}
 
 	function onResetClick(e){
@@ -183,6 +190,7 @@ iddqd.ns('attractors.ui',(function(){
 			getElementById('constant'+i).value = a[i];
 		});
 		redraw();
+		center();
 	}
 
 	function onRenderClick(e){
