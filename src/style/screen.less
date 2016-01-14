@@ -1,5 +1,5 @@
-@headerColor: #D1FFF5;
-@headerBg: #396F67;
+@headerColor: #D1E9FF;
+@headerBg: #486071;
 
 body {
 	margin: 0;
@@ -23,8 +23,67 @@ h1 {
 }
 h2 { font-size: 16px; }
 
+input.form-control[type=range] {
+	padding: 0;
+}
+
+input, select, option {
+	color: #333;
+}
+
+.form-group {
+	margin-bottom: .5rem;
+	&:last-child { margin-bottom: 0; }
+}
+
+.form-control, .btn {
+	border-radius: .14rem;
+}
 .form-control-sm {
-	padding: .1rem .5rem;
+	padding: .05rem .5rem;
+	line-height: 100%;
+}
+
+.btn {
+	transition: background-color 200ms ease-in-out, padding 200ms ease-in-out;
+}
+
+.btn-secondary {
+	color: #FFF;
+	background-color: #5688b3;
+	border-color: #2f353e;
+	&:hover {
+		color: #FFF;
+		background-color: #4d7aa1;
+		border-color: #2f353e;
+	}
+}
+
+.form-left {
+	&:after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+	>* {
+		float: left;
+		vertical-align: middle;
+		&:first-child:nth-last-child(1) {
+			width: 100%;
+		}
+		&:first-child:nth-last-child(2),
+		&:first-child:nth-last-child(2) ~ * {
+			&:nth-child(1) { width: 70%; }
+			&:nth-child(2) { width: 30%; }
+		}
+		&:first-child:nth-last-child(3),
+		&:first-child:nth-last-child(3) ~ * {
+			&:nth-child(1) { width: 30%; }
+			&:nth-child(2) { width: 40%; }
+			&:nth-child(3) { width: 30%; }
+		}
+	}
+	input[type=range]+input { transform: translateX(1px); }
 }
 
 #ui {
@@ -36,10 +95,10 @@ h2 { font-size: 16px; }
 	.tab-title { margin: 1px 0; }
 	>.tab {
 		padding: 0 20px;
-		.tab>* {
+		/*.tab>* {
 			&:first-child { margin-top: 10px; }
 			&:last-child { margin-bottom: 10px; }
-		}
+		}*/
 	}
 }
 
@@ -63,9 +122,8 @@ h2 { font-size: 16px; }
 }
 
 #constants {
-	input[type=range] { width: 60%; }
-	.constant { width: 37%; }
-	.form-group { margin-bottom: 0; }
+	margin-bottom: 10px;
+	.form-group { margin-bottom: 3px; }
 }
 
 #result {
@@ -89,6 +147,7 @@ h2 { font-size: 16px; }
 		left: 0;
 		top: 0;
 	}
+	img { max-width: 80%; }
 }
 
 #stats {
@@ -110,7 +169,10 @@ input.tabs {
 	+*{
 		max-height: 0;
 		overflow: hidden;
-		transition: max-height 200ms ease-in-out;
+		transition: max-height 200ms ease-in-out, padding 200ms ease-in-out;
 	}
-	&:checked+*{ max-height: 1000px; }
+	&:checked+*{
+		max-height: 1000px;
+		padding: 10px 0;
+	}
 }

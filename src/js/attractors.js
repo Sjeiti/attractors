@@ -28,7 +28,6 @@ iddqd.ns('attractors',(function(){
 		}
 		list.push(creation);
 		attractor = creation;
-		console.log('attractor',typeof attractor); // todo: remove log
 		return creation;
 	}
 

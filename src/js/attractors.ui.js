@@ -16,6 +16,9 @@ iddqd.ns('attractors.ui',(function(){
 		,elmRender = getElementById('render')
 		,elmImage = getElementById('image')
 		//
+		,gammaValue = 0.6
+		,iterations = 1E7
+		//
 		,stats
 		,attractor
 	;
@@ -24,7 +27,6 @@ iddqd.ns('attractors.ui',(function(){
 		attractor = attractors.attractor;
 		initUIAttractor();
 		initUIAnimate();
-		initUIPosition();
 		initUIRender();
 		initUIResult();
 		initStats();
@@ -59,17 +61,57 @@ iddqd.ns('attractors.ui',(function(){
 		// buttons
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
 		getElementById('constantsReset').addEventListener('click',onResetClick);
+		getElementById('centerAxis').addEventListener('click',center);
 	}
 	function initUIRender(){
+		var elmGamma = getElementById('gamma')
+			,elmGammaRange = getElementById('gammaRange')
+			,elmIterations = getElementById('iterations')
+			,elmIterationsRange = getElementById('iterationsRange')
+			,changeGamma = function(){
+				gammaValue = parseFloat(elmGammaRange.value);
+				elmGamma.value = gammaValue;
+			}
+			,changeIterations = function(){
+				var inputValue = parseFloat(elmIterationsRange.value)
+					,max = 9
+					,maxOne = 1/max
+					,exp = inputValue*max<<0
+					,mult = Math.max(1,10 - ((maxOne*(exp+1) - inputValue)/maxOne*10<<0))
+					,result = mult*Math.pow(10,exp);
+				iterations = result;
+				elmIterations.value = result;
+			}
+			;
+		//
+		//
+		elmGamma.value = gammaValue;
+		elmGamma.addEventListener('change',function(){gammaValue = parseFloat(elmGamma.value);});
+		elmGammaRange.addEventListener('mousedown',function(){
+			elmGammaRange.addEventListener('mousemove',changeGamma);
+		});
+		document.addEventListener('mouseup',function(){
+			elmGammaRange.removeEventListener('mousemove',changeGamma);
+		});
+		elmGammaRange.addEventListener('change',changeGamma);
+		//
+		//
+		elmIterations.value = iterations;
+		elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
+		elmIterationsRange.addEventListener('mousedown',function(){
+			elmIterationsRange.addEventListener('mousemove',changeIterations);
+		});
+		document.addEventListener('mouseup',function(){
+			elmIterationsRange.removeEventListener('mousemove',changeIterations);
+		});
+		elmIterationsRange.addEventListener('change',changeIterations);
+		//
+		//
 		elmRender.addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
 	}
 	function initUIResult(){
 		elmImage.querySelector('.btn').addEventListener('click',onImageHide);
-	}
-
-	function initUIPosition(){
-		getElementById('position').querySelector('.btn').addEventListener('click',center);
 	}
 
 	function initUIAnimate(){
@@ -84,6 +126,19 @@ iddqd.ns('attractors.ui',(function(){
 				.start();
 		});
 		//signal.animate.add(TWEEN.update.bind(TWEEN));
+		var constants = attractor.constants
+			,first = [];
+		getElementById('store-first').addEventListener('click',function(){
+			constants.forEach(function(n,i){
+				first[i] = n;
+			});
+		});
+		getElementById('load-first').addEventListener('click',function(){
+			first.forEach(function(n,i){
+				constants[i] = n;
+			});
+			redraw();
+		});
 	}
 
 	function onRenderProgress(progress){
@@ -201,8 +256,7 @@ iddqd.ns('attractors.ui',(function(){
 			})(getElementById('image-size').value)
 			,w = size[0]
 			,h = size[1]
-			,iterations = 1E7
-			,frames = 25
+			,frames = parseInt(getElementById('frames').value,10)
 			,doAnimate = getElementById('render-animate').checked
 			,render = attractors.three.render.bind(null,w,h,iterations)
 		;
@@ -265,7 +319,7 @@ iddqd.ns('attractors.ui',(function(){
 		while (i--) {
 			var x = i%w
 				,y = i/w<<0;
-			var color = Math.pow(pixels[i]/max,0.3)*0xFF<<0;
+			var color = Math.pow(pixels[i]/max,gammaValue)*0xFF<<0;
 			png.buffer[png.index(x,y)] = png.color(color,color,color);
 		}
 		src = 'data:image/png;base64,'+png.getBase64();
@@ -284,6 +338,15 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		elmConstants.innerHTML = html;
 		return elmConstants;
+	}
+
+	function countDigits(n){
+		var count = 0;
+		while (n << 0>0) {
+			n /= 10;
+			count++;
+		}
+		return count;
 	}
 
 	return init;

@@ -16,22 +16,22 @@
 	<input type="checkbox" name="main-tab" id="tabs-main" class="tabs" checked />
 	<div class="tab">
 
-		<h2 class="tab-title"><label for="tabs-about">about</label></h2>
+		<!--<h2 class="tab-title"><label for="tabs-about">about</label></h2>
 		<input type="radio" name="tabs" id="tabs-about" class="tabs" />
 		<div class="tab">
 			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
-		</div>
+		</div>-->
 
 		<h2 class="tab-title"><label for="tabs-attractor">attractor</label></h2>
-		<input type="radio" name="tabs" id="tabs-attractor" class="tabs" checked />
+		<input type="checkbox" name="tabs" id="tabs-attractor" class="tabs" checked />
 		<div class="tab">
 			<fieldset class="form-group">
 				<select name="type" id="type" class="form-control"></select>
 			</fieldset>
 			<div id="constants">
 				<script type="text/html" id="constant">
-					<fieldset class="form-group form-inline">
-						<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
+					<fieldset class="form-group form-left">
+						<input type="range" class="form-control form-control-sm" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
 						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-index="<%=index%>" id="constant<%=index%>" />
 					</fieldset>
 				</script>
@@ -39,39 +39,44 @@
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
 				<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
+				<a class="btn btn-secondary btn-sm" id="centerAxis">center</a>
 			</fieldset>
 		</div>
 
-		<h2 class="tab-title"><label for="tabs-position">position</label></h2>
-		<input type="radio" name="tabs" id="tabs-position" class="tabs" />
-		<div id="position" class="tab">
-			<a class="btn btn-secondary btn-sm center">center</a>
-		</div>
-
 		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
-		<input type="radio" name="tabs" id="tabs-animation" class="tabs" />
+		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" />
 		<div id="animate">
 			<fieldset class="form-group form-inline">
 				<label for="frames" class="form-control-label">frames</label>
 				<input type="number" value="60" id="frames" class="form-control form-control-sm" />
 			</fieldset>
-			<a class="btn btn-secondary btn-sm animate">animate</a>
+			<fieldset class="form-group">
+				<a class="btn btn-secondary btn-sm" id="store-first">store first</a>
+				<a class="btn btn-secondary btn-sm" id="load-first">load first</a>
+			</fieldset>
+			<fieldset class="form-group">
+				<a class="btn btn-secondary btn-sm" id="store-last">store last</a>
+				<a class="btn btn-secondary btn-sm" id="load-last">load last</a>
+			</fieldset>
+			<fieldset class="form-group">
+				<a class="btn btn-secondary btn-sm animate">animate</a>
+			</fieldset>
 		</div>
 
 		<h2 class="tab-title"><label for="tabs-render">render</label></h2>
-		<!--<input type="radio" name="tabs" id="tabs-render" class="tabs" />-->
+		<input type="checkbox" name="tabs" id="tabs-render" class="tabs" />
 		<div class="tab">
-			<fieldset class="form-group">
-				<label for="exampleInputEmail1">Iterations</label>
-				<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
-
+			<fieldset class="form-group form-left">
+				<label for="iterations">Iterations</label>
+				<input type="range" class="form-control" min="0" max="1" step="0.00001" id="iterationsRange" />
+				<input type="text" class="form-control form-control-sm constant" disabled value="1" id="iterations" />
 			</fieldset>
-			<fieldset class="form-group">
-				<label for="exampleInputEmail1">Gamma</label>
-				<input type="range" class="form-control" min="-1" max="1" step="0.00001" data-index="<%=index%>" />
-
+			<fieldset class="form-group form-left">
+				<label for="gamma">Gamma</label>
+				<input type="range" class="form-control" min="0" max="1" step="0.00001" id="gammaRange" />
+				<input type="text" class="form-control form-control-sm constant" disabled value="1" id="gamma" />
 			</fieldset>
-			<fieldset class="form-group">
+			<fieldset class="form-group form-left">
 				<label>image size</label>
 				<select name="image-size" id="image-size" class="form-control-sm">
 					<option value="128-128">128-128</option>
@@ -79,6 +84,7 @@
 					<option value="320-240" selected>320-240</option>
 					<option value="640-480">640-480</option>
 					<option value="800-600">800-600</option>
+					<option value="1600-900">1600-900</option>
 				</select>
 			</fieldset>
 			<fieldset class="form-group">
@@ -131,9 +137,9 @@
 
 <script src="/js/attractors.js"></script>
 <script src="/js/attractors.event.js"></script>
+
 <script src="/js/attractors.type.lorenz.js"></script>
 <script src="/js/attractors.type.peterdejong.js"></script>
-<script src="/js/attractors.type.lorenz84.js"></script>
 <script src="/js/attractors.type.pickover.js"></script>
 <script src="/js/attractors.type.clifford3d.js"></script>
 <script src="/js/attractors.type.kamtorus.js"></script>
@@ -141,6 +147,8 @@
 <script src="/js/attractors.type.rossler.js"></script>
 <script src="/js/attractors.type.sprot.js"></script>
 <script src="/js/attractors.type.polynomiala.js"></script>
+<script src="/js/attractors.type.lorenz84.js"></script>
+
 <script src="/js/attractors.three.js"></script>
 <script src="/js/attractors.animate.js"></script>
 <script src="/js/attractors.ui.js"></script>

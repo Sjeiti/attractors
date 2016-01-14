@@ -34,7 +34,7 @@ iddqd.ns('attractors.three',(function(){
 		,n = 200
 		,n2 = n / 2
 		//
-		,particles = 1E5//500000
+		,particles = 1E5
 	;
 
 	function init() {
@@ -198,8 +198,7 @@ iddqd.ns('attractors.three',(function(){
 			,colors = colorAttr.array
 			,color = new THREE.Color()
 			,p = new THREE.Vector3(random(),0,0)
-			,i = positions.length
-			,t = Date.now();
+			,i = positions.length;
 		while (i-=3) {
 			iterate(p);
 			positions[i]   = point.x;
@@ -214,7 +213,6 @@ iddqd.ns('attractors.three',(function(){
 			colors[i+1] = color.g;
 			colors[i+2] = color.b;
 		}
-		console.log('redraw',Date.now()-t); // todo: remove log
 		positionAttr.needsUpdate = true;
 		colorAttr.needsUpdate = true;
 	}
@@ -245,14 +243,6 @@ iddqd.ns('attractors.three',(function(){
 		camera.up = new THREE.Vector3(0,0,1);
 		camera.lookAt(cameraCenter);
 	}
-
-	/*function onClick(){
-		var p = new THREE.Vector3(0,0,0);
-		var vector = p.project(camera);
-		vector.x = (vector.x + 1) / 2 * window.innerWidth;
-		vector.y = -(vector.y - 1) / 2 * window.innerHeight;
-		console.log('onClick',vector.x,vector.y); // todo: remove log
-	}*/
 
 	function onTypeChanged(){
 		attractor = attractors.attractor;
@@ -364,8 +354,8 @@ iddqd.ns('attractors.three',(function(){
 			,positions = positionAttr.array
 			,positionsLen = positions.length
 			,i = Math.min(positionsLen,100)
-			,start = 30//positionsLen - 3*(i+1)
-			, xmin = Infinity
+			,start = 333//positionsLen - 3*(i+2)//
+			,xmin = Infinity
 			,xmax = -Infinity
 			,ymin = Infinity
 			,ymax = -Infinity
@@ -373,9 +363,9 @@ iddqd.ns('attractors.three',(function(){
 			,zmax = -Infinity
 			,vecOffset;
 		while (i--) {
-			var x = start + 3*i
-				,y = start + 3*i+1
-				,z = start + 3*i+2;
+			var x = positions[start + 3*i]
+				,y = positions[start + 3*i+1]
+				,z = positions[start + 3*i+2];
 			if (x<xmin) xmin = x;
 			if (x>xmax) xmax = x;
 			if (y<ymin) ymin = y;
@@ -384,9 +374,9 @@ iddqd.ns('attractors.three',(function(){
 			if (z>zmax) zmax = z;
 		}
 		vecOffset = cameraCenter.clone();
-		cameraCenter.x = -(xmin+xmax)/2;
-		cameraCenter.y = -(ymin+ymax)/2;
-		cameraCenter.z = -(zmin+zmax)/2;
+		cameraCenter.x = (xmin+xmax)/2;
+		cameraCenter.y = (ymin+ymax)/2;
+		cameraCenter.z = (zmin+zmax)/2;
 		//
 		vecOffset.sub(cameraCenter);
 		camera.position.sub(vecOffset);
