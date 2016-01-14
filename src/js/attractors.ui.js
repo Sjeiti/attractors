@@ -16,6 +16,9 @@ iddqd.ns('attractors.ui',(function(){
 		,elmRender = getElementById('render')
 		,elmImage = getElementById('image')
 		//
+		,constantsFirst = []
+		,constantsLast = []
+		//
 		,gammaValue = 0.6
 		,iterations = 1E7
 		//
@@ -115,30 +118,41 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function initUIAnimate(){
+		var constants = attractor.constants;
+		getElementById('store-first').addEventListener('click',array2array.bind(null,constants,constantsFirst));
+		getElementById('load-first').addEventListener('click',function(){
+			array2array(constantsFirst,constants);
+			redraw();
+		});
+		getElementById('store-last').addEventListener('click',array2array.bind(null,constants,constantsLast));
+		getElementById('load-last').addEventListener('click',function(){
+			array2array(constantsLast,constants);
+			redraw();
+		});
+		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',function(){
-			var position = { x: three.cameraRotationX }
+			var from = { x: three.cameraRotationX }
+				,to = { x: from.x+360 }
 				,onUpdate = function(position){
+				var hasConstants = false;
 					three.cameraRotationX = position.x;
-				}.bind(null,position);
-			new TWEEN.Tween(position)
-				.to({x:position.x+360}, 2000)
+				  constants.forEach(function(n,i){
+						var c = position[i];
+				  	if (c) {
+							constants[i] = c;
+							hasConstants = true;
+						}
+				  });
+					hasConstants&&redraw();
+				}.bind(null,from);
+			array2array(constantsFirst,from);
+			array2array(constantsLast,to);
+			new TWEEN.Tween(from)
+				.to(to, 2000)
 				.onUpdate(onUpdate)
 				.start();
 		});
 		//signal.animate.add(TWEEN.update.bind(TWEEN));
-		var constants = attractor.constants
-			,first = [];
-		getElementById('store-first').addEventListener('click',function(){
-			constants.forEach(function(n,i){
-				first[i] = n;
-			});
-		});
-		getElementById('load-first').addEventListener('click',function(){
-			first.forEach(function(n,i){
-				constants[i] = n;
-			});
-			redraw();
-		});
 	}
 
 	function onRenderProgress(progress){
@@ -347,6 +361,12 @@ iddqd.ns('attractors.ui',(function(){
 			count++;
 		}
 		return count;
+	}
+
+	function array2array(a,b){
+		a.forEach(function(n,i){
+			b[i] = n;
+		});
 	}
 
 	return init;
