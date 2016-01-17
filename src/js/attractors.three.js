@@ -6,6 +6,7 @@ iddqd.ns('attractors.three',(function(){
 		,event = attractors.event
 		,isFinite = Number.isFinite
 		,random = Math.random
+		,abs = Math.abs
 		,attractor = attractors.attractor
 		// threejs
 		,camera
@@ -35,6 +36,13 @@ iddqd.ns('attractors.three',(function(){
 		,n2 = n / 2
 		//
 		,particles = 1E5
+		//
+		,xmin = Infinity
+		,xmax = -Infinity
+		,ymin = Infinity
+		,ymax = -Infinity
+		,zmin = Infinity
+		,zmax = -Infinity
 	;
 
 	function init() {
@@ -63,20 +71,40 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function initThreejsAxis(){
-		var size = 1E4;
+		var lineSize = 1E4
+			,lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3})
+			,cubeSize = 50
+			,cubeGeometry = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize)
+			,cubeFaces = cubeGeometry.faces
+			,cubeColors = [0x666666,0x666666,0xAAAAAA,0xAAAAAA,0xFFFFFF,0xFFFFFF]
+			,cubeMaterial
+			,cube
+		;
 		axis = new THREE.Group();
 		[vecX,vecY,vecZ].forEach(function(v){
-			var material = new THREE.LineBasicMaterial({color: 0xffffff})
-				,geometry = new THREE.Geometry()
+			var geometry = new THREE.Geometry()
 				,vertices = geometry.vertices
-				,vec1 = v.clone().setLength(size)
-				,vec2 = v.clone().setLength(-size)
+				,vec1 = v.clone().setLength(lineSize)
+				,vec2 = v.clone().setLength(-lineSize)
 				,line;
 			vertices.push(vec1);
 			vertices.push(vec2);
-			line = new THREE.Line(geometry, material);
+			line = new THREE.Line(geometry, lineMaterial);
 			axis.add(line);
 		});
+		//
+		cubeColors.forEach(function(color,i){
+			cubeFaces[2*i+0].color.setHex(color);
+			cubeFaces[2*i+1].color.setHex(color);
+		});
+		cubeMaterial = new THREE.MeshBasicMaterial({
+			transparent: true
+			,opacity: 0.3
+			,vertexColors: THREE.FaceColors
+		});
+		cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+		axis.add(cube);
+		//
 		scene.add(axis);
 	}
 
@@ -86,22 +114,31 @@ iddqd.ns('attractors.three',(function(){
 			,colors = new Float32Array(len)
 			,i = len
 		;
-		while (i-=3) {
-			positions[i]   = colors[i]   = 0;
-			positions[i+1] = colors[i+1] = 0;
-			positions[i+2] = colors[i+2] = 0;
-		}
+		while (i--) positions[i] = 0;
+		//
 		geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
 		geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 		geometry.computeBoundingSphere();
 		//
-		var material = new THREE.PointsMaterial( { size: 1, vertexColors: THREE.VertexColors } );
+		var material = new THREE.ParticleBasicMaterial({
+			//color: 0xFFFFFF,
+			size: 16,
+			map: THREE.ImageUtils.loadTexture('img/particle.png'),
+			vertexColors: THREE.VertexColors,
+			blending: THREE.AdditiveBlending,
+			transparent: true
+		});
+		//var material = new THREE.PointsMaterial( { size: 1, vertexColors: THREE.VertexColors } );
 		var particleSystem = new THREE.Points( geometry, material );
+		particleSystem.sortParticles = true;
 		scene.add( particleSystem );
 	}
 
 	function initThreejsRenderer(){
-		renderer = new THREE.WebGLRenderer( { antialias: false } );
+		renderer = new THREE.WebGLRenderer({
+			antialias: false
+			//,alpha: true
+		});
 		renderer.setClearColor( colorBg );
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize( window.innerWidth, window.innerHeight );
@@ -194,24 +231,35 @@ iddqd.ns('attractors.three',(function(){
 	function redraw(){
 		var positionAttr = geometry.attributes.position
 			,positions = positionAttr.array
+			,positionsNum = positions.length
 			,colorAttr = geometry.attributes.color
 			,colors = colorAttr.array
-			,color = new THREE.Color()
 			,p = new THREE.Vector3(random(),0,0)
-			,i = positions.length;
+			,i = 100;
+		// dry run
+		while (i--) iterate(p);
+		// wet run
+		resetMinMax();
+		i = positionsNum;
 		while (i-=3) {
 			iterate(p);
-			positions[i]   = point.x;
-			positions[i+1] = point.y;
-			positions[i+2] = point.z;
-			color.setRGB(
-				 point.x/n + 0.5
-				,point.y/n + 0.5
-				,point.z/n + 0.5
-			);
-			colors[i]   = color.r;
-			colors[i+1] = color.g;
-			colors[i+2] = color.b;
+			var x = point.x
+				,y = point.y
+				,z = point.z;
+			//if (i>positionsNum-200) findMinMax(x,y,z);
+			findMinMax(x,y,z);
+			positions[i]   = x;
+			positions[i+1] = y;
+			positions[i+2] = z;
+			//colors[i]   = 1;
+			//colors[i+1] = 1;
+			//colors[i+2] = 1;
+			colors[i]   = 2*abs((x-xmin)/(xmax-xmin)-0.5);
+			colors[i+1] = 2*abs((y-ymin)/(ymax-ymin)-0.5);
+			colors[i+2] = 2*abs((z-zmin)/(zmax-zmin)-0.5);
+			//colors[i]   = (x-xmin)/(xmax-xmin);
+			//colors[i+1] = (y-ymin)/(ymax-ymin);
+			//colors[i+2] = (z-zmin)/(zmax-zmin);
 		}
 		positionAttr.needsUpdate = true;
 		colorAttr.needsUpdate = true;
@@ -275,13 +323,15 @@ iddqd.ns('attractors.three',(function(){
 			,batch = Math.pow(2,14)
 			,progressLast = 0
 			,t = Date.now()
+			,i = 100
 		;
+		while (i--) iterate(p);
 		return new Promise(function(resolve,reject){
-			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iterations,batch,p,progressLast,t));
+			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iterations,batch,p,progressLast,t,t));
 		});
 	}
 
-	function renderCycle(resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t){
+	function renderCycle(resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start){
 		var i = batch
 			,progress
 			,deltaT
@@ -301,9 +351,9 @@ iddqd.ns('attractors.three',(function(){
 		}
 		iteration -= batch;
 		//
-		progress = iteration/iterations*100<<0;
+		progress = 100-(iteration/iterations*100<<0);
 		if (progressLast!==progress) {
-			event.RENDER_PROGRESS.dispatch(progress);
+			event.RENDER_PROGRESS.dispatch(progress,start);
 			progressLast = progress;
 		}
 		//
@@ -314,7 +364,7 @@ iddqd.ns('attractors.three',(function(){
 		if (deltaT<60) batch *= 2;
 		else batch = Math.ceil(batch/2);
 		//
-		if (iteration>0) requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t));
+		if (iteration>0) requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start));
 		else resolve(pixels);
 	}
 
@@ -349,31 +399,27 @@ iddqd.ns('attractors.three',(function(){
 		}
 	}
 
+	function resetMinMax(){
+		xmin = Infinity;
+		xmax = -Infinity;
+		ymin = Infinity;
+		ymax = -Infinity;
+		zmin = Infinity;
+		zmax = -Infinity;
+	}
+
+	function findMinMax(x,y,z){
+		if (x<xmin) xmin = x;
+		if (x>xmax) xmax = x;
+		if (y<ymin) ymin = y;
+		if (y>ymax) ymax = y;
+		if (z<zmin) zmin = z;
+		if (z>zmax) zmax = z;
+	}
+
 	function center(){
-		var positionAttr = geometry.attributes.position
-			,positions = positionAttr.array
-			,positionsLen = positions.length
-			,i = Math.min(positionsLen,100)
-			,start = 333//positionsLen - 3*(i+2)//
-			,xmin = Infinity
-			,xmax = -Infinity
-			,ymin = Infinity
-			,ymax = -Infinity
-			,zmin = Infinity
-			,zmax = -Infinity
-			,vecOffset;
-		while (i--) {
-			var x = positions[start + 3*i]
-				,y = positions[start + 3*i+1]
-				,z = positions[start + 3*i+2];
-			if (x<xmin) xmin = x;
-			if (x>xmax) xmax = x;
-			if (y<ymin) ymin = y;
-			if (y>ymax) ymax = y;
-			if (z<zmin) zmin = z;
-			if (z>zmax) zmax = z;
-		}
-		vecOffset = cameraCenter.clone();
+		var vecOffset = cameraCenter.clone();
+		//
 		cameraCenter.x = (xmin+xmax)/2;
 		cameraCenter.y = (ymin+ymax)/2;
 		cameraCenter.z = (zmin+zmax)/2;
@@ -386,14 +432,6 @@ iddqd.ns('attractors.three',(function(){
 		axis.position.z = cameraCenter.z;
 	}
 
-	/*function createVector(x, y, z, camera, width, height) {
-		var p = new THREE.Vector3(x, y, z);
-		var vector = p.project(camera);
-		vector.x = (vector.x + 1) / 2 * width;
-		vector.y = -(vector.y - 1) / 2 * height;
-		return vector;
-	}*/
-
 	return {
 		init: init
 		,render: render
@@ -404,7 +442,5 @@ iddqd.ns('attractors.three',(function(){
 			cameraRotationX = f;
 			setCamera();
 		}
-		//,get instance() { return attractor; }
-		//,get constants() { return attractor.constants; }
 	};
 })());

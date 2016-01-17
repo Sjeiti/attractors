@@ -19,8 +19,9 @@ function read(file){
 
 function parseLess(data){
 	return new Promise(function(resolve,reject){
-		less.render(data,{compress:true}, function (e, output) {
-			resolve(output.css);
+		less.render(data,{compress:true}, function (err, output) {
+			if (err) reject(err);
+			else resolve(output.css);
 		});
 	});
 }

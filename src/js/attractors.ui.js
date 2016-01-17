@@ -87,7 +87,7 @@ iddqd.ns('attractors.ui',(function(){
 			}
 			;
 		//
-		//
+		// gamma
 		elmGamma.value = gammaValue;
 		elmGamma.addEventListener('change',function(){gammaValue = parseFloat(elmGamma.value);});
 		elmGammaRange.addEventListener('mousedown',function(){
@@ -98,7 +98,7 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		elmGammaRange.addEventListener('change',changeGamma);
 		//
-		//
+		// iterations
 		elmIterations.value = iterations;
 		elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
 		elmIterationsRange.addEventListener('mousedown',function(){
@@ -109,6 +109,31 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		elmIterationsRange.addEventListener('change',changeIterations);
 		//
+		// image size
+		var sizes = {
+				128:128
+				,256:256
+				,320:240
+				,640:480
+				,800:600
+				,1600:900
+			}
+			,availWidth = window.screen.availWidth
+			,availHeight = window.screen.availHeight
+			,elmImageSize = getElementById('image-size');
+		for (var w in sizes) {
+			if (sizes.hasOwnProperty(w)){
+				var h = sizes[w]
+					,value = w+'-'+h
+					,option = document.createElement('option')
+					,isSelected = w===availWidth.toString();
+				option.setAttribute('value',value);
+				isSelected&&option.setAttribute('selected','selected');
+				option.textContent = w+'-'+h;
+				elmImageSize.appendChild(option);
+			}
+		}
+		sizes[availWidth] = availHeight;
 		//
 		elmRender.addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
@@ -131,8 +156,8 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',function(){
-			var from = { x: three.cameraRotationX }
-				,to = { x: from.x+360 }
+			var from = {}//{ x: three.cameraRotationX }
+				,to = {}//{ x: from.x+360 }
 				,onUpdate = function(position){
 				var hasConstants = false;
 					three.cameraRotationX = position.x;
@@ -155,9 +180,12 @@ iddqd.ns('attractors.ui',(function(){
 		//signal.animate.add(TWEEN.update.bind(TWEEN));
 	}
 
-	function onRenderProgress(progress){
-		var indicator = elmRender.querySelector('.progress');
-		indicator.style.width = 100-progress+'%';
+	function onRenderProgress(progress,start){
+		var indicator = elmRender.querySelector('.progress')
+			,elapsed = Date.now()-start
+			,timeLeft = elapsed/progress*(100-progress);
+		indicator.style.width = progress+'%';
+		indicator.textContent = timeLeft/1000<<0;
 	}
 
 	function initStats(){
