@@ -33,7 +33,6 @@ iddqd.ns('attractors',(function(){
 
 	function onTypeChanged(index){
 		attractor = list[index];
-		event.REDRAW.dispatch();
 	}
 
 	return iddqd.extend(init,{

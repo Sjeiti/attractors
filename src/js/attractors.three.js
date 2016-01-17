@@ -157,7 +157,6 @@ iddqd.ns('attractors.three',(function(){
 		signal.animate.add(onAnimate);
 		window.addEventListener( 'resize', onWindowResize, false );
 		event.TYPE_CHANGED.add(onTypeChanged);
-		event.REDRAW.add(redraw);
 	}
 
 	function onMouseDown(e){
@@ -378,7 +377,7 @@ iddqd.ns('attractors.three',(function(){
 			} else {
 				resolve(pixels);
 				isRendering = false;
-				event.RENDER_DONE.dispatch();
+				//event.RENDER_DONE.dispatch();
 			}
 		}
 	}

@@ -16,4 +16,5 @@ attractors.create(
 		vec.z = sin(x);
 		return vec;
 	}
+	,400
 );

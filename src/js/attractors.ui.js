@@ -5,12 +5,15 @@ iddqd.ns('attractors.ui',(function(){
 		,animate = attractors.animate
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
+		,util = attractors.util
+		,wait = util.wait
+		,array2array = util.array2array
 		,signal = iddqd.signal
 		,event = attractors.event
-		,REDRAW = event.REDRAW
 		,center = three.center
-		,redraw = REDRAW.dispatch.bind(REDRAW)//attractors.three.redraw//
-		//,xhttp = iddqd.pattern.callbackToPromise(iddqd.network.xhttp)
+		,redraw = three.redraw
+		//
+		,moveConstant
 		//
 		,elmConstants = getElementById('constants')
 		,elmRender = getElementById('render')
@@ -151,41 +154,34 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function initUIAnimate(){
-		var constants = attractor.constants;
-		getElementById('store-first').addEventListener('click',array2array.bind(null,constants,constantsFirst));
+		getElementById('store-first').addEventListener('click',function(){
+			array2array(attractor.constants,constantsFirst);
+		});
 		getElementById('load-first').addEventListener('click',function(){
-			array2array(constantsFirst,constants);
+			array2array(constantsFirst,attractor.constants);
 			redraw();
 		});
-		getElementById('store-last').addEventListener('click',array2array.bind(null,constants,constantsLast));
+		getElementById('store-last').addEventListener('click',function(){
+			array2array(attractor.constants,constantsLast);
+		});
 		getElementById('load-last').addEventListener('click',function(){
-			array2array(constantsLast,constants);
+			array2array(constantsLast,attractor.constants);
 			redraw();
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',function(){
-			var from = {}//{ x: three.cameraRotationX }
-				,to = {}//{ x: from.x+360 }
+			var anim = getAnimationFromTo()
+				,from = {f:0}
 				,onUpdate = function(position){
-				var hasConstants = false;
-					three.cameraRotationX = position.x;
-				  constants.forEach(function(n,i){
-						var c = position[i];
-				  	if (c) {
-							constants[i] = c;
-							hasConstants = true;
-						}
-				  });
-					hasConstants&&redraw();
-				}.bind(null,from);
-			array2array(constantsFirst,from);
-			array2array(constantsLast,to);
+				  setFrame(position.f,1,anim.start,anim.end);
+					redraw();
+				}.bind(null,from)
+			;
 			new TWEEN.Tween(from)
-				.to(to, 2000)
+				.to({f:1}, 2000)
 				.onUpdate(onUpdate)
 				.start();
 		});
-		//signal.animate.add(TWEEN.update.bind(TWEEN));
 	}
 
 	function onRenderProgress(progress,start){
@@ -201,11 +197,6 @@ iddqd.ns('attractors.ui',(function(){
 		signal.animate.add(stats.update.bind(stats));
 	}
 
-	/*function onDrag(o,e){
-		console.log('onDrag',arguments); // todo: remove log
-		if (e.target.nodeName==='INPUT') e.stopPropagation();
-	}*/
-
 	function onTypeChange(e){
 		var index = e.target.value;
 		event.TYPE_CHANGED.dispatch(index);
@@ -213,10 +204,7 @@ iddqd.ns('attractors.ui',(function(){
 		redrawConstants();
 	}
 
-	var asdf;
-
 	function onInputChange(e){
-		console.log('onInputChange'); // todo: remove log
 		var input = e.target
 			,event = e.type
 			,type = input.getAttribute('type')
@@ -227,32 +215,18 @@ iddqd.ns('attractors.ui',(function(){
 		;
 		if (type==='number') {
 			e.stopPropagation();
-			console.log('onInputChange',attractor.name,type,input.value,attractor.constants); // todo: remove log
 			attractor.constants[index] = parseFloat(input.value);
 			redraw();
-			//if (event==='mousewheel') setTimeout(attractor.redraw,40);
-			//console.log('event',event); // todo: remove log
-			/*if (event==='mousewheel') {
-				e.type = 'foo';
-				setTimeout(onInputChange.bind(null,e),1);
-			} else {
-			}
-			console.log('event',event); // todo: remove log*/
 		} else if (type==='range') {
 			if (event==='mousedown') {
-				asdf = onMoveConstant.bind(null,input);
-				console.log('attractor.name',attractor.name); // todo: remove log
-				signal.animate.add(asdf);
+				moveConstant = onMoveConstant.bind(null,input);
+				signal.animate.add(moveConstant);
 			} else {
-				signal.animate.remove(asdf);
+				signal.animate.remove(moveConstant);
 				input.value = 0;
 				e.stopPropagation();
 			}
-			console.log('range',input.value); // todo: remove log
 		}
-		//attractor.redraw();
-		////e.preventDefault();//todo:fix
-		//console.log('signal.key',signal.key); // todo: remove log
 	}
 
 	function onMoveConstant(input) {
@@ -265,7 +239,7 @@ iddqd.ns('attractors.ui',(function(){
 		redraw();
 	}
 
-	function onRandomizeClick(e){
+	function onRandomizeClick(){
 		var iterations = 20
 			,p = new THREE.Vector3(Math.random(),Math.random(),Math.random())
 			,pp
@@ -288,7 +262,7 @@ iddqd.ns('attractors.ui',(function(){
 		center();
 	}
 
-	function onResetClick(e){
+	function onResetClick(){
 		attractor.constants.reset();
 		attractor.constants.forEach(function(val,i,a){
 			getElementById('constant'+i).value = a[i];
@@ -297,7 +271,7 @@ iddqd.ns('attractors.ui',(function(){
 		center();
 	}
 
-	function onRenderClick(e){
+	function onRenderClick(){
 		if (three.rendering) {
 			three.cancelRender();
 		} else {
@@ -316,17 +290,16 @@ iddqd.ns('attractors.ui',(function(){
 			if (doAnimate) {
 				var rendered = onRendered.bind(null,w,h)
 					,i = frames
-					,cameraRotationX = three.cameraRotationX
-					,propstart = {cameraRotationX:cameraRotationX}
-					,propend = {cameraRotationX:cameraRotationX+(360-360/(frames+1))}
+					,anim = getAnimationFromTo()
 					,promise;
 				animate.start();
 				while (i--) {
 					if (!promise) {
-						promise = render();
+						setFrame(0,frames,anim.start,anim.end);
+						promise = wait().then(render);
 					} else {
 						promise = promise
-							.then(setFrame.bind(null,frames-i-1,frames,propstart,propend))
+							.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
 							.then(wait)
 							.then(render);
 					}
@@ -337,17 +310,13 @@ iddqd.ns('attractors.ui',(function(){
 				promise
 					.then(console.log.bind(console,'pack frames into animation'))
 					.then(animate.end.bind(null,w,h))
-				;
+					.then(event.RENDER_DONE.dispatch);
 			} else {
-				render().then(onRendered.bind(null,w,h),warn);
+				render()
+					.then(onRendered.bind(null,w,h),warn)
+					.then(event.RENDER_DONE.dispatch);
 			}
 		}
-	}
-
-	function wait(){
-		return new Promise(function(resolve){
-			setTimeout(resolve,40);
-		});
 	}
 
 	function onRendered(w,h,pixels){
@@ -394,19 +363,19 @@ iddqd.ns('attractors.ui',(function(){
 		return elmConstants;
 	}
 
-	/*function countDigits(n){
-		var count = 0;
-		while (n << 0>0) {
-			n /= 10;
-			count++;
+	function getAnimationFromTo(){
+		var start = {}
+			,end = {}
+			,isAnimateRotate = getElementById('animate-rotate').checked;
+		if (isAnimateRotate) {
+			start.cameraRotationX = three.cameraRotationX;
+			end.cameraRotationX = start.cameraRotationX+(360-360/(frames+1));
 		}
-		return count;
-	}*/
-
-	function array2array(a,b){
-		a.forEach(function(n,i){
-			b[i] = n;
-		});
+		if (constantsFirst.length&&constantsLast.length) {
+			start.constants = constantsFirst;
+			end.constants = constantsLast;
+		}
+		return {start:start,end:end};
 	}
 
 	return init;
