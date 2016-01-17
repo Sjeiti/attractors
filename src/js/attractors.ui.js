@@ -14,13 +14,16 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		,elmConstants = getElementById('constants')
 		,elmRender = getElementById('render')
+		,elmRenderIndicator = elmRender.querySelector('.progress')
 		,elmImage = getElementById('image')
 		//
 		,constantsFirst = []
 		,constantsLast = []
 		//
-		,gammaValue = 0.6
+		,gammaValue = 0.4
 		,iterations = 1E7
+		//
+		,classnameRendering = 'rendering'
 		//
 		,stats
 		,attractor
@@ -85,7 +88,9 @@ iddqd.ns('attractors.ui',(function(){
 				iterations = result;
 				elmIterations.value = result;
 			}
-			;
+			,renderClasslist = elmRender.classList
+			,renderFinished = renderClasslist.remove.bind(renderClasslist,classnameRendering)
+		;
 		//
 		// gamma
 		elmGamma.value = gammaValue;
@@ -135,8 +140,11 @@ iddqd.ns('attractors.ui',(function(){
 		}
 		sizes[availWidth] = availHeight;
 		//
+		// render
 		elmRender.addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
+		event.RENDER_CANCELED.add(renderFinished);
+		event.RENDER_DONE.add(renderFinished);
 	}
 	function initUIResult(){
 		elmImage.querySelector('.btn').addEventListener('click',onImageHide);
@@ -181,11 +189,10 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRenderProgress(progress,start){
-		var indicator = elmRender.querySelector('.progress')
-			,elapsed = Date.now()-start
+		var elapsed = Date.now()-start
 			,timeLeft = elapsed/progress*(100-progress);
-		indicator.style.width = progress+'%';
-		indicator.textContent = timeLeft/1000<<0;
+		elmRenderIndicator.style.width = progress+'%';
+		elmRenderIndicator.textContent = timeLeft/1000<<0;
 	}
 
 	function initStats(){
@@ -291,44 +298,49 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRenderClick(e){
-		var size = (function(s){
-				return s.split('-').map(function(s){
-					return parseInt(s,10);
-				});
-			})(getElementById('image-size').value)
-			,w = size[0]
-			,h = size[1]
-			,frames = parseInt(getElementById('frames').value,10)
-			,doAnimate = getElementById('render-animate').checked
-			,render = attractors.three.render.bind(null,w,h,iterations)
-		;
-		if (doAnimate) {
-			var rendered = onRendered.bind(null,w,h)
-				,i = frames
-				,cameraRotationX = three.cameraRotationX
-				,propstart = {cameraRotationX:cameraRotationX}
-				,propend = {cameraRotationX:cameraRotationX+(360-360/(frames+1))}
-				,promise;
-			animate.start();
-			while (i--) {
-				if (!promise) {
-					promise = render();
-				} else {
-					promise = promise
-						.then(setFrame.bind(null,frames-i-1,frames,propstart,propend))
-						.then(wait)
-						.then(render);
-				}
-				promise = promise
-					.then(rendered,warn)
-					.then(animate.storeFrame,warn);
-			}
-			promise
-				.then(console.log.bind(console,'pack frames into animation'))
-				.then(animate.end.bind(null,w,h))
-			;
+		if (three.rendering) {
+			three.cancelRender();
 		} else {
-			render().then(onRendered.bind(null,w,h),warn);
+			elmRender.classList.add(classnameRendering);
+			var size = (function(s){
+					return s.split('-').map(function(s){
+						return parseInt(s,10);
+					});
+				})(getElementById('image-size').value)
+				,w = size[0]
+				,h = size[1]
+				,frames = parseInt(getElementById('frames').value,10)
+				,doAnimate = getElementById('render-animate').checked
+				,render = attractors.three.render.bind(null,w,h,iterations)
+			;
+			if (doAnimate) {
+				var rendered = onRendered.bind(null,w,h)
+					,i = frames
+					,cameraRotationX = three.cameraRotationX
+					,propstart = {cameraRotationX:cameraRotationX}
+					,propend = {cameraRotationX:cameraRotationX+(360-360/(frames+1))}
+					,promise;
+				animate.start();
+				while (i--) {
+					if (!promise) {
+						promise = render();
+					} else {
+						promise = promise
+							.then(setFrame.bind(null,frames-i-1,frames,propstart,propend))
+							.then(wait)
+							.then(render);
+					}
+					promise = promise
+						.then(rendered,warn)
+						.then(animate.storeFrame,warn);
+				}
+				promise
+					.then(console.log.bind(console,'pack frames into animation'))
+					.then(animate.end.bind(null,w,h))
+				;
+			} else {
+				render().then(onRendered.bind(null,w,h),warn);
+			}
 		}
 	}
 
@@ -382,14 +394,14 @@ iddqd.ns('attractors.ui',(function(){
 		return elmConstants;
 	}
 
-	function countDigits(n){
+	/*function countDigits(n){
 		var count = 0;
 		while (n << 0>0) {
 			n /= 10;
 			count++;
 		}
 		return count;
-	}
+	}*/
 
 	function array2array(a,b){
 		a.forEach(function(n,i){

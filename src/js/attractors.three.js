@@ -43,6 +43,9 @@ iddqd.ns('attractors.three',(function(){
 		,ymax = -Infinity
 		,zmin = Infinity
 		,zmax = -Infinity
+		//
+		,isRendering = false
+		,cancelRenderRequest = false
 	;
 
 	function init() {
@@ -300,6 +303,8 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function render(w,h,iterations){
+		console.log('three.render'); // todo: remove log
+		isRendering = true;
 		cameraRender = camera.clone();
 		cameraRender.aspect = w/h;
 		/*cameraRender.position.set(
@@ -338,34 +343,49 @@ iddqd.ns('attractors.three',(function(){
 			,now
 			,position
 		;
-		while (i--) {
-			iterate(p);
-			position = point.project(cameraRender);
-			distribute(
-				pixels
-				, (position.x + 1)/2*w
-				,-(position.y - 1)/2*h
-				,w
-				,h
-			);
+		if (cancelRenderRequest) {
+			cancelRenderRequest = false;
+			isRendering = false;
+			event.RENDER_CANCELED.dispatch();
+		} else {
+			while (i--) {
+				iterate(p);
+				position = point.project(cameraRender);
+				distribute(
+					pixels
+					, (position.x + 1)/2*w
+					,-(position.y - 1)/2*h
+					,w
+					,h
+				);
+			}
+			iteration -= batch;
+			//
+			progress = 100-(iteration/iterations*100<<0);
+			if (progressLast!==progress) {
+				event.RENDER_PROGRESS.dispatch(progress,start);
+				progressLast = progress;
+			}
+			//
+			now = Date.now();
+			deltaT = now-t;
+			t = now;
+			//console.log('deltaT',deltaT,batch);
+			if (deltaT<60) batch *= 2;
+			else batch = Math.ceil(batch/2);
+			if (iteration>0) {
+				requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start));
+			} else {
+				resolve(pixels);
+				isRendering = false;
+				event.RENDER_DONE.dispatch();
+			}
 		}
-		iteration -= batch;
-		//
-		progress = 100-(iteration/iterations*100<<0);
-		if (progressLast!==progress) {
-			event.RENDER_PROGRESS.dispatch(progress,start);
-			progressLast = progress;
-		}
-		//
-		now = Date.now();
-		deltaT = now-t;
-		t = now;
-		//console.log('deltaT',deltaT,batch);
-		if (deltaT<60) batch *= 2;
-		else batch = Math.ceil(batch/2);
-		//
-		if (iteration>0) requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start));
-		else resolve(pixels);
+	}
+
+	function cancelRender(){
+		console.log('three.cancelRender'); // todo: remove log
+		cancelRenderRequest = true;
 	}
 
 	function distribute(a,x,y,w,h){
@@ -435,8 +455,10 @@ iddqd.ns('attractors.three',(function(){
 	return {
 		init: init
 		,render: render
+		,cancelRender: cancelRender
 		,redraw: redraw
 		,center: center
+		,get rendering() { return isRendering; }
 		,get cameraRotationX() { return cameraRotationX; }
 		,set cameraRotationX(f) {
 			cameraRotationX = f;
