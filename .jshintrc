@@ -4,7 +4,9 @@
 		,"attractors": true
 		,"THREE": true
 		,"TWEEN": true
-		,"PNGlib": true
+		,"gifshot": true
+		,"Whammy": true
+		,"ImageData": true
 
 		,"module": true
 		,"require": true

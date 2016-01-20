@@ -14,8 +14,26 @@ iddqd.ns('attractors.util',(function() {
 		});
 	}
 
+	function emptyPromise(){
+		var arg = arguments;
+		return new Promise(function(resolve){resolve.apply(arg);});
+	}
+
+	function applyDragMove(element,onMove,init){
+		element.addEventListener('mousedown',function(){
+			element.addEventListener('mousemove',onMove);
+		});
+		document.addEventListener('mouseup',function(){
+			element.removeEventListener('mousemove',onMove);
+		});
+		element.addEventListener('change',onMove);
+		init&&onMove();
+	}
+
 	return {
 		wait: wait
 		,array2array: array2array
+		,emptyPromise: emptyPromise
+		,applyDragMove: applyDragMove
 	};
 })());

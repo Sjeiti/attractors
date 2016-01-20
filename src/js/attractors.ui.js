@@ -1,24 +1,29 @@
 /* globals Stats */
 iddqd.ns('attractors.ui',(function(){
-	var warn = console.warn.bind(console)
-		,three = attractors.three
+	var three = attractors.three
 		,animate = attractors.animate
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
 		,wait = util.wait
+		,applyDragMove = util.applyDragMove
 		,array2array = util.array2array
 		,signal = iddqd.signal
 		,event = attractors.event
+		,ANIMATION_START = event.ANIMATION_START
+		,ANIMATION_FRAME = event.ANIMATION_FRAME
+		,ANIMATION_DONE = event.ANIMATION_DONE
 		,center = three.center
 		,redraw = three.redraw
+		//,warn = console.warn.bind(console)
 		//
 		,moveConstant
 		//
 		,elmConstants = getElementById('constants')
 		,elmRender = getElementById('render')
 		,elmRenderIndicator = elmRender.querySelector('.progress')
-		,elmImage = getElementById('image')
+		,elmImage = getElementById('image').querySelector('img')
+		,elmVideo = getElementById('video').querySelector('video')
 		//
 		,constantsFirst = []
 		,constantsLast = []
@@ -58,104 +63,18 @@ iddqd.ns('attractors.ui',(function(){
 		select.appendChild(fragment);
 		select.addEventListener('change',onTypeChange);
 		// constants
-		//var wrapper = redrawConstants();
 		var html = '';
 		attractor.constants.forEach(function(val,i){
 			html += iddqd.utils.tmpl('constant',{value:val,index:i});
 		});
 		elmConstants.innerHTML = html;
-		//wrapper.addEventListener('mousedown',stopPropagation);
 		elmConstants.addEventListener('mousedown',onInputChange);
-		//wrapper.addEventListener('drag',onInputChange);
 		elmConstants.addEventListener('change',onInputChange);
 		elmConstants.addEventListener('mousewheel',onInputChange);
-		//signal.drag.add(onDrag);
 		// buttons
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
 		getElementById('constantsReset').addEventListener('click',onResetClick);
 		getElementById('centerAxis').addEventListener('click',center);
-	}
-	function initUIRender(){
-		var elmGamma = getElementById('gamma')
-			,elmGammaRange = getElementById('gammaRange')
-			,elmIterations = getElementById('iterations')
-			,elmIterationsRange = getElementById('iterationsRange')
-			,changeGamma = function(){
-				gammaValue = parseFloat(elmGammaRange.value);
-				elmGamma.value = gammaValue;
-			}
-			,changeIterations = function(){
-				var inputValue = parseFloat(elmIterationsRange.value)
-					,max = 9
-					,maxOne = 1/max
-					,exp = inputValue*max<<0
-					,mult = Math.max(1,10 - ((maxOne*(exp+1) - inputValue)/maxOne*10<<0))
-					,result = mult*Math.pow(10,exp);
-				iterations = result;
-				elmIterations.value = result;
-			}
-			,renderClasslist = elmRender.classList
-			,renderFinished = renderClasslist.remove.bind(renderClasslist,classnameRendering)
-		;
-		//
-		// gamma
-		elmGamma.value = gammaValue;
-		elmGamma.addEventListener('change',function(){gammaValue = parseFloat(elmGamma.value);});
-		elmGammaRange.addEventListener('mousedown',function(){
-			elmGammaRange.addEventListener('mousemove',changeGamma);
-		});
-		document.addEventListener('mouseup',function(){
-			elmGammaRange.removeEventListener('mousemove',changeGamma);
-		});
-		elmGammaRange.addEventListener('change',changeGamma);
-		changeGamma();
-		//
-		// iterations
-		elmIterations.value = iterations;
-		elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
-		elmIterationsRange.addEventListener('mousedown',function(){
-			elmIterationsRange.addEventListener('mousemove',changeIterations);
-		});
-		document.addEventListener('mouseup',function(){
-			elmIterationsRange.removeEventListener('mousemove',changeIterations);
-		});
-		elmIterationsRange.addEventListener('change',changeIterations);
-		changeIterations();
-		//
-		// image size
-		var sizes = {
-				128:128
-				,256:256
-				,320:240
-				,640:480
-				,800:600
-				,1600:900
-			}
-			,availWidth = window.screen.availWidth
-			,availHeight = window.screen.availHeight
-			,elmImageSize = getElementById('image-size');
-		for (var w in sizes) {
-			if (sizes.hasOwnProperty(w)){
-				var h = sizes[w]
-					,value = w+'-'+h
-					,option = document.createElement('option')
-					,isSelected = w==256;//w===availWidth.toString();
-				option.setAttribute('value',value);
-				isSelected&&option.setAttribute('selected','selected');
-				option.textContent = w+'-'+h;
-				elmImageSize.appendChild(option);
-			}
-		}
-		sizes[availWidth] = availHeight;
-		//
-		// render
-		elmRender.addEventListener('click',onRenderClick);
-		event.RENDER_PROGRESS.add(onRenderProgress);
-		event.RENDER_CANCELED.add(renderFinished);
-		event.RENDER_DONE.add(renderFinished);
-	}
-	function initUIResult(){
-		elmImage.querySelector('.btn').addEventListener('click',onImageHide);
 	}
 
 	function initUIAnimate(){
@@ -174,26 +93,73 @@ iddqd.ns('attractors.ui',(function(){
 			redraw();
 		});
 		//
-		getElementById('animate').querySelector('.animate').addEventListener('click',function(){
-			var anim = getAnimationFromTo()
-				,from = {f:0}
-				,onUpdate = function(position){
-				  setFrame(position.f,1,anim.start,anim.end);
-					redraw();
-				}.bind(null,from)
-			;
-			new TWEEN.Tween(from)
-				.to({f:1}, 2000)
-				.onUpdate(onUpdate)
-				.start();
-		});
+		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
 	}
 
-	function onRenderProgress(progress,start){
-		var elapsed = Date.now()-start
-			,timeLeft = elapsed/progress*(100-progress);
-		elmRenderIndicator.style.width = progress+'%';
-		elmRenderIndicator.textContent = timeLeft/1000<<0;
+	function initUIRender(){
+		var elmGamma = getElementById('gamma')
+			,elmGammaRange = getElementById('gammaRange')
+			,elmIterations = getElementById('iterations')
+			,elmIterationsRange = getElementById('iterationsRange')
+		;
+		// gamma
+		elmGamma.value = gammaValue;
+		elmGamma.addEventListener('change',function(){gammaValue = parseFloat(elmGamma.value);});
+		applyDragMove(elmGammaRange,function(){
+			gammaValue = parseFloat(elmGammaRange.value);
+			elmGamma.value = gammaValue;
+		},true);
+		// iterations
+		elmIterations.value = iterations;
+		elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
+		applyDragMove(elmIterationsRange,function(){
+			var inputValue = parseFloat(elmIterationsRange.value)
+				,max = 9
+				,maxOne = 1/max
+				,exp = inputValue*max<<0
+				,mult = Math.max(1,10 - ((maxOne*(exp+1) - inputValue)/maxOne*10<<0))
+				,result = mult*Math.pow(10,exp);
+			iterations = result;
+			elmIterations.value = result;
+		},true);
+		// image size
+		var sizes = {
+				128:128
+				,256:256
+				,320:240
+				,640:480
+				,800:600
+				,1600:900
+			}
+			,availWidth = window.screen.availWidth
+			,availHeight = window.screen.availHeight
+			,elmImageSize = getElementById('image-size');
+		for (var w in sizes) {
+			if (sizes.hasOwnProperty(w)){
+				var h = sizes[w]
+					,value = w+'-'+h
+					,option = document.createElement('option')
+					,isSelected = w==='256';//w===availWidth.toString();
+				option.setAttribute('value',value);
+				isSelected&&option.setAttribute('selected','selected');
+				option.textContent = w+'-'+h;
+				elmImageSize.appendChild(option);
+			}
+		}
+		sizes[availWidth] = availHeight;
+		// render
+		elmRender.addEventListener('click',onRenderClick);
+		event.RENDER_PROGRESS.add(onRenderProgress);
+		event.RENDER_CANCELED.add(onRenderStopped);
+		event.RENDER_DONE.add(onRenderStopped);
+		event.RENDER_DONE.add(onRenderDone);
+		ANIMATION_DONE.add(onAnimationFinished);
+	}
+
+	function initUIResult(){
+		var elmResult = getElementById('tabs-result').nextElementSibling;
+		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadClick);
+		elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
 	}
 
 	function initStats(){
@@ -214,10 +180,10 @@ iddqd.ns('attractors.ui',(function(){
 			,event = e.type
 			,type = input.getAttribute('type')
 			,index = parseInt(input.getAttribute('data-index'),10)
-			//,isKeyShift = signal.key[16]
-			//,isKeyCTRL = signal.key[17]
-			//,isKeyAlt = signal.key[18]
-		;
+		//,isKeyShift = signal.key[16]
+		//,isKeyCTRL = signal.key[17]
+		//,isKeyAlt = signal.key[18]
+			;
 		if (type==='number') {
 			e.stopPropagation();
 			attractor.constants[index] = parseFloat(input.value);
@@ -239,7 +205,7 @@ iddqd.ns('attractors.ui',(function(){
 			,value = input.value
 			,constants = attractor.constants
 			,constant = constants[index]
-		;
+			;
 		getElementById('constant'+index).value = constants[index] = constant + value*value*value*value*value*value*value;
 		redraw();
 	}
@@ -276,6 +242,20 @@ iddqd.ns('attractors.ui',(function(){
 		center();
 	}
 
+	function onAnimateClick(){
+		var anim = getAnimationFromTo()
+			,from = {f:0}
+			,onUpdate = function(position){
+				setFrame(position.f,1,anim.start,anim.end);
+				redraw();
+			}.bind(null,from)
+		;
+		new TWEEN.Tween(from)
+			.to({f:1}, 2000)
+			.onUpdate(onUpdate)
+			.start();
+	}
+
 	function onRenderClick(){
 		if (three.rendering) {
 			three.cancelRender();
@@ -291,46 +271,85 @@ iddqd.ns('attractors.ui',(function(){
 				,frames = parseInt(getElementById('frames').value,10)
 				,doAnimate = getElementById('render-animate').checked
 				,render = attractors.three.render.bind(null,w,h,iterations)
-			;
+				,rendered = onRendered.bind(null,w,h)
+				,dispatchRenderDone = event.RENDER_DONE.dispatch
+				;
 			if (doAnimate) {
-				var rendered = onRendered.bind(null,w,h)
-					,i = frames
+				var i = frames
 					,anim = getAnimationFromTo()
-					,promise;
-				animate.start();
+					,promise = util.emptyPromise();
+				ANIMATION_START.dispatch(w,h);
 				while (i--) {
-					if (!promise) {
-						setFrame(0,frames,anim.start,anim.end);
-						promise = wait().then(render);
-					} else {
-						promise = promise
-							.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
-							.then(wait)
-							.then(render);
-					}
 					promise = promise
-						.then(rendered,warn)
-						.then(animate.storeFrame,warn);
+						.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
+						.then(wait)
+						.then(render)
+						.then(rendered)
+						.then(ANIMATION_FRAME.dispatch);
 				}
 				promise
-					.then(console.log.bind(console,'pack frames into animation'))
-					.then(animate.end.bind(null,w,h))
-					.then(event.RENDER_DONE.dispatch);
+					.then(event.ANIMATION_DONE.dispatch)
+					.then(dispatchRenderDone);
 			} else {
 				render()
-					.then(onRendered.bind(null,w,h),warn)
-					.then(event.RENDER_DONE.dispatch);
+					.then(rendered)
+					.then(dispatchRenderDone);
 			}
 		}
 	}
 
+	function onRenderProgress(progress,start){
+		var elapsed = Date.now()-start
+			,timeLeft = elapsed/progress*(100-progress);
+		elmRenderIndicator.style.width = progress+'%';
+		elmRenderIndicator.textContent = timeLeft/1000<<0;
+	}
+
+	function onRenderStopped(){
+		elmRender.classList.remove(classnameRendering);
+	}
+
+	function onRenderDone(){
+		getElementById('tabs-attractor').checked = false;
+		getElementById('tabs-result').checked = true;
+	}
+
+	function onAnimationFinished(){
+		var frames = attractors.animate.frames
+			,w = attractors.animate.w
+			,h = attractors.animate.h;
+		var images = (function (a) {
+				frames.forEach(function (src) {
+					var img = document.createElement('img');
+					img.setAttribute('src',src);
+					a.push(img);
+				});
+				return a;
+			})([]);
+		wait().then(function(){
+			gifshot.createGIF({
+				gifWidth: w
+				,gifHeight: h
+				,images: images
+				,interval: 0.04
+			},function (obj) {
+				if (!obj.error) {
+					var image = obj.image;
+					elmImage.setAttribute('src',image);
+				}
+			});
+		});
+		//////////////////////////////////////
+		var encoder = new Whammy.Video();//25
+		frames.forEach(encoder.add.bind(encoder));
+		encoder.compile(false,function(output){
+			var url = (window.webkitURL || window.URL).createObjectURL(output);
+			elmVideo.src = url;
+		});
+	}
+
 	function onRendered(w,h,pixels){
-		var resultWrapper = getElementById('result')
-			,img = resultWrapper.querySelector('img')||(function(img){
-				img.classList.add('image');
-				elmImage.appendChild(img);
-				return img;
-			})(document.createElement('img'))
+		var resultWrapper = getElementById('tabs-result')
 			//
 			,colorMax = 255
 			,colorBg = getElementById('background-color').value
@@ -347,7 +366,6 @@ iddqd.ns('attractors.ui',(function(){
 			//
 			,max = 0
 			,i
-			,src
 		;
 		//
 		canvas.width = w;
@@ -392,14 +410,18 @@ iddqd.ns('attractors.ui',(function(){
 		}
 		//
 		context.putImageData(imagedata,0,0);
-		src = canvas.toDataURL();
 		//
-		img.setAttribute('src',src);
-		return src;
+		elmImage.setAttribute('src',canvas.toDataURL('image/png'));
+		return canvas.toDataURL('image/webp');
 	}
 
-	function onImageHide(){
-		getElementById('result').classList.add('hidden-xs-up');
+	function onDownloadClick(e){
+			var elm = e.currentTarget
+				,isImage = elm.classList.contains('img')
+				,elmMedium = isImage?elmImage:elmVideo
+				,extension = isImage?'.png':'.webm';
+			elm.setAttribute('href',elmMedium.getAttribute('src'));
+			elm.setAttribute('download',attractor.name+extension);
 	}
 
 	function redrawConstants(){
@@ -414,16 +436,21 @@ iddqd.ns('attractors.ui',(function(){
 	function getAnimationFromTo(){
 		var start = {}
 			,end = {}
+			,frames = parseInt(getElementById('frames').value,10)
 			,isAnimateRotate = getElementById('animate-rotate').checked;
 		if (isAnimateRotate) {
 			start.cameraRotationX = three.cameraRotationX;
-			end.cameraRotationX = start.cameraRotationX+(360-360/(frames+1));
+			end.cameraRotationX = three.cameraRotationX+(360-360/(frames+1));
 		}
 		if (constantsFirst.length&&constantsLast.length) {
 			start.constants = constantsFirst;
 			end.constants = constantsLast;
 		}
 		return {start:start,end:end};
+		/*return attractors.animate.getFromTo(
+			parseInt(getElementById('frames').value,10)
+			,getElementById('animate-rotate').checked
+		);*/
 	}
 
 	return init;

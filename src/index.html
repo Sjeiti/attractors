@@ -48,7 +48,7 @@
 		<div id="animate">
 			<fieldset class="form-group form-inline">
 				<label for="frames" class="form-control-label">frames</label>
-				<input type="number" value="60" id="frames" class="form-control form-control-sm" />
+				<input type="number" value="10" id="frames" class="form-control form-control-sm" />
 			</fieldset>
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm" id="store-first">store first</a>
@@ -108,14 +108,16 @@
 				</a>
 			</fieldset>
 		</div>
-	</div>
-</div>
 
-<div id="result" class="hidden-xs-up">
-	<div id="image">
-		<div class="ui">
-			<a class="btn btn-primary btn-sm">x</a>
-			<a class="btn btn-primary btn-sm">download</a>
+		<h2 class="tab-title"><label for="tabs-result">result</label></h2>
+		<input type="checkbox" name="tabs" id="tabs-result" class="tabs" />
+		<div class="tab">
+			<div id="image"><img /></div>
+			<div id="video" class="hidden-xs-up"><video controls></video></div>
+			<fieldset>
+				<a class="btn btn-primary btn-sm img">download img</a>
+				<a class="btn btn-primary btn-sm video">download video</a>
+			</fieldset>
 		</div>
 	</div>
 </div>
@@ -145,6 +147,7 @@
 <script src="/vendor/tween.js/src/Tween.js"></script>
 <script src="/vendor/jszip/dist/jszip.min.js"></script>
 <script src="/vendor/gifshot/build/gifshot.js"></script>
+<script src="/vendor/whammy/whammy.js"></script>
 
 <script src="/js/attractors.js"></script>
 <script src="/js/attractors.util.js"></script>

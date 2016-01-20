@@ -102,7 +102,7 @@ input, select, option {
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: 30%;
+	width: 100%/3;
 	background-color: rgba(0,0,0,.6);
 	.tab-title { margin: 1px 0; }
 	>.tab {
@@ -144,28 +144,8 @@ input, select, option {
 	.form-group { margin-bottom: 3px; }
 }
 
-#result {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	background-color: rgba(0,0,0,.7);
-}
 #image {
-	position: relative;
-	top: 50%;
-	left: 50%;
-	display: table;
-	transform: translateX(-50%) translateY(-50%);
-	box-shadow: 0 0 64px 0 rgba(255,255,255,0.5);
-	.ui {
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	img { max-width: 80%; }
+	img { max-width: 100%; }
 }
 
 #stats {
