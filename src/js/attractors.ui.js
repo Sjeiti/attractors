@@ -30,6 +30,9 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		,stats
 		,attractor
+		//
+		,canvas = document.createElement('canvas')
+		,context = canvas.getContext('2d')
 	;
 
 	function init() {
@@ -105,6 +108,7 @@ iddqd.ns('attractors.ui',(function(){
 			elmGammaRange.removeEventListener('mousemove',changeGamma);
 		});
 		elmGammaRange.addEventListener('change',changeGamma);
+		changeGamma();
 		//
 		// iterations
 		elmIterations.value = iterations;
@@ -116,6 +120,7 @@ iddqd.ns('attractors.ui',(function(){
 			elmIterationsRange.removeEventListener('mousemove',changeIterations);
 		});
 		elmIterationsRange.addEventListener('change',changeIterations);
+		changeIterations();
 		//
 		// image size
 		var sizes = {
@@ -134,7 +139,7 @@ iddqd.ns('attractors.ui',(function(){
 				var h = sizes[w]
 					,value = w+'-'+h
 					,option = document.createElement('option')
-					,isSelected = w===availWidth.toString();
+					,isSelected = w==256;//w===availWidth.toString();
 				option.setAttribute('value',value);
 				isSelected&&option.setAttribute('selected','selected');
 				option.textContent = w+'-'+h;
@@ -320,18 +325,35 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRendered(w,h,pixels){
-		var png = new PNGlib(w,h,256)
-			,resultWrapper = getElementById('result')
+		var resultWrapper = getElementById('result')
 			,img = resultWrapper.querySelector('img')||(function(img){
 				img.classList.add('image');
 				elmImage.appendChild(img);
 				return img;
 			})(document.createElement('img'))
+			//
+			,colorMax = 255
+			,colorBg = getElementById('background-color').value
+			,colorBgR = parseInt(colorBg.substr(1,2),16)/colorMax
+			,colorBgG = parseInt(colorBg.substr(3,2),16)/colorMax
+			,colorBgB = parseInt(colorBg.substr(5,2),16)/colorMax
+			,colorAt = getElementById('attractor-color').value
+			,colorAtR = parseInt(colorAt.substr(1,2),16)/colorMax
+			,colorAtG = parseInt(colorAt.substr(3,2),16)/colorMax
+			,colorAtB = parseInt(colorAt.substr(5,2),16)/colorMax
+			//
+			,imagedata = new ImageData(w,h)
+			,data = imagedata.data
+			//
 			,max = 0
 			,i
-			,src;
+			,src
+		;
+		//
+		canvas.width = w;
+		canvas.height = h;
+		//
 		resultWrapper.classList.remove('hidden-xs-up');
-		png.color(0, 0, 0, 0); // set the background transparent
 		//
 		i = pixels.length;
 		while (i--) {
@@ -340,12 +362,38 @@ iddqd.ns('attractors.ui',(function(){
 		}
 		i = pixels.length;
 		while (i--) {
-			var x = i%w
-				,y = i/w<<0;
-			var color = Math.pow(pixels[i]/max,gammaValue)*0xFF<<0;
-			png.buffer[png.index(x,y)] = png.color(color,color,color);
+			var piximaxgam = Math.pow(pixels[i]/max,gammaValue)
+				// screen
+				,r = (1 - (1-colorBgR)*(1-piximaxgam*colorAtR))*colorMax<<0
+				,g = (1 - (1-colorBgG)*(1-piximaxgam*colorAtG))*colorMax<<0
+				,b = (1 - (1-colorBgB)*(1-piximaxgam*colorAtB))*colorMax<<0
+				// multiply
+				//,r = (colorBgR * piximaxgam*colorAtR)*colorMax<<0
+				//,g = (colorBgG * piximaxgam*colorAtG)*colorMax<<0
+				//,b = (colorBgB * piximaxgam*colorAtB)*colorMax<<0
+				//
+				//,r = (colorBgR&&piximaxgam*colorAtR)*colorMax<<0
+				//,g = (colorBgG&&piximaxgam*colorAtG)*colorMax<<0
+				//,b = (colorBgB&&piximaxgam*colorAtB)*colorMax<<0
+				//,r = (colorBgR||piximaxgam*colorAtR)*colorMax<<0
+				//,g = (colorBgG||piximaxgam*colorAtG)*colorMax<<0
+				//,b = (colorBgB||piximaxgam*colorAtB)*colorMax<<0
+				//,r = ((1-colorBgR) * piximaxgam*colorAtR)*colorMax<<0
+				//,g = ((1-colorBgG) * piximaxgam*colorAtG)*colorMax<<0
+				//,b = ((1-colorBgB) * piximaxgam*colorAtB)*colorMax<<0
+				//,r = Math.max(colorBgR,piximaxgam*colorAtR)*colorMax<<0
+				//,g = Math.max(colorBgG,piximaxgam*colorAtG)*colorMax<<0
+				//,b = Math.max(colorBgB,piximaxgam*colorAtB)*colorMax<<0
+			;
+			data[4*i] = r;
+			data[4*i+1] = g;
+			data[4*i+2] = b;
+			data[4*i+3] = 255;
 		}
-		src = 'data:image/png;base64,'+png.getBase64();
+		//
+		context.putImageData(imagedata,0,0);
+		src = canvas.toDataURL();
+		//
 		img.setAttribute('src',src);
 		return src;
 	}

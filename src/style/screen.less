@@ -1,5 +1,14 @@
+// header
 @headerColor: #D1E9FF;
 @headerBg: #486071;
+// button
+@btnColor: #FFF;
+@btnColorBg: #5688b3;
+@btnColorBorder: #2f353e;
+@btnHoverColor: #FFF;
+@btnHoverColorBg: #4d7aa1;
+@btnHoverColorBorder: #2f353e;
+@btnRadius: .14rem;
 
 body {
 	margin: 0;
@@ -40,7 +49,7 @@ input, select, option {
 }
 
 .form-control, .btn {
-	border-radius: .14rem;
+	border-radius: @btnRadius;
 }
 .form-control-sm {
 	padding: .05rem .5rem;
@@ -52,13 +61,13 @@ input, select, option {
 }
 
 .btn-secondary {
-	color: #FFF;
-	background-color: #5688b3;
-	border-color: #2f353e;
+	color: @btnColor;
+	background-color: @btnColorBg;
+	border-color: @btnColorBorder;
 	&:hover {
-		color: #FFF;
-		background-color: #4d7aa1;
-		border-color: #2f353e;
+		color: @btnHoverColor;
+		background-color: @btnHoverColorBg;
+		border-color: @btnHoverColorBorder;
 	}
 }
 
@@ -183,5 +192,70 @@ input.tabs {
 	&:checked+*{
 		max-height: 1000px;
 		padding: 10px 0;
+	}
+}
+
+///////////////////////////////////////////////////////
+
+input[type=color] {
+	&, *, &::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
+		padding: 0;
+	}
+	&::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
+		border: 0;
+	}
+	/*&::-webkit-color-swatch-wrapper {
+
+	}*/
+}
+
+///////////////////////////////////////////////////////
+
+input[type=text], input[type=number], input[type=color], option, select {
+	&, &.form-control, &:disabled {
+		background-color: #DAE8EC;
+		border-radius: @btnRadius;
+		box-shadow: 2px 4px 16px rgba(0,0,0,0.2) inset;
+		color: #222;
+	}
+}
+
+// range
+input[type=range] {
+	@rangeBtnW: 10px;
+	@rangeBtnH: 20px;
+	@rangeTrackH: 6px;
+  -webkit-appearance: none;
+  width: 100%;
+	height: @rangeBtnH;
+	background-color: transparent;
+	border: 0;
+	&, * {
+		outline: none;
+		cursor: pointer;
+	}
+	// track
+	&::-webkit-slider-runnable-track {
+		width: 100%;
+		height: @rangeTrackH;
+		margin: 0;
+		background-color: darken(@btnColorBg,20%);
+		border-radius: @btnRadius;
+		border: 0;
+		box-shadow: 2px 2px 4px rgba(0,0,0,0.3) inset;
+		&:hover { background-color: darken(@btnHoverColorBg,20%); }
+	}
+	// thumb
+	&::-webkit-slider-thumb {
+		height: @rangeBtnH;
+		width: @rangeBtnW;
+		margin: 0;
+		transform: translateY(-(@rangeBtnH - @rangeTrackH)/2);
+		border: 1px solid @btnColorBorder;
+		border-radius: @btnRadius;
+		background: @btnColorBg;
+		cursor: pointer;
+		-webkit-appearance: none;
+		&:hover { background-color: @btnHoverColorBg; }
 	}
 }

@@ -22,6 +22,7 @@
     "iddqd": "2.5.9",
     "jszip": "~2.5.0",
     "tween.js": "tweenjs#~16.3.1",
-    "gifshot": "~0.3.2"
+    "gifshot": "~0.3.2",
+    "whammy": "*"
   }
 }
