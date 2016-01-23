@@ -157,6 +157,7 @@ iddqd.ns('attractors.three',(function(){
 		signal.animate.add(onAnimate);
 		window.addEventListener( 'resize', onWindowResize, false );
 		event.TYPE_CHANGED.add(onTypeChanged);
+		event.CONSTANTS_CHANGED.add(redraw);
 	}
 
 	function onMouseDown(e){
@@ -301,8 +302,8 @@ iddqd.ns('attractors.three',(function(){
 		redraw();
 	}
 
-	function render(w,h,iterations){
-		console.log('three.render'); // todo: remove log
+	function render(w,h,iterations,frame,frames){
+		console.log('three.render',frame,frames); // todo: remove log
 		isRendering = true;
 		cameraRender = camera.clone();
 		cameraRender.aspect = w/h;
@@ -331,11 +332,11 @@ iddqd.ns('attractors.three',(function(){
 		;
 		while (i--) iterate(p);
 		return new Promise(function(resolve,reject){
-			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iterations,batch,p,progressLast,t,t));
+			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iterations,batch,p,progressLast,t,t,frame,frames));
 		});
 	}
 
-	function renderCycle(resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start){
+	function renderCycle(resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start,frame,frames){
 		var i = batch
 			,progress
 			,deltaT
@@ -362,7 +363,7 @@ iddqd.ns('attractors.three',(function(){
 			//
 			progress = 100-(iteration/iterations*100<<0);
 			if (progressLast!==progress) {
-				event.RENDER_PROGRESS.dispatch(progress,start);
+				event.RENDER_PROGRESS.dispatch(progress,start,frame,frames);
 				progressLast = progress;
 			}
 			//
@@ -373,7 +374,7 @@ iddqd.ns('attractors.three',(function(){
 			if (deltaT<60) batch *= 2;
 			else batch = Math.ceil(batch/2);
 			if (iteration>0) {
-				requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start));
+				requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,w,h,iterations,iteration,batch,p,progressLast,t,start,frame,frames));
 			} else {
 				resolve(pixels);
 				isRendering = false;
@@ -455,7 +456,7 @@ iddqd.ns('attractors.three',(function(){
 		init: init
 		,render: render
 		,cancelRender: cancelRender
-		,redraw: redraw
+		//,redraw: redraw
 		,center: center
 		,get rendering() { return isRendering; }
 		,get cameraRotationX() { return cameraRotationX; }
@@ -463,5 +464,6 @@ iddqd.ns('attractors.three',(function(){
 			cameraRotationX = f;
 			setCamera();
 		}
+		,get computeBoundingSphere() { return geometry.computeBoundingSphere.bind(geometry); }
 	};
 })());

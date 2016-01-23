@@ -7,6 +7,7 @@ iddqd.ns('attractors',(function(){
 		event = attractors.event;
 		attractors.three.init();
 		attractors.ui();
+		attractors.location();
 		event.TYPE_CHANGED.add(onTypeChanged,null,1);
 	}
 

@@ -13,8 +13,9 @@ iddqd.ns('attractors.ui',(function(){
 		,ANIMATION_START = event.ANIMATION_START
 		,ANIMATION_FRAME = event.ANIMATION_FRAME
 		,ANIMATION_DONE = event.ANIMATION_DONE
+		,CONSTANTS_CHANGED = event.CONSTANTS_CHANGED
+		,dispatchConstantsChanged = CONSTANTS_CHANGED.dispatch
 		,center = three.center
-		,redraw = three.redraw
 		//,warn = console.warn.bind(console)
 		//
 		,moveConstant
@@ -23,7 +24,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmRender = getElementById('render')
 		,elmRenderIndicator = elmRender.querySelector('.progress')
 		,elmImage = getElementById('image').querySelector('img')
-		,elmVideo = getElementById('video').querySelector('video')
+		,elmVideo = document.createElement('video')
 		//
 		,constantsFirst = []
 		,constantsLast = []
@@ -62,6 +63,7 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		select.appendChild(fragment);
 		select.addEventListener('change',onTypeChange);
+		event.TYPE_CHANGED.add(onTypeChanged);
 		// constants
 		var html = '';
 		attractor.constants.forEach(function(val,i){
@@ -82,15 +84,13 @@ iddqd.ns('attractors.ui',(function(){
 			array2array(attractor.constants,constantsFirst);
 		});
 		getElementById('load-first').addEventListener('click',function(){
-			array2array(constantsFirst,attractor.constants);
-			redraw();
+			dispatchConstantsChanged(array2array(constantsFirst,attractor.constants));
 		});
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,constantsLast);
 		});
 		getElementById('load-last').addEventListener('click',function(){
-			array2array(constantsLast,attractor.constants);
-			redraw();
+			dispatchConstantsChanged(array2array(constantsLast,attractor.constants));
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
@@ -175,19 +175,25 @@ iddqd.ns('attractors.ui',(function(){
 		redrawConstants();
 	}
 
+	function onTypeChanged(index){
+		var select = getElementById('type');
+		select.value = index;
+	}
+
 	function onInputChange(e){
 		var input = e.target
 			,event = e.type
 			,type = input.getAttribute('type')
 			,index = parseInt(input.getAttribute('data-index'),10)
+			,constants = attractor.constants
 		//,isKeyShift = signal.key[16]
 		//,isKeyCTRL = signal.key[17]
 		//,isKeyAlt = signal.key[18]
 			;
 		if (type==='number') {
 			e.stopPropagation();
-			attractor.constants[index] = parseFloat(input.value);
-			redraw();
+			constants[index] = parseFloat(input.value);
+			dispatchConstantsChanged(constants);
 		} else if (type==='range') {
 			if (event==='mousedown') {
 				moveConstant = onMoveConstant.bind(null,input);
@@ -196,6 +202,7 @@ iddqd.ns('attractors.ui',(function(){
 				signal.animate.remove(moveConstant);
 				input.value = 0;
 				e.stopPropagation();
+				three.computeBoundingSphere();
 			}
 		}
 	}
@@ -205,9 +212,9 @@ iddqd.ns('attractors.ui',(function(){
 			,value = input.value
 			,constants = attractor.constants
 			,constant = constants[index]
-			;
+		;
 		getElementById('constant'+index).value = constants[index] = constant + value*value*value*value*value*value*value;
-		redraw();
+		dispatchConstantsChanged(constants);
 	}
 
 	function onRandomizeClick(){
@@ -229,16 +236,17 @@ iddqd.ns('attractors.ui',(function(){
 			}
 			size = p.distanceTo(pp);
 		}
-		redraw();
+		dispatchConstantsChanged(constants);
 		center();
 	}
 
 	function onResetClick(){
-		attractor.constants.reset();
-		attractor.constants.forEach(function(val,i,a){
+		var constants = attractor.constants;
+		constants.reset();
+		constants.forEach(function(val,i,a){
 			getElementById('constant'+i).value = a[i];
 		});
-		redraw();
+		dispatchConstantsChanged(constants);
 		center();
 	}
 
@@ -247,7 +255,7 @@ iddqd.ns('attractors.ui',(function(){
 			,from = {f:0}
 			,onUpdate = function(position){
 				setFrame(position.f,1,anim.start,anim.end);
-				redraw();
+				dispatchConstantsChanged(attractor.constants);
 			}.bind(null,from)
 		;
 		new TWEEN.Tween(from)
@@ -283,7 +291,7 @@ iddqd.ns('attractors.ui',(function(){
 					promise = promise
 						.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
 						.then(wait)
-						.then(render)
+						.then(render.bind(null,frames-i-1,frames))
 						.then(rendered)
 						.then(ANIMATION_FRAME.dispatch);
 				}
@@ -298,10 +306,11 @@ iddqd.ns('attractors.ui',(function(){
 		}
 	}
 
-	function onRenderProgress(progress,start){
+	function onRenderProgress(progress,start,frame,frames){
 		var elapsed = Date.now()-start
+			,isAnimation = frame!==undefined&&frames!==undefined
 			,timeLeft = elapsed/progress*(100-progress);
-		elmRenderIndicator.style.width = progress+'%';
+		elmRenderIndicator.style.width = (isAnimation?frame/frames*100+progress/frames:progress)+'%';
 		elmRenderIndicator.textContent = timeLeft/1000<<0;
 	}
 
@@ -378,6 +387,34 @@ iddqd.ns('attractors.ui',(function(){
 			var val = pixels[i];
 			if (max<val) max = val;
 		}
+		////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////
+		var chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
+			,delimiter = chars[0]+chars[0]
+			,decodeList = (delimiter+decodeURIComponent(location.hash).substr(1).toLowerCase()+delimiter).split('')
+			,intResult = (function(a){
+				decodeList.forEach(function(char){
+					a.push(chars.indexOf(char));
+				});
+				return a;
+			})([])
+			,pad2 = '00'
+			,oct = intResult.map(function(i){
+				var bin = i.toString(8);
+				return pad2.substring(0, pad2.length - bin.length) + bin;
+			}).join('').split('').map(function(s){
+				return parseInt(s,10);
+			})
+			;
+
+		console.log('intResult'
+			,decodeList
+			,oct//.join('').match(/.{1,12}/g).join('\n')
+		);
+		////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////
 		i = pixels.length;
 		while (i--) {
 			var piximaxgam = Math.pow(pixels[i]/max,gammaValue)
@@ -402,7 +439,23 @@ iddqd.ns('attractors.ui',(function(){
 				//,r = Math.max(colorBgR,piximaxgam*colorAtR)*colorMax<<0
 				//,g = Math.max(colorBgG,piximaxgam*colorAtG)*colorMax<<0
 				//,b = Math.max(colorBgB,piximaxgam*colorAtB)*colorMax<<0
+				//
 			;
+			////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////
+			if (i<=oct.length) {
+				var multiplier = 4
+					,margin = 8*multiplier
+					,subtract = 85*(colorBgR+colorBgG+colorBgB)>(255-margin)?-margin:0
+					,code = multiplier*oct[i];
+				r = (colorBgR*255<<0) + code + subtract;
+				g = (colorBgG*255<<0) + code + subtract;
+				b = (colorBgB*255<<0) + code + subtract;
+			}
+			////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////
 			data[4*i] = r;
 			data[4*i+1] = g;
 			data[4*i+2] = b;

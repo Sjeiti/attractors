@@ -12,6 +12,7 @@ iddqd.ns('attractors.util',(function() {
 		a.forEach(function(n,i){
 			b[i] = n;
 		});
+		return b;
 	}
 
 	function emptyPromise(){
