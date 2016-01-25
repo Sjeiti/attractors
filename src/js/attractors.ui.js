@@ -21,6 +21,8 @@ iddqd.ns('attractors.ui',(function(){
 		,moveConstant
 		//
 		,elmConstants = getElementById('constants')
+		,elmSines = getElementById('sines')
+		,elmOffsets = getElementById('offsets')
 		,elmRender = getElementById('render')
 		,elmRenderIndicator = elmRender.querySelector('.progress')
 		,elmImage = getElementById('image').querySelector('img')
@@ -65,14 +67,12 @@ iddqd.ns('attractors.ui',(function(){
 		select.addEventListener('change',onTypeChange);
 		event.TYPE_CHANGED.add(onTypeChanged);
 		// constants
-		var html = '';
-		attractor.constants.forEach(function(val,i){
-			html += iddqd.utils.tmpl('constant',{value:val,index:i});
+		redrawConstants();
+		[elmConstants,elmSines,elmOffsets].forEach(function(elm){
+			elm.addEventListener('mousedown',onInputChange);
+			elm.addEventListener('change',onInputChange);
+			elm.addEventListener('mousewheel',onInputChange);
 		});
-		elmConstants.innerHTML = html;
-		elmConstants.addEventListener('mousedown',onInputChange);
-		elmConstants.addEventListener('change',onInputChange);
-		elmConstants.addEventListener('mousewheel',onInputChange);
 		// buttons
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
 		getElementById('constantsReset').addEventListener('click',onResetClick);
@@ -254,40 +254,47 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onInputChange(e){
-		var input = e.target
+		var wrapper = e.currentTarget
+			,input = e.target
 			,event = e.type
 			,type = input.getAttribute('type')
 			,index = parseInt(input.getAttribute('data-index'),10)
-			,constants = attractor.constants
-		//,isKeyShift = signal.key[16]
-		//,isKeyCTRL = signal.key[17]
-		//,isKeyAlt = signal.key[18]
-			;
+			,isControlAdd = input.getAttribute('data-type')==='add'
+			,model = {
+				constants: attractor.constants
+				,sines: animate.sines
+				,offsets: animate.offsets
+			}[input.getAttribute('data-model')]
+			,isModelConstants = model===attractor.constants
+			,animations = wrapper.a||(wrapper.a=[])
+			,removeAnimations = function(){while (animations.length) signal.animate.remove(animations.pop());}
+			,dispatch = isModelConstants?dispatchConstantsChanged:null
+		;
 		if (type==='number') {
 			e.stopPropagation();
-			constants[index] = parseFloat(input.value);
-			dispatchConstantsChanged(constants);
+			model[index] = parseFloat(input.value);
+			dispatch&&dispatch(model);
 		} else if (type==='range') {
 			if (event==='mousedown') {
-				moveConstant = onMoveConstant.bind(null,input);
+				removeAnimations();
+				moveConstant = onMoveConstant.bind(null,input,input.nextElementSibling,model,index,isControlAdd,dispatch);
 				signal.animate.add(moveConstant);
+				animations.push(moveConstant);
 			} else {
+				removeAnimations();
 				signal.animate.remove(moveConstant);
-				input.value = 0;
+				isControlAdd&&(input.value = 0);
 				e.stopPropagation();
-				three.computeBoundingSphere();
+				isModelConstants&&three.computeBoundingSphere();
 			}
 		}
 	}
 
-	function onMoveConstant(input) {
-		var index = parseInt(input.getAttribute('data-index'),10)
-			,value = input.value
-			,constants = attractor.constants
-			,constant = constants[index]
-		;
-		getElementById('constant'+index).value = constants[index] = constant + value*value*value*value*value*value*value;
-		dispatchConstantsChanged(constants);
+	function onMoveConstant(input,inputNumber,model,index,isControlAdd,dispatch) {
+		var value = input.value
+			,numberValue = model[index];
+		inputNumber.value = model[index] = isControlAdd?numberValue + value*value*value*value*value*value*value:value;
+		dispatch&&dispatch(model);
 	}
 
 	function onRandomizeClick(){
@@ -551,11 +558,17 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function redrawConstants(){
-		var html = '';
+		var constants = ''
+			,sines = elmSines.querySelector('h3').outerHTML
+			,offsets = elmOffsets.querySelector('h3').outerHTML;
 		attractor.constants.forEach(function(val,i){
-			html += iddqd.utils.tmpl('constant',{value:val,index:i});
+			constants += iddqd.utils.tmpl('constant',{value:val,index:i,min:-1,max:1,rangevalue:0,model:'constants',type:'add'});
+			sines +=     iddqd.utils.tmpl('constant',{value:0,index:i,min:-1,max:1,rangevalue:0,model:'sines',type:'add'});
+			offsets +=   iddqd.utils.tmpl('constant',{value:0,index:i,min:0,max:2,rangevalue:0,model:'offsets',type:'absolute'});
 		});
-		elmConstants.innerHTML = html;
+		elmConstants.innerHTML = constants;
+		elmSines.innerHTML = sines;
+		elmOffsets.innerHTML = offsets;
 		return elmConstants;
 	}
 

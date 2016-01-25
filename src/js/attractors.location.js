@@ -30,12 +30,10 @@ iddqd.ns('attractors.location',(function(){
 					if (val!==attractor.constants[i]) b = false;
 				});
 				return b;
-			})(true);
+			})(true)
 		;
 		///////////////////////////
-		console.log('decode',decode); // todo: remove log
-		console.log('chars','abcdefghijklmnopqrstuvwxyz 01234567890-,.'.length); // todo: remove log
-		var chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
+		/*var chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
 			,decodeList = decode.toLowerCase().split('')
 			,intResult = (function(a){
 				decodeList.forEach(function(char){
@@ -53,13 +51,13 @@ iddqd.ns('attractors.location',(function(){
 				var bin = i.toString(8);
 				return pad2.substring(0, pad2.length - bin.length) + bin;
 			}).join('')
-			;
+			;*/
 
-		console.log('intResult'
+		/*console.log('intResult'
 			,intResult
 			,bin.match(/.{1,24}/g).join('\n')
 			,oct.match(/.{1,12}/g).join('\n')
-		);
+		);*/
 
 		///////////////////////////
 		//
@@ -73,7 +71,6 @@ iddqd.ns('attractors.location',(function(){
 		if (!isConstants) {
 			dispatchConstantsChanged(array2array(constants,attractor.constants));
 		}
-		!isName||!isConstants&&console.log('loadAndOrRedraw',isName,isConstants); // todo: remove log
 	}
 
 	function buildHash(){

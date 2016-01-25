@@ -3,13 +3,17 @@ iddqd.ns('attractors.animate',(function() {
 	var three = attractors.three
 		,event = attractors.event
 		,frames = []
+		,sines = []
+		,offsets = []
 		,w = 1
 		,h = 1;
 
 	requestAnimationFrame(animate);
+	onTypeChanged();
 
 	event.ANIMATION_START.add(onAnimationStart);
 	event.ANIMATION_FRAME.add(onAnimationFrame);
+	event.TYPE_CHANGED.add(onTypeChanged);
 
 	function animate(time) {
 			requestAnimationFrame(animate);
@@ -24,6 +28,17 @@ iddqd.ns('attractors.animate',(function() {
 
 	function onAnimationFrame(src){
 		frames.push(src);
+	}
+
+	function onTypeChanged() {
+		var attractor = attractors.attractor
+			,constants = attractor.constants
+			,numConstants = constants.length
+			,i = numConstants;
+		sines.length = offsets.length = numConstants;
+		while (i--) {
+			sines[i] = offsets[i] = 0;
+		}
 	}
 
 	function setFrame(frame,frames,propstart,propend) {
@@ -66,5 +81,7 @@ iddqd.ns('attractors.animate',(function() {
 		,get frames() { return frames; }
 		,get w() { return w; }
 		,get h() { return h; }
+		,get sines() { return sines; }
+		,get offsets() { return offsets; }
 	};
 })());
