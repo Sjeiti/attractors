@@ -28,9 +28,6 @@ iddqd.ns('attractors.ui',(function(){
 		,elmImage = getElementById('image').querySelector('img')
 		,elmVideo = document.createElement('video')
 		//
-		,constantsFirst = []
-		,constantsLast = []
-		//
 		,gammaValue = 0.4
 		,iterations = 1E7
 		//
@@ -81,16 +78,16 @@ iddqd.ns('attractors.ui',(function(){
 
 	function initUIAnimate(){
 		getElementById('store-first').addEventListener('click',function(){
-			array2array(attractor.constants,constantsFirst);
+			array2array(attractor.constants,animate.constantsFirst);
 		});
 		getElementById('load-first').addEventListener('click',function(){
-			dispatchConstantsChanged(array2array(constantsFirst,attractor.constants));
+			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
 		});
 		getElementById('store-last').addEventListener('click',function(){
-			array2array(attractor.constants,constantsLast);
+			array2array(attractor.constants,animate.constantsLast);
 		});
 		getElementById('load-last').addEventListener('click',function(){
-			dispatchConstantsChanged(array2array(constantsLast,attractor.constants));
+			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
@@ -195,7 +192,6 @@ iddqd.ns('attractors.ui',(function(){
 		function onImageLoad(e){
 			var w = image.naturalWidth||image.width;
 			var h = image.naturalHeight||image.height;
-			console.log(w,h);
 			canvas.width = w;
 			canvas.height = h;
 			context.drawImage(image,0,0);
@@ -221,9 +217,9 @@ iddqd.ns('attractors.ui',(function(){
 				return chars[n%chars.length];
 			}).join('');
 			var constants = doubled.substr(2,doubled.length-4).split(',');
-			var name = constants.shift();
+			//var name = constants.shift(); // todo: name
 			constants = constants.map(function(s){return parseFloat(s);});
-			console.log('attractor',name,constants.map(function(s){return parseFloat(s);}));
+			//console.log('attractor',name,constants.map(function(s){return parseFloat(s);}));
 
 			//event.TYPE_CHANGED.dispatch();
 			dispatchConstantsChanged(array2array(constants,attractor.constants));
@@ -488,10 +484,10 @@ iddqd.ns('attractors.ui',(function(){
 			})
 			;
 
-		console.log('intResult'
+		/*console.log('intResult'
 			,decodeList
 			,oct//.join('').match(/.{1,12}/g).join('\n')
-		);
+		);*/
 		////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////
@@ -573,23 +569,10 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function getAnimationFromTo(){
-		var start = {}
-			,end = {}
-			,frames = parseInt(getElementById('frames').value,10)
-			,isAnimateRotate = getElementById('animate-rotate').checked;
-		if (isAnimateRotate) {
-			start.cameraRotationX = three.cameraRotationX;
-			end.cameraRotationX = three.cameraRotationX+(360-360/(frames+1));
-		}
-		if (constantsFirst.length&&constantsLast.length) {
-			start.constants = constantsFirst;
-			end.constants = constantsLast;
-		}
-		return {start:start,end:end};
-		/*return attractors.animate.getFromTo(
+		return animate.getFromTo(
 			parseInt(getElementById('frames').value,10)
 			,getElementById('animate-rotate').checked
-		);*/
+		);
 	}
 
 	return init;
