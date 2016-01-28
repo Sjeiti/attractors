@@ -32,7 +32,7 @@
 				<script type="text/html" id="constant">
 					<fieldset class="form-group form-left">
 						<input type="range" class="form-control form-control-sm" min="<%=min%>" max="<%=max%>" step="0.00001" value="<%=rangevalue%>" data-model="<%=model%>" data-index="<%=index%>" data-type="<%=type%>" />
-						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="constant<%=index%>" />
+						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="<%=model%><%=index%>" />
 					</fieldset>
 				</script>
 			</div>
@@ -65,6 +65,7 @@
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm" id="store-last">store last</a>
 				<a class="btn btn-secondary btn-sm" id="load-last">load last</a>
+				<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>
 			</fieldset>
 			<fieldset class="form-group">
 				<label>
@@ -95,7 +96,7 @@
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<label for="gamma">Gamma</label>
-				<input type="range" class="form-control" min="0" max="1" step="0.00001" value="0.3" id="gammaRange" />
+				<input type="range" class="form-control" min="0" max="1" step="0.00001" value="0.5" id="gammaRange" />
 				<input type="text" class="form-control form-control-sm constant" disabled value="1" id="gamma" />
 			</fieldset>
 			<fieldset class="form-group form-left">
@@ -160,16 +161,23 @@
 <script src="/js/attractors.util.js"></script>
 <script src="/js/attractors.event.js"></script>
 
-<script src="/js/attractors.type.lorenz.js"></script>
-<script src="/js/attractors.type.peterdejong.js"></script>
-<script src="/js/attractors.type.pickover.js"></script>
-<script src="/js/attractors.type.clifford3d.js"></script>
-<script src="/js/attractors.type.kamtorus.js"></script>
-<script src="/js/attractors.type.latoocarfian.js"></script>
-<script src="/js/attractors.type.rossler.js"></script>
-<script src="/js/attractors.type.sprot.js"></script>
-<script src="/js/attractors.type.polynomiala.js"></script>
 <script src="/js/attractors.type.lorenz84.js"></script>
+<script src="/js/attractors.type.lorenz.js"></script>
+<script src="/js/attractors.type.rossler.js"></script>
+<script src="/js/attractors.type.pickover.js"></script>
+<script src="/js/attractors.type.polynomiala.js"></script>
+<script src="/js/attractors.type.polynomialb.js"></script>
+<script src="/js/attractors.type.polynomialc.js"></script><!---->
+<script src="/js/attractors.type.latoocarfian.js"></script>
+<script src="/js/attractors.type.kamtorus.js"></script>
+<script src="/js/attractors.type.clifford3d.js"></script>
+
+<script src="/js/attractors.type.sprot.js"></script>
+<script src="/js/attractors.type.peterdejong.js"></script>
+
+<script src="/js/attractors.type.ikeda.js"></script>
+<script src="/js/attractors.type.chua.js"></script>
+<script src="/js/attractors.type.tamari.js"></script>
 
 <script src="/js/attractors.three.js"></script>
 <script src="/js/attractors.animate.js"></script>

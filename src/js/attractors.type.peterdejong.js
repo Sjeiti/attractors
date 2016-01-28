@@ -16,6 +16,11 @@ attractors.create(
 		vec.x = sin(c0*y) - cos(c3*x);
 		vec.y = sin(c1*z) - cos(c4*y);
 		vec.z = sin(c2*x) - cos(c5*z);
+
+		/*
+			x' = sin(ay) - cos(bx)
+			y' = sin(cx) - cos(dy )
+		*/
 		return vec;
 	}
 );

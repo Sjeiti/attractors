@@ -41,7 +41,8 @@ iddqd.ns('attractors.animate',(function() {
 			,i = numConstants;
 		sines.length = offsets.length = numConstants;
 		while (i--) {
-			sines[i] = offsets[i] = 0;
+			sines[i] = 0;
+			offsets[i] = i*(2/numConstants);
 		}
 	}
 

@@ -1,6 +1,6 @@
 iddqd.ns('attractors',(function(){
 	var list = []
-		,attractor = function(){}
+		,attractor
 		,event;
 
 	function init(){
@@ -18,17 +18,25 @@ iddqd.ns('attractors',(function(){
 
 	function create(name,constants,iterate,scale){
 		var defaultConstants = constants.slice(0)
+			,maxConstant = (function(max){
+				defaultConstants.forEach(function(i){
+					var abs = Math.abs(i);
+					if (abs>max) max = abs;
+				});
+				return max;
+			})(0)
 			,creation = iterate.bind(null,constants);
 		scale = scale||200;
 		Object.defineProperty(creation, 'name', { get: function(){return name;}});
 		Object.defineProperty(creation, 'constants', { get: function(){return constants;}});
 		Object.defineProperty(creation, 'scale', { get: function(){return scale;}});
+		Object.defineProperty(creation, 'constantSize', { get: function(){return maxConstant;}});
 		constants.reset = resetConstants;
 		function resetConstants(){
 			for (var i=0,l=constants.length;i<l;i++) constants[i] = defaultConstants[i];
 		}
 		list.push(creation);
-		attractor = creation;
+		if (attractor===undefined) attractor = creation;
 		return creation;
 	}
 

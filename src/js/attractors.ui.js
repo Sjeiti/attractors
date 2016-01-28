@@ -82,12 +82,30 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		getElementById('load-first').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
+			updateContantsInputs();
 		});
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsLast);
 		});
 		getElementById('load-last').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));
+			updateContantsInputs();
+		});
+		//
+		getElementById('set-sines').addEventListener('click',function(){
+			//animate.constantsFirst
+			//animate.constantsLast
+			var constantsFirst = animate.constantsFirst
+				,constantsLast = animate.constantsLast
+				,constants = attractor.constants
+				,sines = animate.sines
+				,diffFr = constantsFirst.length===0?constants:constantsFirst
+				,diffTo = constantsLast.length===0?constants:constantsLast
+			;
+			diffTo.forEach(function(f,i){
+				getElementById('sines'+i).value = sines[i] = f - diffFr[i];
+			});
+			//console.log('',animate.constantsLast.length); // todo: remove log
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
@@ -300,10 +318,11 @@ iddqd.ns('attractors.ui',(function(){
 			,size = 1E-3
 			,tries = 1E4
 			,constants = attractor.constants
+			,maxConstant = 2*attractor.constantSize
 			,i;
 		while (tries--&&(size<0.02||isNaN(size)||!isFinite(size))) {
 			constants.forEach(function(val,j,a){
-				getElementById('constant'+j).value = a[j] = 24*(Math.random()-0.5);
+				getElementById('constants'+j).value = a[j] = maxConstant*(Math.random()-0.5);
 			});
 			i = iterations;
 			while (i--) {
@@ -319,9 +338,7 @@ iddqd.ns('attractors.ui',(function(){
 	function onResetClick(){
 		var constants = attractor.constants;
 		constants.reset();
-		constants.forEach(function(val,i,a){
-			getElementById('constant'+i).value = a[i];
-		});
+		updateContantsInputs();
 		dispatchConstantsChanged(constants);
 		center();
 	}
@@ -494,6 +511,11 @@ iddqd.ns('attractors.ui',(function(){
 		i = pixels.length;
 		while (i--) {
 			var piximaxgam = Math.pow(pixels[i]/max,gammaValue)
+				//
+				////
+				////
+				////
+				//
 				// screen
 				,r = (1 - (1-colorBgR)*(1-piximaxgam*colorAtR))*colorMax<<0
 				,g = (1 - (1-colorBgG)*(1-piximaxgam*colorAtG))*colorMax<<0
@@ -517,6 +539,7 @@ iddqd.ns('attractors.ui',(function(){
 				//,b = Math.max(colorBgB,piximaxgam*colorAtB)*colorMax<<0
 				//
 			;
+
 			////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////
@@ -553,18 +576,26 @@ iddqd.ns('attractors.ui',(function(){
 			elm.setAttribute('download',attractor.name+extension);
 	}
 
-	function redrawConstants(){
-		var constants = ''
-			,sines = elmSines.querySelector('h3').outerHTML
-			,offsets = elmOffsets.querySelector('h3').outerHTML;
-		attractor.constants.forEach(function(val,i){
-			constants += iddqd.utils.tmpl('constant',{value:val,index:i,min:-1,max:1,rangevalue:0,model:'constants',type:'add'});
-			sines +=     iddqd.utils.tmpl('constant',{value:0,index:i,min:-1,max:1,rangevalue:0,model:'sines',type:'add'});
-			offsets +=   iddqd.utils.tmpl('constant',{value:0,index:i,min:0,max:2,rangevalue:0,model:'offsets',type:'absolute'});
+	function updateContantsInputs(){
+		attractor.constants.forEach(function(val,i,a){
+			getElementById('constants'+i).value = a[i];
 		});
-		elmConstants.innerHTML = constants;
-		elmSines.innerHTML = sines;
-		elmOffsets.innerHTML = offsets;
+	}
+
+	function redrawConstants(){
+		var constants = attractor.constants
+			,offsets = animate.offsets
+			,htmlConstants = ''
+			,htmlsines = elmSines.querySelector('h3').outerHTML
+			,htmlOffsets = elmOffsets.querySelector('h3').outerHTML;
+		constants.forEach(function(val,i){
+			htmlConstants += iddqd.utils.tmpl('constant',{value:val,index:i,min:-1,max:1,rangevalue:0,model:'constants',type:'add'});
+			htmlsines +=     iddqd.utils.tmpl('constant',{value:0,index:i,min:-1,max:1,rangevalue:0,model:'sines',type:'add'});
+			htmlOffsets +=   iddqd.utils.tmpl('constant',{value:offsets[i],index:i,min:0,max:2,rangevalue:offsets[i],model:'offsets',type:'absolute'});
+		});
+		elmConstants.innerHTML = htmlConstants;
+		elmSines.innerHTML = htmlsines;
+		elmOffsets.innerHTML = htmlOffsets;
 		return elmConstants;
 	}
 

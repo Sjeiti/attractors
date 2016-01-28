@@ -51,6 +51,7 @@ iddqd.ns('attractors.three',(function(){
 	function init() {
 		initThreejs();
 		initEvents();
+		onTypeChanged();
 		resetAttractor();
 	}
 
@@ -240,6 +241,7 @@ iddqd.ns('attractors.three',(function(){
 			,positionsNum = positions.length
 			,colorAttr = geometry.attributes.color
 			,colors = colorAttr.array
+			,color
 			,p = new THREE.Vector3(random(),0,0)
 			,i = 100;
 		// dry run
@@ -260,15 +262,24 @@ iddqd.ns('attractors.three',(function(){
 			//colors[i]   = 1;
 			//colors[i+1] = 1;
 			//colors[i+2] = 1;
-			colors[i]   = 2*abs((x-xmin)/(xmax-xmin)-0.5);
-			colors[i+1] = 2*abs((y-ymin)/(ymax-ymin)-0.5);
-			colors[i+2] = 2*abs((z-zmin)/(zmax-zmin)-0.5);
+			color = getColor(x,y,z);
+			colors[i]   = color[0];
+			colors[i+1] = color[1];
+			colors[i+2] = color[2];
 			//colors[i]   = (x-xmin)/(xmax-xmin);
 			//colors[i+1] = (y-ymin)/(ymax-ymin);
 			//colors[i+2] = (z-zmin)/(zmax-zmin);
 		}
 		positionAttr.needsUpdate = true;
 		colorAttr.needsUpdate = true;
+	}
+
+	function getColor(x,y,z){
+		return [
+			2*abs((x-xmin)/(xmax-xmin)-0.5)
+			,2*abs((y-ymin)/(ymax-ymin)-0.5)
+			,2*abs((z-zmin)/(zmax-zmin)-0.5)
+		];
 	}
 
 	function iterate(p){
@@ -354,6 +365,7 @@ iddqd.ns('attractors.three',(function(){
 			while (i--) {
 				iterate(p);
 				position = point.project(cameraRender);
+				// todo: implement getColor here
 				distribute(
 					pixels
 					, (position.x + 1)/2*w
