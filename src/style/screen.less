@@ -163,20 +163,40 @@ input, select, option {
 }
 
 #constant-animation {
-	position: absolute;
-	left: 100%;
-	top: 16px;
-	width: 100%;
-	padding: 10px @padding;
+	//position: absolute;
+	//left: 100%;
+	//top: 16px;
+	//width: 100%;
+	//padding: 10px @padding;
 	.form-group { margin-bottom: 3px; }
-	background-color: @uiBgColor;
+	//background-color: @uiBgColor;
 	#sines, #offsets {
 		width: 50%;
 		float: left;
 	}
 	&:after {
 		content: '';
+		display: table;
 		clear: both;
+	}
+	h2 {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 20px;
+		height: 100%;
+		color: @headerColor;
+		background-color: @headerBg;
+		transform: translateX(-50%);
+		div {
+			position: relative;
+			top: 50%;
+    	left: 25%;
+			width: 2px;
+			word-wrap: break-word;
+			line-height: 90%;
+			transform: translateY(-50%);
+		}
 	}
 }
 

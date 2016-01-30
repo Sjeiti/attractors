@@ -2,6 +2,7 @@
 iddqd.ns('attractors.ui',(function(){
 	var three = attractors.three
 		,animate = attractors.animate
+		,renderer = attractors.renderer
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
@@ -36,8 +37,11 @@ iddqd.ns('attractors.ui',(function(){
 		,stats
 		,attractor
 		//
-		,canvas = document.createElement('canvas')
-		,context = canvas.getContext('2d')
+		,canvasBackground = document.createElement('canvas')
+		,contextBackground = canvasBackground.getContext('2d')
+		//
+		,canvasAttractor = document.createElement('canvas')
+		,contextAttractor = canvasAttractor.getContext('2d')
 	;
 
 	function init() {
@@ -210,8 +214,8 @@ iddqd.ns('attractors.ui',(function(){
 		function onImageLoad(e){
 			var w = image.naturalWidth||image.width;
 			var h = image.naturalHeight||image.height;
-			canvas.width = w;
-			canvas.height = h;
+			canvas.width = canvasBackground.width = canvasAttractor.width = w;
+			canvas.height = canvasBackground.height = canvasAttractor.height = h;
 			context.drawImage(image,0,0);
 			var imageData = context.getImageData(0,0,w,h);
 			var data = imageData.data;
@@ -234,9 +238,11 @@ iddqd.ns('attractors.ui',(function(){
 				var n = parseInt(s,8);
 				return chars[n%chars.length];
 			}).join('');
+			console.log('doubled',doubled); // todo: remove log
 			var constants = doubled.substr(2,doubled.length-4).split(',');
-			//var name = constants.shift(); // todo: name
+			var name = constants.shift(); name; // todo: name
 			constants = constants.map(function(s){return parseFloat(s);});
+			console.log('constants',constants); // todo: remove log
 			//console.log('attractor',name,constants.map(function(s){return parseFloat(s);}));
 
 			//event.TYPE_CHANGED.dispatch();
@@ -445,8 +451,7 @@ iddqd.ns('attractors.ui',(function(){
 		var encoder = new Whammy.Video();//25
 		frames.forEach(encoder.add.bind(encoder));
 		encoder.compile(false,function(output){
-			var url = (window.webkitURL || window.URL).createObjectURL(output);
-			elmVideo.src = url;
+			elmVideo.src = (window.webkitURL || window.URL).createObjectURL(output);
 		});
 	}
 
@@ -458,20 +463,21 @@ iddqd.ns('attractors.ui',(function(){
 			,colorBgR = parseInt(colorBg.substr(1,2),16)/colorMax
 			,colorBgG = parseInt(colorBg.substr(3,2),16)/colorMax
 			,colorBgB = parseInt(colorBg.substr(5,2),16)/colorMax
+			//
 			,colorAt = getElementById('attractor-color').value
 			,colorAtR = parseInt(colorAt.substr(1,2),16)/colorMax
 			,colorAtG = parseInt(colorAt.substr(3,2),16)/colorMax
 			,colorAtB = parseInt(colorAt.substr(5,2),16)/colorMax
 			//
-			,imagedata = new ImageData(w,h)
-			,data = imagedata.data
+			,imagedataAttractor = new ImageData(w,h)
+			,dataAttractor = imagedataAttractor.data
 			//
 			,max = 0
 			,i
 		;
 		//
-		canvas.width = w;
-		canvas.height = h;
+		canvasBackground.width = canvasAttractor.width = w;
+		canvasBackground.height = canvasAttractor.height = h;
 		//
 		resultWrapper.classList.remove('hidden-xs-up');
 		//
@@ -517,9 +523,14 @@ iddqd.ns('attractors.ui',(function(){
 				////
 				//
 				// screen
-				,r = (1 - (1-colorBgR)*(1-piximaxgam*colorAtR))*colorMax<<0
-				,g = (1 - (1-colorBgG)*(1-piximaxgam*colorAtG))*colorMax<<0
-				,b = (1 - (1-colorBgB)*(1-piximaxgam*colorAtB))*colorMax<<0
+				//,r = (1 - (1-colorBgR)*(1-piximaxgam*colorAtR))*colorMax<<0
+				//,g = (1 - (1-colorBgG)*(1-piximaxgam*colorAtG))*colorMax<<0
+				//,b = (1 - (1-colorBgB)*(1-piximaxgam*colorAtB))*colorMax<<0
+				//
+				,r = piximaxgam*colorAtR*colorMax<<0
+				,g = piximaxgam*colorAtG*colorMax<<0
+				,b = piximaxgam*colorAtB*colorMax<<0
+				//
 				// multiply
 				//,r = (colorBgR * piximaxgam*colorAtR)*colorMax<<0
 				//,g = (colorBgG * piximaxgam*colorAtG)*colorMax<<0
@@ -555,16 +566,39 @@ iddqd.ns('attractors.ui',(function(){
 			////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////
-			data[4*i] = r;
-			data[4*i+1] = g;
-			data[4*i+2] = b;
-			data[4*i+3] = 255;
+			//
+			dataAttractor[4*i] = r;
+			dataAttractor[4*i+1] = g;
+			dataAttractor[4*i+2] = b;
+			dataAttractor[4*i+3] = 255;
+			//
 		}
 		//
-		context.putImageData(imagedata,0,0);
+		////
+		contextAttractor.putImageData(imagedataAttractor,0,0);
+		////
+		//var point = {x:100,y:100,size:50};
+		var radius = Math.sqrt(w*w+h*h);
+		contextBackground.fillStyle = '#000';
+		contextBackground.fillRect(0,0,w,h);
+		contextBackground.globalCompositeOperation = 'lighter';
+		//contextBackground.fillStyle = '#800';//'rgba(0,0,0,0)';//
+		contextBackground.shadowColor = colorBg;//'#00FF00';//point.color.hex;
+		contextBackground.shadowBlur = radius;
+		contextBackground.fillRect(w/2-radius/2,h/2-radius/2,radius,radius);
 		//
-		elmImage.setAttribute('src',canvas.toDataURL('image/png'));
-		return canvas.toDataURL('image/webp');
+		contextBackground.globalCompositeOperation = 'screen';
+		contextBackground.drawImage(canvasAttractor,0,0);
+		//contextBackground.fillRect(w/2-i/2,h/2-i/2,i,i);
+		////
+		//
+		elmImage.setAttribute('src',canvasBackground.toDataURL('image/png'));
+		//
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		//elmImage.parentNode.appendChild(canvasBackground);
+		//elmImage.parentNode.appendChild(canvasAttractor);
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		return canvasBackground.toDataURL('image/webp');
 	}
 
 	function onDownloadClick(e){
