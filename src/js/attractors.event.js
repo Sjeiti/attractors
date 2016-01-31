@@ -13,5 +13,11 @@ iddqd.ns('attractors.event',{
 	,ANIMATION_START: new signals.Signal()
 	,ANIMATION_FRAME: new signals.Signal()
 	,ANIMATION_DONE: new signals.Signal()
+	,ANIMATION_DRAWN: new signals.Signal()
+	,ANIMATION_DRAWN_WEBM: new signals.Signal()
+	//
+	,IMAGE_RESIZE: new signals.Signal()
+	,IMAGE_DRAWN: new signals.Signal()
+	,IMAGE_GAMMA_CHANGED: new signals.Signal()
 	//
 });
