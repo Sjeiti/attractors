@@ -364,8 +364,8 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRenderClick(){
-		if (three.rendering) {
-			three.cancelRender();
+		if (renderer.rendering) {
+			renderer.cancelRender();
 		} else {
 			elmRender.classList.add(classnameRendering);
 			var size = (function(s){
@@ -377,7 +377,7 @@ iddqd.ns('attractors.ui',(function(){
 				,h = size[1]
 				,frames = parseInt(getElementById('frames').value,10)
 				,doAnimate = getElementById('render-animate').checked
-				,render = attractors.three.render.bind(null,w,h,iterations)
+				,render = renderer.render.bind(null,w,h,iterations)
 				,rendered = onRendered.bind(null,w,h)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch
 				;
