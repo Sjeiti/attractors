@@ -123,14 +123,16 @@ iddqd.ns('attractors.three',(function(){
 		geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 		geometry.computeBoundingSphere();
 		//
-		var material = new THREE.ParticleBasicMaterial({
-			//color: 0xFFFFFF,
-			size: 16,
-			map: THREE.ImageUtils.loadTexture('img/particle.png'),
-			vertexColors: THREE.VertexColors,
-			blending: THREE.AdditiveBlending,
-			transparent: true
-		});
+		var textureLoader = new THREE.TextureLoader()
+			,material = new THREE.PointsMaterial({
+				//color: 0xFFFFFF,
+				size: 16,
+				map: textureLoader.load('img/particle.png'),
+				vertexColors: THREE.VertexColors,
+				blending: THREE.AdditiveBlending,
+				transparent: true
+			})
+		;
 		//var material = new THREE.PointsMaterial( { size: 1, vertexColors: THREE.VertexColors } );
 		var particleSystem = new THREE.Points( geometry, material );
 		particleSystem.sortParticles = true;

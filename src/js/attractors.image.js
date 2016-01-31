@@ -14,6 +14,8 @@ iddqd.ns('attractors.image',(function(){
 		//
 		,canvasCode = document.createElement('canvas')
 		,contextCode = canvasCode.getContext('2d')
+		//
+		,chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
 	;
 
 	event.IMAGE_RESIZE.add(onImageResize);
@@ -82,10 +84,6 @@ iddqd.ns('attractors.image',(function(){
 		//
 		setBackground(w,h,colorBg);
 		setCode(w,contextBackground.getImageData(0,0,1,1).data);
-		console.log('contextBackground.createImageData(1,1)',contextBackground.createImageData(1,1)); // todo: remove log
-		/*setTimeout(function(){
-			console.log('contextBackground.createImageData(1,1)',contextBackground.createImageData(1,1))
-		},1000);*/
 		//
 		i = pixels.length;
 		while (i--) {
@@ -133,9 +131,19 @@ iddqd.ns('attractors.image',(function(){
 		return canvasBackground.toDataURL('image/webp');
 	}
 
+	function setBackground(w,h,colorBg){
+		var radius = Math.sqrt(w*w+h*h);
+		contextBackground.fillStyle = '#000';
+		contextBackground.fillRect(0,0,w,h);
+		contextBackground.globalCompositeOperation = 'lighter';
+		contextBackground.shadowColor = colorBg;
+		contextBackground.shadowBlur = radius;
+		contextBackground.fillRect(w/2-radius/2,h/2-radius/2,radius,radius);
+		contextBackground.globalCompositeOperation = 'screen';
+	}
+
 	function setCode(w,colorBg){
-		var chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
-			,delimiter = chars[0]+chars[0]
+		var delimiter = chars[0]+chars[0]
 			,decodeList = (delimiter+decodeURIComponent(location.hash).substr(1).toLowerCase()+delimiter).split('')
 			,intResult = (function(a){
 				decodeList.forEach(function(char){
@@ -177,18 +185,50 @@ iddqd.ns('attractors.image',(function(){
 		return oct;
 	}
 
-	function setBackground(w,h,colorBg){
-		var radius = Math.sqrt(w*w+h*h);
-		contextBackground.fillStyle = '#000';
-		contextBackground.fillRect(0,0,w,h);
-		contextBackground.globalCompositeOperation = 'lighter';
-		contextBackground.shadowColor = colorBg;
-		contextBackground.shadowBlur = radius;
-		contextBackground.fillRect(w/2-radius/2,h/2-radius/2,radius,radius);
-		contextBackground.globalCompositeOperation = 'screen';
+	function read(image){
+		var canvas = document.createElement('canvas')
+			,context = canvas.getContext('2d')
+			,w = image.naturalWidth||image.width
+			,h = image.naturalHeight||image.height
+			,imageData = (function(){
+				event.IMAGE_RESIZE.dispatch(w,h);
+				canvas.width = w;
+				canvas.height = h;
+				context.drawImage(image,0,0);
+				return context.getImageData(0,0,w,h);
+			})()
+			,data = imageData.data
+			,baseR = data[0]
+			,baseG = data[1]
+			,baseB = data[2]
+			,multiplier = 4
+			,result = []
+			,fourzero = 0
+			//
+			,doubled
+			,constants;
+		for (var i=0,l=data.length;i<l;i+=4) {
+			var r = (data[i+0]-baseR)/multiplier
+				,g = (data[i+1]-baseG)/multiplier
+				,b = (data[i+2]-baseB)/multiplier
+				,rgb = Math.round((r+g+b)/3);
+			result.push(rgb);
+			fourzero = rgb===0&&i>4?fourzero+1:0;
+			if (fourzero===4) break;
+		}
+		doubled = result.join('').match(/.{1,2}/g).map(function(s){
+			var n = parseInt(s,8);
+			return chars[n%chars.length];
+		}).join('');
+		constants = doubled.substr(2,doubled.length-4).split(',');
+		return {
+			name: constants.shift()
+			,constants: constants.map(function(s){return parseFloat(s);})
+		};
 	}
 
 	return {
 		draw: draw
+		,read: read
 	};
 })());

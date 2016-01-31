@@ -175,80 +175,15 @@ iddqd.ns('attractors.ui',(function(){
 		var elmResult = getElementById('tabs-result').nextElementSibling;
 		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadClick);
 		elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
-		//////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////
-		var canvas = document.createElement('canvas');
-		var context = canvas.getContext('2d');
+		//
 		var image = document.createElement('img');
-		var chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('');
-
 		var input = document.createElement('input');
 		input.setAttribute('type','file');
 		elmResult.appendChild(input);
-
 		image.addEventListener('load',onImageLoad);
-		input.addEventListener('change', onFilesChange, false);
-
-		function onFilesChange(evt) {
-			var files = evt.target.files;
-			for (var i = 0, f; f = files[i]; i++) {
-				if (f.type.match('image.*')) {
-					var reader = new FileReader();
-					reader.addEventListener('load',onReaderLoad.bind(reader,f));
-					reader.readAsDataURL(f);
-				}
-			}
-		}
-
-		function onReaderLoad(theFile,e){
-			var loader = e.target;
-			var loadResult = loader.result;
-			image.setAttribute('src',loadResult);
-		}
-
-		function onImageLoad(e){
-			var w = image.naturalWidth||image.width;
-			var h = image.naturalHeight||image.height;
-			event.IMAGE_RESIZE.dispatch(w,h);
-			canvas.width = w;
-			canvas.height = h;
-			context.drawImage(image,0,0);
-			var imageData = context.getImageData(0,0,w,h);
-			var data = imageData.data;
-			var baseR = data[0];
-			var baseG = data[1];
-			var baseB = data[2];
-			var multiplier = 4;
-			var result = [];
-			var fourzero = 0;
-			for (var i=0,l=data.length;i<l;i+=4) {
-				var r = (data[i+0]-baseR)/multiplier;
-				var g = (data[i+1]-baseG)/multiplier;
-				var b = (data[i+2]-baseB)/multiplier;
-				var rgb = Math.round((r+g+b)/3);
-				result.push(rgb);
-				fourzero = rgb===0&&i>4?fourzero+1:0;
-				if (fourzero===4) break;
-			}
-			var doubled = result.join('').match(/.{1,2}/g).map(function(s){
-				var n = parseInt(s,8);
-				return chars[n%chars.length];
-			}).join('');
-			console.log('doubled',doubled); // todo: remove log
-			var constants = doubled.substr(2,doubled.length-4).split(',');
-			var name = constants.shift(); name; // todo: name
-			constants = constants.map(function(s){return parseFloat(s);});
-			console.log('constants',constants); // todo: remove log
-			//console.log('attractor',name,constants.map(function(s){return parseFloat(s);}));
-
-			//event.TYPE_CHANGED.dispatch();
-			dispatchConstantsChanged(array2array(constants,attractor.constants));
-		}
-
-		//////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////
+		input.addEventListener('change', onFilesChange.bind(null,image), false);
+		document.body.addEventListener('dragover',function(e){e.preventDefault();});
+		document.body.addEventListener('drop',onDrop.bind(null,image));
 		//
 		event.IMAGE_DRAWN.add(onImageDrawn);
 	}
@@ -443,6 +378,32 @@ iddqd.ns('attractors.ui',(function(){
 				,extension = isImage?'.png':'.webm';
 			elm.setAttribute('href',elmMedium.getAttribute('src'));
 			elm.setAttribute('download',attractor.name+extension);
+	}
+
+	function onDrop(image,e){
+		e.preventDefault();
+		readFiles(image,e.dataTransfer.files);
+	}
+	function onFilesChange(image,e) {
+		readFiles(image,e.target.files);
+	}
+	function readFiles(image,files){
+		for (var i = 0, f; f = files[i]; i++) {
+			if (f.type.match('image.*')) {
+				var reader = new FileReader();
+				reader.addEventListener('load',onReaderLoad.bind(reader,image));
+				reader.readAsDataURL(f);
+			}
+		}
+	}
+	function onReaderLoad(image,e){
+		image.setAttribute('src',e.target.result);
+	}
+	function onImageLoad(e){
+		var image = e.target
+			,readResult = attractors.image.read(image);
+		// todo: name
+		dispatchConstantsChanged(array2array(readResult.constants,attractor.constants));
 	}
 
 	function updateContantsInputs(){
