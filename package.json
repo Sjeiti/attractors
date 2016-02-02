@@ -22,12 +22,14 @@
     "grunt-jscs": "~1.5.0",
     "grunt-ng-annotate": "~0.10.0",
     "grunt-version-git": "~0.3.1",
+    "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
     "load-grunt-tasks": "~0.6.0",
     "pngjs2": "^2.0.0",
     "request": "~2.55.0",
     "serve-static": "^1.10.0",
     "three": "^0.73.0",
+    "uglify": "^0.1.5",
     "uglify-files": "~0.1.1",
     "watch-run": "^1.2.4",
     "xml2js": "~0.4.6"
@@ -39,7 +41,9 @@
   },
   "scripts": {
     "less": "node task/less.js",
-    "less:watch": "watch-run \"npm run less\" ./src/style/screen.less"
+    "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
+    "uglify": "node task/uglify.js"
+
   },
   "keywords": [],
   "author": "Ron Valstar (http://www.sjeiti.com/)"
