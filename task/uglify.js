@@ -1,14 +1,19 @@
 var uglify = require('uglify-js')
 	,htmlparser = require('htmlparser2')
+	,mkdirp = require('mkdirp')
 	,fs = require('fs')
 	,warn = console.warn.bind(console)
+	//
+	,srcIndex = './src/index.html'
+	,targetIndex = './dist/index.html'
+	,targetJs = './dist/js/attractors.min.js'
 ;
 
-read('./src/index.html')
+read(srcIndex)
 	.then(findJs,warn)
 	.then(loadJs,warn)
 	.then(minify,warn)
-	.then(save.bind(null,'./dist/js/attractors.min.js'),warn)
+	.then(save.bind(null,targetJs),warn)
 	.then(console.log.bind(console,'done'),warn)
 ;
 
@@ -22,6 +27,15 @@ function read(file){
 }
 
 function findJs(data){
+	//
+	//var html = data.replace(/<script.*<\/script>/,'<script src="/js/attractors.min.js"></script>');
+	var foo = data.replace(/[\n\r\t]/g,'').match(/<!--script-->.*<!--\/script-->/g).pop();
+	var html = data.replace(/[\n\r\t]/g,'').replace(/<!--script-->.*<!--\/script-->/,'<script src="/js/attractors.min.js"></script>').replace(/<!--[\s\S]*?-->/g,'');
+	//var html = data.replace(/[\n\r\t]/g,'').replace(/<!--[\s\S]*?-->/g,'').replace(/<script.*<\/script>/,'<script src="/js/attractors.min.js"></script>');
+	save(targetIndex,html);
+	//
+	console.log('foo',foo); // todo: remove log
+	//
 	var js = []
 		,isNextText = false
 		,parser = new htmlparser.Parser({
@@ -40,7 +54,7 @@ function findJs(data){
 			},
 			onclosetag: function(tagname){}
 		}, {decodeEntities: true});
-	parser.write(data);
+	parser.write(foo);
 	parser.end();
 	return js;
 }
@@ -52,14 +66,21 @@ function loadJs(js){
 }
 
 function minify(files){
-	return uglify.minify(files.join(';'), {fromString: true}).code;
+	return uglify.minify(files.join(';'), {
+		fromString: true
+		,pure_getters: true
+	}).code;//files.join(';');//
 }
 
-function save(file,data){
+function save(file,data) {
 	return new Promise(function(resolve,reject){
-		fs.writeFile(file,data,function(err,data) {
-			if (err) reject(err);
-			else resolve(data);
+		mkdirp(getDirName(file), function(err) {
+			err&&reject(err);
+			fs.writeFile(file, data, resolve);
 		});
 	});
+}
+
+function getDirName(file){
+	return file.replace(/[^\/\\]*\.\w{0,4}$/,'');
 }

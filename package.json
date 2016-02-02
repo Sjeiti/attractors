@@ -25,6 +25,7 @@
     "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
     "load-grunt-tasks": "~0.6.0",
+    "mkdirp": "^0.5.1",
     "pngjs2": "^2.0.0",
     "request": "~2.55.0",
     "serve-static": "^1.10.0",
@@ -43,7 +44,6 @@
     "less": "node task/less.js",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
     "uglify": "node task/uglify.js"
-
   },
   "keywords": [],
   "author": "Ron Valstar (http://www.sjeiti.com/)"
