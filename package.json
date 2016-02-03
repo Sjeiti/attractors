@@ -1,50 +1,21 @@
 {
   "name": "Attractors",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "license": "none",
   "devDependencies": {
-    "adm-zip": "~0.4.4",
-    "babelify": "~6.1.2",
-    "connect": "^3.4.0",
-    "express": "^4.13.3",
-    "glob": "~5.0.3",
-    "gm": "^1.21.1",
-    "grunt": "~0.4.2",
-    "grunt-autoprefixer": "~3.0.0",
-    "grunt-browserify": "~3.8.0",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-htmlmin": "~0.4.0",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-uglify": "^0.6.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-jscs": "~1.5.0",
-    "grunt-ng-annotate": "~0.10.0",
-    "grunt-version-git": "~0.3.1",
     "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
-    "load-grunt-tasks": "~0.6.0",
     "mkdirp": "^0.5.1",
-    "pngjs2": "^2.0.0",
-    "request": "~2.55.0",
-    "serve-static": "^1.10.0",
-    "three": "^0.73.0",
-    "uglify": "^0.1.5",
-    "uglify-files": "~0.1.1",
-    "watch-run": "^1.2.4",
-    "xml2js": "~0.4.6"
+    "uglify-js": "^2.6.1",
+    "watch-run": "^1.2.4"
   },
-  "main": "Gruntfile.js",
-  "dependencies": {
-    "grunt": "~0.4.1",
-    "uglify-js": "~2.3.6"
-  },
+  "dependencies": {},
   "scripts": {
     "less": "node task/less.js",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
     "uglify": "node task/uglify.js"
   },
-  "keywords": [],
+  "keywords": ["attractors"],
   "author": "Ron Valstar (http://www.sjeiti.com/)"
 }
