@@ -1,65 +1,79 @@
 iddqd.ns('attractors.util.addDragEvent',(function() {
 
-	var dragCallback
-		,vecMouse = new THREE.Vector3(0,0,0)
+	var movesAdded = []
+		,vecMouse = {x:0,y:0}
+		,isDragging = false
 		;
 
 	function addDragEvent(element,callback){
-		dragCallback = callback;
-		element.addEventListener('mousedown',onMouseDown);
-		document.addEventListener('mouseup',onMouseUp);
-		element.addEventListener('touchstart',onTouchStart);
+		element.addEventListener('touchstart',onTouchStart.bind(null,callback));
 		document.addEventListener('touchend',onTouchEnd);
+		element.addEventListener('mousedown',onMouseDown.bind(null,callback));
+		document.addEventListener('mouseup',onMouseUp);
 	}
 
-	function onTouchStart(e){
-		document.removeEventListener('touchmove',onTouchMove);
-		document.addEventListener('touchmove',onTouchMove);
-		onTouchMove(e);
+	function onTouchStart(callback,e){
+		addMove('touchmove',onTouchMove,callback);
+		onTouchMove(callback,e);
 	}
 
 	function onTouchEnd(e){
 		if (e.touches.length===0) {
-			document.removeEventListener('touchmove',onTouchMove);
-			vecMouse.z = 0;
+			removeOldMoves();
+			isDragging = false;
 		}
 	}
 
-	function onTouchMove(e){
+	function onTouchMove(callback,e){
 		var touches = e.touches
 			,touchesNum = touches.length;
 		if (touchesNum===1) {
-			drag(touches[0]);
+			drag(callback,e,touches[0]);
 		}
 	}
 
-	function onMouseDown(e){
-		document.removeEventListener('mousemove',onMouseMove);
-		document.addEventListener('mousemove',onMouseMove);
-		onMouseMove(e);
+	function onMouseDown(callback,e){
+		addMove('mousemove',onMouseMove,callback);
+		onMouseMove(callback,e);
 	}
 
 	function onMouseUp(){
-		document.removeEventListener('mousemove',onMouseMove);
-		vecMouse.z = 0;
+		removeOldMoves();
+		isDragging = false;
 	}
 
-	function onMouseMove(e){
-		drag(e);
+	function onMouseMove(callback,e){
+		drag(callback,e);
 	}
 
-	function drag(touchOrE){
-		var x = touchOrE.pageX
-			,y = touchOrE.pageY
+	function drag(callback,e,touch){
+		var pos = touch||e
+			,x = pos.pageX
+			,y = pos.pageY
 			,offsetX = x - vecMouse.x
 			,offsetY = y - vecMouse.y;
 		vecMouse.x = x;
 		vecMouse.y = y;
-		if (vecMouse.z===0) {
-			vecMouse.z = 1;
+		if (isDragging===false) {
+			isDragging = true;
 		} else {
-			dragCallback(touchOrE,offsetX,offsetY);
+			callback(e,offsetX,offsetY);
 		}
+	}
+
+	function addMove(type,listener,callback){
+		var move = listener.bind(null,callback);
+		removeOldMoves();
+		movesAdded.push(move);
+		document.addEventListener(type,move);
+	}
+
+	function removeOldMoves(){
+		movesAdded.forEach(function(move){
+			document.removeEventListener('touchmove',move);
+			document.removeEventListener('mousemove',move);
+		});
+		movesAdded.length = 0;
 	}
 
 	return addDragEvent;

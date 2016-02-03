@@ -7,6 +7,7 @@ iddqd.ns('attractors.ui',(function(){
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
+		,addDragEvent = util.addDragEvent
 		,wait = util.wait
 		,applyDragMove = util.applyDragMove
 		,array2array = util.array2array
@@ -64,6 +65,7 @@ iddqd.ns('attractors.ui',(function(){
 		redrawConstants();
 		[elmConstants,elmSines,elmOffsets].forEach(function(elm){
 			elm.addEventListener('mousedown',onInputChange);
+			elm.addEventListener('touchstart',onInputChange);
 			elm.addEventListener('change',onInputChange);
 			elm.addEventListener('mousewheel',onInputChange);
 		});
@@ -228,14 +230,14 @@ iddqd.ns('attractors.ui',(function(){
 			model[index] = parseFloat(input.value);
 			dispatch&&dispatch(model);
 		} else if (type==='range') {
-			if (event==='mousedown') {
+			if (event==='mousedown'||event==='touchstart') {
 				removeAnimations();
 				moveConstant = onMoveConstant.bind(null,input,input.nextElementSibling,model,index,isControlAdd,dispatch);
 				signal.animate.add(moveConstant);
 				animations.push(moveConstant);
 			} else {
 				removeAnimations();
-				signal.animate.remove(moveConstant);
+				signal.animate.remove(moveConstant); //
 				isControlAdd&&(input.value = 0);
 				e.stopPropagation();
 				isModelConstants&&three.computeBoundingSphere();
@@ -426,6 +428,7 @@ iddqd.ns('attractors.ui',(function(){
 		elmConstants.innerHTML = htmlConstants;
 		elmSines.innerHTML = htmlsines;
 		elmOffsets.innerHTML = htmlOffsets;
+		//
 		return elmConstants;
 	}
 
