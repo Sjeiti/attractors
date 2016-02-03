@@ -8,6 +8,7 @@ iddqd.ns('attractors.three',(function(){
 		,random = Math.random
 		,abs = Math.abs
 		,attractor = attractors.attractor
+		,addDragEvent = attractors.util.addDragEvent
 		// threejs
 		,camera
 		,cameraFrameSize = 1
@@ -16,8 +17,8 @@ iddqd.ns('attractors.three',(function(){
 		,geometry = new THREE.BufferGeometry()
 		,cameraCenter = new THREE.Vector3(0,0,0)
 		,cameraRotationX = 111
-		,cameraRotationY = 111
-		,cameraDistance = 2750
+		,cameraRotationY = 70
+		,cameraDistance = 2750 // todo: change for model
 		,colorBg = 0x222222
 		//
 		,elmContainer = document.getElementById('container')
@@ -25,8 +26,6 @@ iddqd.ns('attractors.three',(function(){
 		,vecX = new THREE.Vector3(1,0,0)
 		,vecY = new THREE.Vector3(0,1,0)
 		,vecZ = new THREE.Vector3(0,0,1)
-		//
-		,vecMouse = new THREE.Vector3(0,0,0)
 		//
 		,axis
 		//
@@ -151,8 +150,7 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function initEvents(){
-		elmContainer.addEventListener('mousedown',onMouseDown);
-		document.addEventListener('mouseup',onMouseUp);
+		addDragEvent(elmContainer,drag);
 
 		signal.key.press.add(onKeyPress);
 		signal.mouseWheel.add(onMouseWheel);
@@ -162,31 +160,10 @@ iddqd.ns('attractors.three',(function(){
 		event.CONSTANTS_CHANGED.add(redraw);
 	}
 
-	function onMouseDown(e){
-		document.removeEventListener('mousemove',onMouseMove);
-		document.addEventListener('mousemove',onMouseMove);
-		onMouseMove(e);
-	}
-
-	function onMouseUp(){
-		document.removeEventListener('mousemove',onMouseMove);
-		vecMouse.z = 0;
-	}
-
-	function onMouseMove(e){
-		var x = e.pageX
-			,y = e.pageY
-			,offsetX = x - vecMouse.x
-			,offsetY = y - vecMouse.y;
-		vecMouse.x = x;
-		vecMouse.y = y;
-		if (vecMouse.z===0) {
-			vecMouse.z = 1;
-		} else {
-			cameraRotationX += 0.3*offsetX;
-			cameraRotationY -= 0.3*offsetY;
-			setCamera();
-		}
+	function drag(touchOrE,offsetX,offsetY){
+		cameraRotationX += 0.3*offsetX;
+		cameraRotationY -= 0.3*offsetY;
+		setCamera();
 	}
 
 	function onKeyPress(keys){
