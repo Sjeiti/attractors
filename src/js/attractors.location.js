@@ -12,11 +12,17 @@ iddqd.ns('attractors.location',(function(){
 	function init(){
 		attractor = attractors.attractor;
 		CONSTANTS_CHANGED.add(onConstantsChanged);
+		event.TYPE_CHANGED.add(onTypeChanged);
 		window.addEventListener('hashchange', onHashChange, false);
 	}
 
 	function onConstantsChanged(){
 		location.hash = buildHash();
+	}
+
+	function onTypeChanged(){
+		attractor = attractors.attractor;
+		onConstantsChanged();
 	}
 
 	function onHashChange(){

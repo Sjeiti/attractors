@@ -7,6 +7,7 @@ iddqd.ns('attractors.ui',(function(){
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
+		,dispatchEvent = util.dispatchEvent
 		//,addDragEvent = util.addDragEvent
 		,wait = util.wait
 		,applyDragMove = util.applyDragMove
@@ -30,6 +31,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmImage = getElementById('image').querySelector('img')
 		,elmVideo = document.createElement('video')
 		,elmsInputTabs = document.querySelectorAll('#ui>.tab input.tabs')
+		,elmType = getElementById('type')
 		//
 		,iterations = 1E7
 		//
@@ -49,6 +51,7 @@ iddqd.ns('attractors.ui',(function(){
 		initUIRender();
 		initUIResult();
 		initStats();
+		initTouch();
 	}
 
 
@@ -61,8 +64,7 @@ iddqd.ns('attractors.ui',(function(){
 
 	function initUIAttractor(){
 		// type
-		var select = getElementById('type')
-			,fragment = document.createDocumentFragment();
+		var fragment = document.createDocumentFragment();
 		attractors.list.forEach(function(attractor,i){
 			var option = document.createElement('option');
 			option.textContent = attractor.name;
@@ -70,8 +72,8 @@ iddqd.ns('attractors.ui',(function(){
 			attractors.attractor===attractor&&option.setAttribute('selected','selected');
 			fragment.appendChild(option);
 		});
-		select.appendChild(fragment);
-		select.addEventListener('change',onTypeChange);
+		elmType.appendChild(fragment);
+		elmType.addEventListener('change',onTypeChange);
 		event.TYPE_CHANGED.add(onTypeChanged);
 		// constants
 		redrawConstants();
@@ -104,8 +106,6 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		//
 		getElementById('set-sines').addEventListener('click',function(){
-			//animate.constantsFirst
-			//animate.constantsLast
 			var constantsFirst = animate.constantsFirst
 				,constantsLast = animate.constantsLast
 				,constants = attractor.constants
@@ -116,7 +116,6 @@ iddqd.ns('attractors.ui',(function(){
 			diffTo.forEach(function(f,i){
 				getElementById('sines'+i).value = sines[i] = f - diffFr[i];
 			});
-			//console.log('',animate.constantsLast.length); // todo: remove log
 		});
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
@@ -208,6 +207,14 @@ iddqd.ns('attractors.ui',(function(){
 		signal.animate.add(stats.update.bind(stats));
 	}
 
+	function initTouch(){
+		document.body.addEventListener('touchstart',onBodyTouchStart);
+		function onBodyTouchStart(){
+			document.body.removeEventListener('touchstart',onBodyTouchStart);
+			document.documentElement.classList.add('touch');
+		}
+	}
+
 	function onTabChange(e){
 		var input = e.currentTarget
 			,checked = input.checked
@@ -225,8 +232,7 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onTypeChanged(index){
-		var select = getElementById('type');
-		select.value = index;
+		elmType.value = index;
 	}
 
 	function onInputChange(e){
@@ -383,16 +389,6 @@ iddqd.ns('attractors.ui',(function(){
 		dispatchEvent(getElementById('tabs-result'),'change');
 	}
 
-	function dispatchEvent(element,eventName){
-		if ('createEvent' in document) {
-			var evt = document.createEvent('HTMLEvents');
-			evt.initEvent(eventName,false,true);
-			element.dispatchEvent(evt);
-		} else {
-			element.fireEvent('on'+eventName);
-		}
-	}
-
 	function onAnimationDrawn(image){
 		elmImage.setAttribute('src',image);
 	}
@@ -438,7 +434,15 @@ iddqd.ns('attractors.ui',(function(){
 	function onImageLoad(e){
 		var image = e.target
 			,readResult = attractors.image.read(image);
-		// todo: name
+		Array.prototype.forEach.call(elmType.querySelectorAll('option'),function(option,i){
+			var name = option.textContent.toLowerCase();
+			if (name===readResult.name.toLowerCase()) {
+				if (elmType.value!==option.value) {
+					elmType.value = option.value;
+					dispatchEvent(elmType,'change');
+				}
+			}
+		});
 		dispatchConstantsChanged(array2array(readResult.constants,attractor.constants));
 	}
 

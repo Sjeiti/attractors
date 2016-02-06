@@ -31,10 +31,21 @@ iddqd.ns('attractors.util',(function() {
 		init&&onMove();
 	}
 
+	function dispatchEvent(element,type) {
+		if ('createEvent' in document) {
+			var evt = document.createEvent('HTMLEvents');
+			evt.initEvent(type,false,true);
+			element.dispatchEvent(evt);
+		} else {
+			element.fireEvent('on'+type);
+		}
+	}
+
 	return {
 		wait: wait
 		,array2array: array2array
 		,emptyPromise: emptyPromise
 		,applyDragMove: applyDragMove
+		,dispatchEvent: dispatchEvent
 	};
 })());

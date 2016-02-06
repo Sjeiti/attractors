@@ -35,10 +35,16 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-	margin: 5px 0;
+	margin: 0 0 5px;
 	font-size: 18px;
 	text-align: center;
-	label[for^=tabs-] { box-shadow: none; }
+	label[for^=tabs-] {
+		box-shadow: none;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+	}
 }
 h2 { font-size: 16px; }
 h3 { font-size: 14px; }
@@ -134,6 +140,9 @@ input, select, option {
 		}*/
 	}
 }
+.touch #ui {
+	opacity: 1;
+}
 
 #render {
 	display: block;
@@ -228,6 +237,8 @@ label[for^=tabs-]{
 	background-color: @headerBg;
 	//box-shadow: -20px 0 0 @headerBg, 20px 0 0 @headerBg;
 	cursor: pointer;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 }
 input.tabs {
 	display: none;

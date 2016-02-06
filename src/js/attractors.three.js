@@ -1,4 +1,4 @@
-/* globals THREE, Detector, iddqd */
+/* globals THREE, Detector, iddqd, TouchEvent */
 iddqd.ns('attractors.three',(function(){
 	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -161,9 +161,27 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function drag(touchOrE,offsetX,offsetY){
-		cameraRotationX += 0.3*offsetX;
-		cameraRotationY -= 0.3*offsetY;
-		setCamera();
+		if (touchOrE.constructor===TouchEvent&&touchOrE.touches.length>1) {
+
+			var pos = camera.position
+				,vecCam = cameraCenter.clone().sub(pos)
+				,sideVec = vecCam.clone().cross(vecZ)
+				,stepVec;
+			stepVec = sideVec.cross(vecCam).setLength(offsetY);
+			pos.sub(stepVec);
+			cameraCenter.sub(stepVec);
+			stepVec = sideVec.setLength(offsetX);
+			pos.sub(stepVec);
+			cameraCenter.sub(stepVec);
+			axis.position.x = cameraCenter.x;
+			axis.position.y = cameraCenter.y;
+			axis.position.z = cameraCenter.z;
+			//console.log('touchOrE',touchOrE,touchOrE.constructor===TouchEvent); // todo: remove log
+		} else {
+			cameraRotationX += 0.3*offsetX;
+			cameraRotationY -= 0.3*offsetY;
+			setCamera();
+		}
 	}
 
 	function onKeyPress(keys){
