@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>three.js webgl - buffergeometry [particles]</title>
+	<title>Strange Attractors</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-	<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css"/>
+	<!--<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css"/>-->
+	<link rel="stylesheet" href="/style/bootstrap.min.css"/>
 	<link rel="stylesheet" href="/style/screen.css"/>
 </head>
 <body>
@@ -93,11 +94,17 @@
 		<div class="tab">
 			<fieldset class="form-group form-left">
 				<label for="background-color">Background color</label>
-				<input type="color" class="form-control-sm" id="background-color" value="#2f002f" />
+				<input type="color" class="form-control-sm" id="background-color" value="#FFFFFF" />
+				<!--<input type="color" class="form-control-sm" id="background-color" value="#2f002f" />-->
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<label for="attractor-color">Attractor color</label>
-				<input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />
+				<input type="color" class="form-control-sm" id="attractor-color" value="#000000" />
+				<!--<input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />-->
+			</fieldset>
+			<fieldset class="form-group form-left">
+				<label for="background-radial">Radial background</label>
+				<input type="checkbox" class="form-control-sm" id="background-radial" />
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<label for="iterations">Iterations</label>

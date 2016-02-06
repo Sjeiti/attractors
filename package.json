@@ -4,18 +4,25 @@
   "description": "",
   "license": "none",
   "devDependencies": {
+    "connect": "^3.4.1",
     "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
     "mkdirp": "^0.5.1",
+    "open": "0.0.5",
+    "serve-static": "^1.10.2",
     "uglify-js": "^2.6.1",
     "watch-run": "^1.2.4"
   },
   "dependencies": {},
   "scripts": {
+    "serve": "node ./task/serve.js",
+    "serve:dist": "node ./task/serve.js dist",
     "less": "node task/less.js",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
     "uglify": "node task/uglify.js"
   },
-  "keywords": ["attractors"],
+  "keywords": [
+    "attractors"
+  ],
   "author": "Ron Valstar (http://www.sjeiti.com/)"
 }

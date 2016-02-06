@@ -7,7 +7,7 @@ iddqd.ns('attractors.ui',(function(){
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
-		,addDragEvent = util.addDragEvent
+		//,addDragEvent = util.addDragEvent
 		,wait = util.wait
 		,applyDragMove = util.applyDragMove
 		,array2array = util.array2array
@@ -29,6 +29,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmRenderIndicator = elmRender.querySelector('.progress')
 		,elmImage = getElementById('image').querySelector('img')
 		,elmVideo = document.createElement('video')
+		,elmsInputTabs = document.querySelectorAll('#ui>.tab input.tabs')
 		//
 		,iterations = 1E7
 		//
@@ -36,15 +37,26 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		,stats
 		,attractor
+		//
+		,openTabs = []
 	;
 
 	function init() {
 		attractor = attractors.attractor;
+		initTabs();
 		initUIAttractor();
 		initUIAnimate();
 		initUIRender();
 		initUIResult();
 		initStats();
+	}
+
+
+	function initTabs(){
+		Array.prototype.forEach.call(elmsInputTabs,function(input){
+			input.addEventListener('change',onTabChange);
+			input.checked&&openTabs.push(input);
+		});
 	}
 
 	function initUIAttractor(){
@@ -196,6 +208,15 @@ iddqd.ns('attractors.ui',(function(){
 		signal.animate.add(stats.update.bind(stats));
 	}
 
+	function onTabChange(e){
+		var input = e.currentTarget
+			,checked = input.checked
+			,index = openTabs.indexOf(input);
+		index!==-1&&openTabs.splice(index,1);
+		checked&&openTabs.unshift(input);
+		openTabs.length>2&&(openTabs.pop().checked = false);
+	}
+
 	function onTypeChange(e){
 		var index = e.target.value;
 		event.TYPE_CHANGED.dispatch(index);
@@ -314,8 +335,9 @@ iddqd.ns('attractors.ui',(function(){
 				,doAnimate = getElementById('render-animate').checked
 				,colorAt = getElementById('attractor-color').value
 				,colorBg = getElementById('background-color').value
+				,bgRadial = getElementById('background-radial').checked
 				,render = renderer.render.bind(null,w,h,iterations)
-				,rendered = image.draw.bind(null,w,h,colorAt,colorBg)
+				,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch
 				;
 			if (doAnimate) {
@@ -354,9 +376,21 @@ iddqd.ns('attractors.ui',(function(){
 		elmRender.classList.remove(classnameRendering);
 	}
 
-	function onRenderDone(){
+	function onRenderDone() {
 		getElementById('tabs-attractor').checked = false;
 		getElementById('tabs-result').checked = true;
+		dispatchEvent(getElementById('tabs-attractor'),'change');
+		dispatchEvent(getElementById('tabs-result'),'change');
+	}
+
+	function dispatchEvent(element,eventName){
+		if ('createEvent' in document) {
+			var evt = document.createEvent('HTMLEvents');
+			evt.initEvent(eventName,false,true);
+			element.dispatchEvent(evt);
+		} else {
+			element.fireEvent('on'+eventName);
+		}
 	}
 
 	function onAnimationDrawn(image){

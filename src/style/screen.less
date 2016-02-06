@@ -120,6 +120,11 @@ input, select, option {
 	min-width: 320px;
 	max-width: 100%;
 	background-color: @uiBgColor;
+	opacity: 0.1;
+	transition: opacity 200ms linear;
+	&:hover {
+		opacity: 1;
+	}
 	.tab-title { margin: 1px 0; }
 	>.tab {
 		padding: 0;

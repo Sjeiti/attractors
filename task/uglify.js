@@ -6,7 +6,7 @@ var uglify = require('uglify-js')
 	//
 	,srcIndex = './src/index.html'
 	,targetIndex = './dist/index.html'
-	,targetJs = './dist/js/attractors.min.js'
+	,targetJs = './dist/js/attracnnptors.min.js'
 ;
 
 read(srcIndex)
@@ -34,7 +34,7 @@ function findJs(data){
 	//var html = data.replace(/[\n\r\t]/g,'').replace(/<!--[\s\S]*?-->/g,'').replace(/<script.*<\/script>/,'<script src="/js/attractors.min.js"></script>');
 	save(targetIndex,html);
 	//
-	console.log('foo',foo); // todo: remove log
+	//console.log('foo',foo); // todo: remove log
 	//
 	var js = []
 		,isNextText = false

@@ -70,76 +70,66 @@ iddqd.ns('attractors.image',(function(){
 		];
 	}
 
-	function draw(w,h,colorAt,colorBg,pixels){
+	function draw(w,h,colorAt,colorBg,radial,pixels){
 		var colorAtO = colorHexSplit(colorAt)
+			,colorBgO = colorHexSplit(colorBg)
+			,isBgLighter = colorBgO.reduce(function(a,b){return a+b;},0)>colorAtO.reduce(function(a,b){return a+b;},0)
 			//
 			,imagedataAttractor = new ImageData(w,h)
 			,dataAttractor = imagedataAttractor.data
 			//
-			,max = 0
-			,i
+			,max = Math.max.apply(Math,pixels)
+			,i = pixels.length
 		;
 		canvasBackground.width = canvasAttractor.width = w;
 		canvasBackground.height = canvasAttractor.height = h;
 		//
-		setBackground(w,h,colorBg);
-		setCode(w,contextBackground.getImageData(0,0,1,1).data);
+		setBackground(w,h,colorBg,radial);
 		//
-		i = pixels.length;
 		while (i--) {
-			var val = pixels[i];
-			if (max<val) max = val;
-		}
-		//
-		i = pixels.length;
-		while (i--) {
-			var piximaxgam = Math.pow(pixels[i]/max,gammaValue)
-			// screen
-			//,r = (1 - (1-colorBgR)*(1-piximaxgam*colorAtR))*colorMax<<0
-			//,g = (1 - (1-colorBgG)*(1-piximaxgam*colorAtG))*colorMax<<0
-			//,b = (1 - (1-colorBgB)*(1-piximaxgam*colorAtB))*colorMax<<0
-			// multiply
-			//,r = (colorBgR * piximaxgam*colorAtR)*colorMax<<0
-			//,g = (colorBgG * piximaxgam*colorAtG)*colorMax<<0
-			//,b = (colorBgB * piximaxgam*colorAtB)*colorMax<<0
-			//
-			//,r = (colorBgR&&piximaxgam*colorAtR)*colorMax<<0
-			//,g = (colorBgG&&piximaxgam*colorAtG)*colorMax<<0
-			//,b = (colorBgB&&piximaxgam*colorAtB)*colorMax<<0
-			//,r = (colorBgR||piximaxgam*colorAtR)*colorMax<<0
-			//,g = (colorBgG||piximaxgam*colorAtG)*colorMax<<0
-			//,b = (colorBgB||piximaxgam*colorAtB)*colorMax<<0
-			//,r = ((1-colorBgR) * piximaxgam*colorAtR)*colorMax<<0
-			//,g = ((1-colorBgG) * piximaxgam*colorAtG)*colorMax<<0
-			//,b = ((1-colorBgB) * piximaxgam*colorAtB)*colorMax<<0
-			//,r = Math.max(colorBgR,piximaxgam*colorAtR)*colorMax<<0
-			//,g = Math.max(colorBgG,piximaxgam*colorAtG)*colorMax<<0
-			//,b = Math.max(colorBgB,piximaxgam*colorAtB)*colorMax<<0
-			;
-			//
-			dataAttractor[4*i]   = piximaxgam*colorAtO[0]*255<<0;
-			dataAttractor[4*i+1] = piximaxgam*colorAtO[1]*255<<0;
-			dataAttractor[4*i+2] = piximaxgam*colorAtO[2]*255<<0;
-			dataAttractor[4*i+3] = 255;
+			var gamma = Math.pow(pixels[i]/max,gammaValue);
+			dataAttractor[4*i+3] = gamma*255<<0;
 		}
 		contextAttractor.putImageData(imagedataAttractor,0,0);
+		contextAttractor.globalCompositeOperation = 'source-in';
+		contextAttractor.fillStyle = colorAt;
+		contextAttractor.fillRect(0,0,w,h);
+		//
+		// draw attractor onto bg
+		contextBackground.globalCompositeOperation = isBgLighter?'multiply':'screen';
 		contextBackground.drawImage(canvasAttractor,0,0);
+		//
+		// draw code onto bg
+		setCode(w,contextBackground.getImageData(0,0,1,1).data);
 		contextBackground.globalCompositeOperation = 'source-over';
 		contextBackground.drawImage(canvasCode,0,0);
+		//
 		event.IMAGE_DRAWN.dispatch(canvasBackground);
 		//
 		return canvasBackground.toDataURL('image/webp');
 	}
 
-	function setBackground(w,h,colorBg){
-		var radius = Math.sqrt(w*w+h*h);
-		contextBackground.fillStyle = '#000';
-		contextBackground.fillRect(0,0,w,h);
-		contextBackground.globalCompositeOperation = 'lighter';
-		contextBackground.shadowColor = colorBg;
-		contextBackground.shadowBlur = radius;
-		contextBackground.fillRect(w/2-radius/2,h/2-radius/2,radius,radius);
-		contextBackground.globalCompositeOperation = 'screen';
+	function setBackground(w,h,colorBg,radial){
+		if (radial) {
+			var radius = Math.sqrt(w*w+h*h)
+				,darken = 0.1
+				,color = '#'+[
+					parseInt(colorBg.substr(1,2),16)*darken<<0
+					,parseInt(colorBg.substr(3,2),16)*darken<<0
+					,parseInt(colorBg.substr(5,2),16)*darken<<0
+				].map(function(i){
+						var s = i.toString(16);
+					return (s.length===1?'0':'')+s;
+				}).join('')
+				,gradient = contextBackground.createRadialGradient(w/2,h/2,radius,w/2,h*0.75,0);
+			gradient.addColorStop(0,color);
+			gradient.addColorStop(1,colorBg);
+			contextBackground.fillStyle = gradient;
+			contextBackground.fillRect(0,0,w,h);
+		} else {
+			contextBackground.fillStyle = colorBg;
+			contextBackground.fillRect(0,0,w,h);
+		}
 	}
 
 	function setCode(w,colorBg){
@@ -208,7 +198,7 @@ iddqd.ns('attractors.image',(function(){
 			,doubled
 			,constants;
 		for (var i=0,l=data.length;i<l;i+=4) {
-			var r = (data[i+0]-baseR)/multiplier
+			var r = (data[i]-baseR)/multiplier
 				,g = (data[i+1]-baseG)/multiplier
 				,b = (data[i+2]-baseB)/multiplier
 				,rgb = Math.round((r+g+b)/3);
