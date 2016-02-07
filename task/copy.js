@@ -4,8 +4,9 @@ var mkdirp = require('mkdirp')
 ;
 
 Promise.all([
-	glomise('./src/img/*')
-	,glomise('./src/*')
+	glomise('./src/*')
+	,glomise('./src/img/*')
+	,glomise('./src/style/*.css')
 ]).then(function(results){
 	Array.prototype.concat.apply(results.pop(),results).forEach(function(file){
 		if (!fs.lstatSync(file).isDirectory()) {

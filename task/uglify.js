@@ -6,7 +6,7 @@ var uglify = require('uglify-js')
 	//
 	,srcIndex = './src/index.html'
 	,targetIndex = './dist/index.html'
-	,targetJs = './dist/js/attracnnptors.min.js'
+	,targetJs = './dist/js/attractors.min.js'
 ;
 
 read(srcIndex)

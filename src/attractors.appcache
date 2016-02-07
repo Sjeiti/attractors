@@ -1,0 +1,13 @@
+CACHE MANIFEST
+
+# v1.0.8
+
+index.html
+js/attractors.min.js
+css/bootstrap.min.css
+css/screen.css
+img/icon.png
+img/particle.png
+
+NETWORK:
+*

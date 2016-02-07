@@ -1,15 +1,18 @@
 {
   "name": "Attractors",
-  "version": "0.1.0",
+  "version": "1.0.8",
   "description": "",
   "license": "none",
   "devDependencies": {
+    "autoprefixer": "^6.3.1",
     "connect": "^3.4.1",
     "glob": "^6.0.4",
+    "gm": "^1.21.1",
     "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
     "mkdirp": "^0.5.1",
     "open": "0.0.5",
+    "postcss": "^5.0.14",
     "serve-static": "^1.10.2",
     "uglify-js": "^2.6.1",
     "watch-run": "^1.2.4"
@@ -21,7 +24,10 @@
     "less": "node task/less.js",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
     "uglify": "node task/uglify.js",
-    "copy": "node task/copy.js"
+    "copy": "node task/copy.js",
+    "build": "node task/build.js",
+    "version": "node task/version.js patch",
+    "icons": "node task/icons.js"
   },
   "keywords": [
     "attractors"

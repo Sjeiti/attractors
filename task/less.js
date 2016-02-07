@@ -1,12 +1,13 @@
 var less = require('less')
 	,fs = require('fs')
 	,mkdirp = require('mkdirp')
+	,postcss = require('postcss')
+	,autoprefixer = require('autoprefixer')
 	,warn = console.warn.bind(console)
 	//
 	,srcLess = './src/style/screen.less'
 	,targetCss = [
 		'./src/style/screen.css'
-		,'./dist/style/screen.css'
 	]
 ;
 
@@ -41,10 +42,14 @@ function saveFiles(data) {
 }
 
 function save(file,data) {
+	console.log('save',file); // todo: remove log
 	return new Promise(function(resolve,reject){
 		mkdirp(getDirName(file), function(err) {
 			err&&reject(err);
-			fs.writeFile(file, data, resolve);
+			postcss([autoprefixer]).process(data).then(function (result) {
+					result.warnings().forEach(warn);
+					fs.writeFile(file, result.css, resolve);
+			});
 		});
 	});
 }
