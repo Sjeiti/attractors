@@ -21,7 +21,6 @@ body {
 	font-size: 13px;
 	color: #cccccc;
 	background-color: #050505;
-	//background: radial-gradient(ellipse at center, rgba(85,116,117,1) 0%, rgba(0,0,0,1) 100%);
 }
 
 * {
@@ -36,7 +35,7 @@ h1, h2, h3, h4 {
 
 h1 {
 	margin: 0 0 5px;
-	font-size: 18px;
+	font-size: 22px;
 	text-align: center;
 	label[for^=tabs-] {
 		box-shadow: none;
@@ -80,16 +79,22 @@ input, select, option {
 	transition: background-color 200ms ease-in-out, padding 200ms ease-in-out;
 }
 
-.btn-secondary {
-	color: @btnColor;
-	background-color: @btnColorBg;
-	border-color: @btnColorBorder;
+.button(@fore,@background,@border){
+	color: @fore;
+	background-color: @background;
+	background: linear-gradient(to bottom, @background 0%, darken(@background,5%) 100%);
+	border-color: @border;
+	text-shadow: -1px -1px 1px rgba(0,0,0,0.3), 1px 1px 1px rgba(255,255,255,0.6);
 	&:hover {
-		color: @btnHoverColor;
+		color: @fore;
 		background-color: @btnHoverColorBg;
-		border-color: @btnHoverColorBorder;
+		background: linear-gradient(to bottom, @background 5%, darken(@background,10%) 100%);
+		border-color: darken(@border,5%);
 	}
 }
+
+.btn-primary { .button(#e3ffff, #0072ff, #394857); }
+.btn-secondary { .button(@btnColor, @btnColorBg, @btnColorBorder); }
 
 .form-left {
 	&:after {
@@ -115,7 +120,6 @@ input, select, option {
 			&:nth-child(3) { width: 30%; }
 		}
 	}
-	input[type=range]+input { transform: translateX(1px); }
 }
 
 #ui {
@@ -172,20 +176,10 @@ input, select, option {
 #constants {
 	margin-bottom: 10px;
 	.form-group { margin-bottom: 3px; }
-	//
-	/*fieldset {
-		position: relative;
-	}*/
 }
 
 #constant-animation {
-	//position: absolute;
-	//left: 100%;
-	//top: 16px;
-	//width: 100%;
-	//padding: 10px @padding;
 	.form-group { margin-bottom: 3px; }
-	//background-color: @uiBgColor;
 	#sines, #offsets {
 		width: 50%;
 		float: left;
@@ -194,25 +188,6 @@ input, select, option {
 		content: '';
 		display: table;
 		clear: both;
-	}
-	h2 {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 20px;
-		height: 100%;
-		color: @headerColor;
-		background-color: @headerBg;
-		transform: translateX(-50%);
-		div {
-			position: relative;
-			top: 50%;
-    	left: 25%;
-			width: 2px;
-			word-wrap: break-word;
-			line-height: 90%;
-			transform: translateY(-50%);
-		}
 	}
 }
 
@@ -235,10 +210,11 @@ label[for^=tabs-]{
 	padding: 0 @padding;
 	color: @headerColor;
 	background-color: @headerBg;
-	//box-shadow: -20px 0 0 @headerBg, 20px 0 0 @headerBg;
 	cursor: pointer;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
+	//box-shadow: 0 0 16px darken(@headerBg,10%) inset;
+	background: linear-gradient(to right, @headerBg 0%, darken(@headerBg,10%) 100%);
 }
 input.tabs {
 	display: none;
@@ -258,9 +234,39 @@ input.tabs {
 
 ///////////////////////////////////////////////////////
 
+input.imitate {
+	@size: 16px;
+	display: none;
+	+label {
+		position: relative;
+		width: 100%!important;
+		&:after {
+			.form-control;
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			display: block;
+			width: @size;
+			height: @size;
+			background-color: #EEE;
+			text-align: center;
+			color: #333;
+			font-size: @size;
+			line-height: @size;
+			font-weight: bold;
+			box-shadow: 2px 2px 4px rgba(0,0,0,0.3) inset;
+		}
+	}
+	&:checked+label:after { content: 'V'; }
+}
+
+///////////////////////////////////////////////////////
+
 input[type=color] {
 	&, *, &::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
 		padding: 0;
+		box-shadow: -2px -2px 8px rgba(0,0,0,0.3) inset, 2px 2px 8px rgba(255,255,255,0.5) inset;
 	}
 	&::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
 		border: 0;
@@ -291,6 +297,7 @@ input[type=range] {
 	height: @rangeBtnH;
 	background-color: transparent;
 	border: 0;
+	transform: translateX(1px);
 	&, * {
 		outline: none;
 		cursor: pointer;
@@ -318,5 +325,11 @@ input[type=range] {
 		cursor: pointer;
 		-webkit-appearance: none;
 		&:hover { background-color: @btnHoverColorBg; }
+	}
+	// number
+	+input[type=number], +input[type=text] {
+		position: relative;
+		z-index: 1;
+		border: 1px solid @btnColorBg;
 	}
 }

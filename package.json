@@ -5,6 +5,7 @@
   "license": "none",
   "devDependencies": {
     "connect": "^3.4.1",
+    "glob": "^6.0.4",
     "htmlparser2": "^3.9.0",
     "less": "^2.5.3",
     "mkdirp": "^0.5.1",
@@ -19,7 +20,8 @@
     "serve:dist": "node ./task/serve.js dist",
     "less": "node task/less.js",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
-    "uglify": "node task/uglify.js"
+    "uglify": "node task/uglify.js",
+    "copy": "node task/copy.js"
   },
   "keywords": [
     "attractors"
