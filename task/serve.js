@@ -5,6 +5,7 @@ var connect = require('connect'),
 	root = process.argv[2]||'src',
   port = 8181
 ;
+console.log('root',root);
 
 connect()
     .use(serveStatic('./'+root+'/'))

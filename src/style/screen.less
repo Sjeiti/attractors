@@ -14,10 +14,15 @@
 //
 @uiBgColor: rgba(0,0,0,.6);
 
+/////
+//font-family: 'Cousine', ;
+//font-family: 'Nova Mono', ;
+/////
+
 body {
 	margin: 0;
 	overflow: hidden;
-	font-family: Monospace, monospace;
+	font-family: Cousine, monospace;
 	font-size: 13px;
 	color: #cccccc;
 	background-color: #050505;
@@ -35,6 +40,7 @@ h1, h2, h3, h4 {
 
 h1 {
 	margin: 0 0 5px;
+	font-family: 'Nova Mono', monospace;
 	font-size: 22px;
 	text-align: center;
 	label[for^=tabs-] {
@@ -130,11 +136,7 @@ input, select, option {
 	min-width: 320px;
 	max-width: 100%;
 	background-color: @uiBgColor;
-	opacity: 0.1;
 	transition: opacity 200ms linear;
-	&:hover {
-		opacity: 1;
-	}
 	.tab-title { margin: 1px 0; }
 	>.tab {
 		padding: 0;
@@ -143,9 +145,14 @@ input, select, option {
 			&:last-child { margin-bottom: 10px; }
 		}*/
 	}
+	@media (max-width:320px) {
+		min-width: 100%;
+	}
 }
-.touch #ui {
-	opacity: 1;
+.touch #ui {}
+.no-touch #ui {
+	opacity: 0.1;
+	&:hover { opacity: 1; }
 }
 
 #render {
@@ -207,7 +214,7 @@ input, select, option {
 label[for^=tabs-]{
 	display: block;
 	margin-bottom: 0;
-	padding: 0 @padding;
+	padding: 2px @padding 0;
 	color: @headerColor;
 	background-color: @headerBg;
 	cursor: pointer;
@@ -265,12 +272,16 @@ input.imitate {
 
 input[type=color] {
 	&, *, &::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
+		//content: attr(value);
 		padding: 0;
 		box-shadow: -2px -2px 8px rgba(0,0,0,0.3) inset, 2px 2px 8px rgba(255,255,255,0.5) inset;
 	}
 	&::-webkit-color-swatch-wrapper, &::-webkit-color-swatch {
 		border: 0;
 	}
+	/*&::-webkit-color-swatch {
+		content: attr(value);
+	}*/
 	/*&::-webkit-color-swatch-wrapper {
 
 	}*/

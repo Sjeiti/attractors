@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# v1.0.8
+# v1.0.10
 
 index.html
 js/attractors.min.js
@@ -8,6 +8,8 @@ css/bootstrap.min.css
 css/screen.css
 img/icon.png
 img/particle.png
+
+https://fonts.googleapis.com/css?family=Cousine:400,700|Nova+Mono
 
 NETWORK:
 *

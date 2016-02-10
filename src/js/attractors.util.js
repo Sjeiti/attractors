@@ -41,11 +41,21 @@ iddqd.ns('attractors.util',(function() {
 		}
 	}
 
+	function getMax(a) {
+		var max = -Infinity
+			,len = a.length
+			,value;
+		if (len<1E5) max = Math.max.apply(Math,a);
+		else while (len--) (value=a[len])>max&&(max = value);
+		return max;
+	}
+
 	return {
 		wait: wait
 		,array2array: array2array
 		,emptyPromise: emptyPromise
 		,applyDragMove: applyDragMove
 		,dispatchEvent: dispatchEvent
+		,getMax: getMax
 	};
 })());

@@ -3,6 +3,7 @@ iddqd.ns('attractors.image',(function(){
 	var event = attractors.event
 		,util = attractors.util
 		,wait = util.wait
+		,getMax = util.getMax
 		//
 		,gammaValue = 0.4
 		//
@@ -78,7 +79,7 @@ iddqd.ns('attractors.image',(function(){
 			,imagedataAttractor = new ImageData(w,h)
 			,dataAttractor = imagedataAttractor.data
 			//
-			,max = Math.max.apply(Math,pixels)
+			,max = getMax(pixels)
 			,i = pixels.length
 		;
 		canvasBackground.width = canvasAttractor.width = w;

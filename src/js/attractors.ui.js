@@ -209,10 +209,20 @@ iddqd.ns('attractors.ui',(function(){
 
 	function initTouch(){
 		document.body.addEventListener('touchstart',onBodyTouchStart);
+		document.body.addEventListener('click',onBodyClickStart);
 		function onBodyTouchStart(){
-			document.body.removeEventListener('touchstart',onBodyTouchStart);
+			removeEvents();
 			document.documentElement.classList.add('touch');
 		}
+		function onBodyClickStart(){
+			removeEvents();
+			document.documentElement.classList.add('no-touch');
+		}
+		function removeEvents(){
+			document.body.removeEventListener('touchstart',onBodyTouchStart);
+			document.body.removeEventListener('click',onBodyClickStart);
+		}
+
 	}
 
 	function onTabChange(e){
