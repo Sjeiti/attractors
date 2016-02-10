@@ -28,7 +28,8 @@ iddqd.ns('attractors.ui',(function(){
 		,elmOffsets = getElementById('offsets')
 		,elmRender = getElementById('render')
 		,elmRenderIndicator = elmRender.querySelector('.progress')
-		,elmImage = getElementById('image').querySelector('img')
+		,elmImageWrapper = getElementById('image')
+		,elmImage = elmImageWrapper.querySelector('img')
 		,elmVideo = document.createElement('video')
 		,elmsInputTabs = document.querySelectorAll('#ui>.tab input.tabs')
 		,elmType = getElementById('type')
@@ -184,7 +185,7 @@ iddqd.ns('attractors.ui',(function(){
 		event.ANIMATION_DRAWN_WEBM.add(onAnimationDrawnWebm);
 	}
 
-	function initUIResult(){
+	function initUIResult(undefined){
 		var elmResult = getElementById('tabs-result').nextElementSibling;
 		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadClick);
 		elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
@@ -197,6 +198,8 @@ iddqd.ns('attractors.ui',(function(){
 		input.addEventListener('change', onFilesChange.bind(null,image), false);
 		document.body.addEventListener('dragover',function(e){e.preventDefault();});
 		document.body.addEventListener('drop',onDrop.bind(null,image));
+		//elmImageWrapper.addEventListener('click',DOMTokenList.prototype.toggle.bind(elmImageWrapper.classList,'zoom',undefined));
+		elmImageWrapper.addEventListener('click',function(){elmImageWrapper.classList.toggle('zoom');});
 		//
 		event.IMAGE_DRAWN.add(onImageDrawn);
 	}
