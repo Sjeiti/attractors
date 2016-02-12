@@ -12,17 +12,11 @@ iddqd.ns('attractors.animate',(function() {
 		,w = 1
 		,h = 1;
 
-	requestAnimationFrame(animate);
 	onTypeChanged();
 
 	event.ANIMATION_START.add(onAnimationStart);
 	event.ANIMATION_FRAME.add(onAnimationFrame);
 	event.TYPE_CHANGED.add(onTypeChanged);
-
-	function animate(time) {
-			requestAnimationFrame(animate);
-			TWEEN.update(time);
-	}
 
 	function onAnimationStart(width,height){
 		frames.length = 0;

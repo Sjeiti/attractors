@@ -54,18 +54,10 @@
 			</div>
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
+				<a class="btn btn-secondary btn-sm" id="constantsRandomizeTiny">randomize a little</a>
 				<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
 				<a class="btn btn-secondary btn-sm" id="centerAxis">center</a>
 			</fieldset>
-			<!--<div id="constant-animation">
-				<h2><div>animation</div></h2>
-				<div id="sines">
-					<h3>sine width</h3>
-				</div>
-				<div id="offsets">
-					<h3>offset radians</h3>
-				</div>
-			</div>-->
 		</div>
 
 		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
@@ -74,6 +66,9 @@
 			<fieldset class="form-group form-inline">
 				<label for="frames" class="form-control-label">frames</label>
 				<input type="number" value="100" id="frames" class="form-control form-control-sm" />
+			</fieldset>
+			<fieldset class="form-group form-inline">
+				<input type="range" min="0" max="100" step="1" value="0" id="track" class="form-control form-control-sm" />
 			</fieldset>
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm" id="store-first">store first</a>
@@ -85,7 +80,6 @@
 				<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>
 			</fieldset>
 			<div id="constant-animation">
-				<!--<h2><div>animation</div></h2>-->
 				<div id="sines">
 					<h3>sine width</h3>
 				</div>
@@ -180,7 +174,6 @@
 <script src="/vendor/three.js/examples/js/Detector.js"></script>
 <script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
 
-<script src="/vendor/tween.js/src/Tween.js"></script>
 <script src="/vendor/jszip/dist/jszip.min.js"></script>
 <script src="/vendor/gifshot/build/gifshot.js"></script>
 <script src="/vendor/whammy/whammy.js"></script>

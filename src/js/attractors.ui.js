@@ -8,7 +8,7 @@ iddqd.ns('attractors.ui',(function(){
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
 		,dispatchEvent = util.dispatchEvent
-		//,addDragEvent = util.addDragEvent
+		,addDragEvent = util.addDragEvent
 		,wait = util.wait
 		,applyDragMove = util.applyDragMove
 		,array2array = util.array2array
@@ -35,6 +35,8 @@ iddqd.ns('attractors.ui',(function(){
 		,elmVideo = document.createElement('video')
 		,elmsInputTabs = document.querySelectorAll('#ui>.tab input.tabs')
 		,elmType = getElementById('type')
+		,elmFrames = getElementById('frames')
+		,elmTrack = getElementById('track')
 		//
 		,iterations = 1E7
 		//
@@ -88,17 +90,45 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		// buttons
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
+		getElementById('constantsRandomizeTiny').addEventListener('click',onRandomizeClick.bind(null,1E-3));
 		getElementById('constantsReset').addEventListener('click',onResetClick);
 		getElementById('centerAxis').addEventListener('click',center);
 	}
 
 	function initUIAnimate(){
+		array2array(attractor.constants,animate.constantsFirst);
+		array2array(attractor.constants,animate.constantsLast);
+		//
+		elmFrames.addEventListener('change',function(){
+			elmTrack.setAttribute('max',elmFrames.value);
+		});
+		//
+		/////////////////////////////////////////////
+		var lastFrame
+			,fnChange = function(){
+				var anim = getAnimationFromTo() // todo: cache?
+					,frames = elmFrames.value
+					,frame = elmTrack.value;
+				if (lastFrame!==frame) {
+					setFrame(frame,frames,anim.start,anim.end);
+					dispatchConstantsChanged(attractor.constants);
+					updateContantsInputs();
+				}
+				lastFrame = frame;
+			}
+		;
+		addDragEvent(elmTrack,fnChange);
+		elmTrack.addEventListener('change',fnChange);
+		/////////////////////////////////////////////
+		//
 		getElementById('store-first').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsFirst);
 		});
 		getElementById('load-first').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
 			updateContantsInputs();
+			setCamera();
+			elmTrack.value = 0;
 		});
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsLast);
@@ -106,6 +136,8 @@ iddqd.ns('attractors.ui',(function(){
 		getElementById('load-last').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));
 			updateContantsInputs();
+			setCamera();
+			elmTrack.value = elmFrames.value;
 		});
 		//
 		getElementById('set-sines').addEventListener('click',function(){
@@ -280,7 +312,7 @@ iddqd.ns('attractors.ui',(function(){
 				animations.push(moveConstant);
 			} else {
 				removeAnimations();
-				signal.animate.remove(moveConstant); //
+				signal.animate.remove(moveConstant);
 				isControlAdd&&(input.value = 0);
 				e.stopPropagation();
 				isModelConstants&&three.computeBoundingSphere();
@@ -295,18 +327,19 @@ iddqd.ns('attractors.ui',(function(){
 		dispatch&&dispatch(model);
 	}
 
-	function onRandomizeClick(){
+	function onRandomizeClick(rnd,e){
+		if (rnd===undefined) rnd = 1;
 		var iterations = 20
 			,p = new THREE.Vector3(Math.random(),Math.random(),Math.random())
 			,pp
 			,size = 1E-3
-			,tries = 1E5
+			,tries = 1E4
 			,constants = attractor.constants
-			,maxConstant = 2*attractor.constantSize
+			,maxConstant = attractor.constantSize
 			,i;
-		while (tries--&&(size<0.02||isNaN(size)||!isFinite(size))) {
+		while (tries--&&(i===undefined||isNaN(size)||!isFinite(size))) { //size<0.02||
 			constants.forEach(function(val,j,a){
-				getElementById('constants'+j).value = a[j] = maxConstant*(Math.random()-0.5);
+				getElementById('constants'+j).value = a[j] = val + rnd*maxConstant*(Math.random()-0.5);
 			});
 			i = iterations;
 			while (i--) {
@@ -331,7 +364,7 @@ iddqd.ns('attractors.ui',(function(){
 
 	function onAnimateClick(){
 		var anim = getAnimationFromTo()
-			,frames = parseInt(getElementById('frames').value,10)
+			,frames = parseInt(elmFrames.value,10)
 			,i = frames
 			,frame = util.emptyPromise()
 		;
@@ -340,7 +373,11 @@ iddqd.ns('attractors.ui',(function(){
 				.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
 				.then(function(){
 					dispatchConstantsChanged(attractor.constants);
+					updateContantsInputs();
 				})
+				.then((function(frame){
+					return function(){ elmTrack.value = frame; };
+				})(frames-i-1))
 				.then(util.promiseAnimationFrame);
 		}
 	}
@@ -357,7 +394,7 @@ iddqd.ns('attractors.ui',(function(){
 				})(getElementById('image-size').value)
 				,w = size[0]
 				,h = size[1]
-				,frames = parseInt(getElementById('frames').value,10)
+				,frames = parseInt(elmFrames.value,10)
 				,doAnimate = getElementById('render-animate').checked
 				,colorAt = getElementById('attractor-color').value
 				,colorBg = getElementById('background-color').value
@@ -493,7 +530,7 @@ iddqd.ns('attractors.ui',(function(){
 
 	function getAnimationFromTo(){
 		return animate.getFromTo(
-			parseInt(getElementById('frames').value,10)
+			parseInt(elmFrames.value,10)
 			,getElementById('animate-rotate').checked
 		);
 	}
