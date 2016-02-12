@@ -162,7 +162,14 @@ input, select, option {
 		position: relative;
 		z-index: 1;
 	}
-	.cancel { display: none; }
+	.cancel {
+		display: none;
+		span {
+			font-size: 12px;
+			&:before { content: '('; }
+			&:after { content: ' seconds left)'; }
+		}
+	}
 	.progress {
 		position: absolute;
 		left: 0;
@@ -172,7 +179,7 @@ input, select, option {
 		width: 0;
 		height: 100%;
 		background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 100%);
-		border-radius: 4px;
+		border-radius: 2px;
 	}
 	&.rendering {
 		.render { display: none; }
@@ -252,6 +259,33 @@ input.tabs {
 	}
 }
 
+label[data-info] {
+	position: relative;
+	&:before {
+		content: attr(data-info);
+		position: absolute;
+		right: -@padding;
+		top: 10px;
+		z-index: 2;
+		display: block;
+		visibility: hidden;
+		width: 200px;
+		padding: 10px 10px 10px 0;
+		opacity: 0;
+		font-size: 11px;
+		color: #FFBD00;
+		border-radius: 2px;
+		background-color: @uiBgColor;
+		transform: translateX(100%) translateY(-50%);
+		box-shadow: 0 0 0 1px #000000, 1px 0 0 1px #000000, 1px 0 0 2px #FFBD00;
+		transition: opacity 200ms 0ms linear, visibility 0ms 200ms linear;
+	}
+	&:hover:before {
+		visibility: visible;
+		opacity: 1;
+		transition: opacity 200ms 1000ms linear, visibility 0ms 1000ms linear;
+	}
+}
 ///////////////////////////////////////////////////////
 
 input.imitate {

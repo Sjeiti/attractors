@@ -50,6 +50,12 @@ iddqd.ns('attractors.util',(function() {
 		return max;
 	}
 
+	function promiseAnimationFrame(){
+		return new Promise(function(resolve,reject){
+			requestAnimationFrame(resolve);
+		});
+	}
+
 	return {
 		wait: wait
 		,array2array: array2array
@@ -57,5 +63,6 @@ iddqd.ns('attractors.util',(function() {
 		,applyDragMove: applyDragMove
 		,dispatchEvent: dispatchEvent
 		,getMax: getMax
+		,promiseAnimationFrame: promiseAnimationFrame
 	};
 })());

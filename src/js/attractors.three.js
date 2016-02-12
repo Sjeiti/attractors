@@ -162,7 +162,6 @@ iddqd.ns('attractors.three',(function(){
 
 	function drag(touchOrE,offsetX,offsetY){
 		if (touchOrE.constructor===TouchEvent&&touchOrE.touches.length>1) {
-
 			var pos = camera.position
 				,vecCam = cameraCenter.clone().sub(pos)
 				,sideVec = vecCam.clone().cross(vecZ)
@@ -352,6 +351,7 @@ iddqd.ns('attractors.three',(function(){
 		,center: center
 		,getCameraClone: getCameraClone
 		,iterate: iterate
+		,setCamera: setCamera
 		,get point() { return point; }
 		,get cameraRotationX() { return cameraRotationX; }
 		,set cameraRotationX(f) {

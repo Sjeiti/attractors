@@ -19,6 +19,7 @@ iddqd.ns('attractors.ui',(function(){
 		,CONSTANTS_CHANGED = event.CONSTANTS_CHANGED
 		,dispatchConstantsChanged = CONSTANTS_CHANGED.dispatch
 		,center = three.center
+		,setCamera = three.setCamera
 		//,warn = console.warn.bind(console)
 		//
 		,moveConstant
@@ -27,6 +28,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmSines = getElementById('sines')
 		,elmOffsets = getElementById('offsets')
 		,elmRender = getElementById('render')
+		,elmRenderTime = elmRender.querySelector('.cancel span')
 		,elmRenderIndicator = elmRender.querySelector('.progress')
 		,elmImageWrapper = getElementById('image')
 		,elmImage = elmImageWrapper.querySelector('img')
@@ -158,6 +160,7 @@ iddqd.ns('attractors.ui',(function(){
 				,640:480
 				,800:600
 				,1600:900
+				,2560:1440
 			}
 			,availWidth = window.screen.availWidth
 			,availHeight = window.screen.availHeight
@@ -297,7 +300,7 @@ iddqd.ns('attractors.ui',(function(){
 			,p = new THREE.Vector3(Math.random(),Math.random(),Math.random())
 			,pp
 			,size = 1E-3
-			,tries = 1E4
+			,tries = 1E5
 			,constants = attractor.constants
 			,maxConstant = 2*attractor.constantSize
 			,i;
@@ -314,6 +317,7 @@ iddqd.ns('attractors.ui',(function(){
 		}
 		dispatchConstantsChanged(constants);
 		center();
+		setCamera();
 	}
 
 	function onResetClick(){
@@ -322,20 +326,23 @@ iddqd.ns('attractors.ui',(function(){
 		updateContantsInputs();
 		dispatchConstantsChanged(constants);
 		center();
+		setCamera();
 	}
 
 	function onAnimateClick(){
 		var anim = getAnimationFromTo()
-			,from = {f:0}
-			,onUpdate = function(position){
-				setFrame(position.f,1,anim.start,anim.end);
-				dispatchConstantsChanged(attractor.constants);
-			}.bind(null,from)
+			,frames = parseInt(getElementById('frames').value,10)
+			,i = frames
+			,frame = util.emptyPromise()
 		;
-		new TWEEN.Tween(from)
-			.to({f:1}, 2000)
-			.onUpdate(onUpdate)
-			.start();
+		while (i--) {
+			frame = frame
+				.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
+				.then(function(){
+					dispatchConstantsChanged(attractor.constants);
+				})
+				.then(util.promiseAnimationFrame);
+		}
 	}
 
 	function onRenderClick(){
@@ -388,7 +395,8 @@ iddqd.ns('attractors.ui',(function(){
 			,isAnimation = frame!==undefined&&frames!==undefined
 			,timeLeft = elapsed/progress*(100-progress);
 		elmRenderIndicator.style.width = (isAnimation?frame/frames*100+progress/frames:progress)+'%';
-		elmRenderIndicator.textContent = timeLeft/1000<<0;
+		//elmRenderIndicator.textContent = timeLeft/1000<<0;
+		elmRenderTime.textContent = timeLeft/1000<<0;
 	}
 
 	function onRenderStopped(){
