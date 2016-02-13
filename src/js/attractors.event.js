@@ -4,6 +4,8 @@ iddqd.ns('attractors.event',{
 	TYPE_CHANGED: new signals.Signal()
 	,CONSTANTS_CHANGED: new signals.Signal()
 	//
+	,SINES_CHANGED: new signals.Signal()
+	//
 	,RANGE_CHANGED: new signals.Signal()
 	//
 	,RENDER_PROGRESS: new signals.Signal()

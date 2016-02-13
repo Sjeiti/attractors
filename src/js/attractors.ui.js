@@ -18,6 +18,8 @@ iddqd.ns('attractors.ui',(function(){
 		,ANIMATION_FRAME = event.ANIMATION_FRAME
 		,CONSTANTS_CHANGED = event.CONSTANTS_CHANGED
 		,dispatchConstantsChanged = CONSTANTS_CHANGED.dispatch
+		,SINES_CHANGED = event.SINES_CHANGED
+		,dispatchSinesChanged = SINES_CHANGED.dispatch
 		,center = three.center
 		,setCamera = three.setCamera
 		//,warn = console.warn.bind(console)
@@ -124,21 +126,21 @@ iddqd.ns('attractors.ui',(function(){
 		getElementById('store-first').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsFirst);
 		});
-		getElementById('load-first').addEventListener('click',function(){
+		/*getElementById('load-first').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
 			updateContantsInputs();
 			setCamera();
 			elmTrack.value = 0;
-		});
+		});*/
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsLast);
 		});
-		getElementById('load-last').addEventListener('click',function(){
+		/*getElementById('load-last').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));
 			updateContantsInputs();
 			setCamera();
 			elmTrack.value = elmFrames.value;
-		});
+		});*/
 		//
 		getElementById('set-sines').addEventListener('click',function(){
 			var constantsFirst = animate.constantsFirst
@@ -151,7 +153,38 @@ iddqd.ns('attractors.ui',(function(){
 			diffTo.forEach(function(f,i){
 				getElementById('sines'+i).value = sines[i] = f - diffFr[i];
 			});
+			dispatchSinesChanged();
 		});
+		/////////////////////////////////////////////
+		var svg = getElementById('wrapper-track').querySelector('svg');
+		SINES_CHANGED.add(function(){
+			var constants = attractor.constants
+			  ,paths = svg.querySelectorAll('path')
+				,numPaths = paths.length
+				,numConstants = constants.length
+				,highest = -Infinity
+				,i;
+			if (numPaths!==numConstants) {
+				while (paths.length>1) svg.removeChild(paths[0]);
+				for (i=1;i<numConstants;i++) svg.appendChild(paths[0].cloneNode());
+			}
+			//
+			paths = svg.querySelectorAll('path');
+			//
+			for (i=0;i<numConstants;i++) {
+				var high = Math.abs(parseFloat(getElementById('sines'+i).value));
+				if (high>highest) highest = high;
+			}
+			//
+			for (i=0;i<numConstants;i++) {
+				var path = paths[i]
+					,sine = Math.abs(parseFloat(getElementById('sines'+i).value))
+					,part = sine/highest
+					,offset = getElementById('offsets'+i).value;
+				part&&path.setAttribute('transform','translate('+-offset*128+','+(1-part)*64+') scale(1,'+part+')');
+			}
+		});
+		/////////////////////////////////////////////
 		//
 		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
 	}
@@ -298,7 +331,7 @@ iddqd.ns('attractors.ui',(function(){
 			,isModelConstants = model===attractor.constants
 			,animations = wrapper.a||(wrapper.a=[])
 			,removeAnimations = function(){while (animations.length) signal.animate.remove(animations.pop());}
-			,dispatch = isModelConstants?dispatchConstantsChanged:null
+			,dispatch = isModelConstants?dispatchConstantsChanged:dispatchSinesChanged
 		;
 		if (type==='number') {
 			e.stopPropagation();
