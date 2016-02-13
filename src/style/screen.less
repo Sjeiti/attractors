@@ -193,6 +193,7 @@ input, select, option {
 #wrapper-track {
 	position: relative;
 	height: 64px;
+	margin-bottom: 0;
 	svg {
 		position: absolute;
 		left: 0;
@@ -217,18 +218,20 @@ input, select, option {
 		top: 50%;
 		transform: translateY(-50%);
 	}
+	+fieldset {
+		position: relative;
+	}
 }
 
-#store-first, #store-last {
 	@storeSize: 21px;
-	position: relative;
-	top: -30px;
+#store-first, #store-last {
+	position: absolute;
+	top: -20px;
 	width: @storeSize;
 	height: @storeSize;
 	border-radius: 50%;
 	padding: 0;
 	font-size: 0;
-	transform: translate(-50%);
 	&:before {
 		content: '+';
 		font-size: 14px;
@@ -242,12 +245,51 @@ input, select, option {
 		top: -10px;
 		width: 1px;
 		height: 10px;
-		background-color: @colorA2;
+		background-color: @colorA0;
 	}
 }
+#store-first {
+	left: -@storeSize/2 + 1px;
+}
 #store-last {
-	float: right;
-	transform: translate(50%);
+	right: -@storeSize/2 + 1px;
+}
+#set-sines {
+	margin-top: 12px;
+	margin-left: 29%;
+}
+
+
+.brace {
+	@braceHeight: 10px;
+	position: relative;
+	width: 100%;
+	height: @braceHeight;
+	border: 1px solid @colorA0;
+	border-top: 0;
+	border-bottom-left-radius: @braceHeight;
+	border-bottom-right-radius: @braceHeight;
+	&:before, &:after {
+		content: '';
+		position: absolute;
+		top: @braceHeight;
+		left: 40%;
+		display: block;
+		width: @braceHeight;
+		height: @braceHeight;
+		border-top: 1px solid @colorA0;
+	}
+	&:before {
+		border-left: 1px solid @colorA0;
+		border-top-left-radius: @braceHeight;
+		transform: translateX(50%);
+	}
+	&:after {
+		position: absolute;
+		border-right: 1px solid @colorA0;
+		border-top-right-radius: @braceHeight;
+		transform: translateX(-50%);
+	}
 }
 
 #render {
