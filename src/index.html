@@ -61,36 +61,42 @@
 		</div>
 
 		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" />
+		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" checked />
 		<div id="animate">
 			<fieldset class="form-group form-inline">
 				<label for="frames" class="form-control-label">frames</label>
 				<input type="number" value="100" id="frames" class="form-control form-control-sm" />
 			</fieldset>
-			<fieldset id="wrapper-track" class="form-group form-inline">
+			<fieldset id="wrapper-track" class="form-group form-inline flat">
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 128" preserveAspectRatio="none">
 					<path d="M0,64C128-147,128,275,256,64s128,211,255,0" vector-effect="non-scaling-stroke" />
 					<!--<path d="M0.1,64C128-157.6,128,285.6,256,64s128,221.6,255.9,0" />-->
 				</svg>
 				<input type="range" min="0" max="100" step="1" value="0" id="track" class="form-control form-control-sm" />
 			</fieldset>
-			<fieldset class="form-group">
+
+			<fieldset class="form-group flat">
 				<a class="btn btn-secondary btn-sm" id="store-first">store first</a>
 				<a class="btn btn-secondary btn-sm" id="store-last">store last</a>
+			</fieldset>
+
+			<input type="checkbox" id="use-sines-switch" class="switch" />
+			<fieldset class="form-group">
 				<!--<a class="btn btn-secondary btn-sm" id="load-first">load first</a>-->
 				<!--<a class="btn btn-secondary btn-sm" id="load-last">load last</a>-->
-				<div class="brace"></div>
+				<div class="brace down"></div>
 				<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>
-			</fieldset>
-			<div id="constant-animation">
 				<div id="sines">
-					<h3>sine width</h3>
+					<h3>sine height</h3>
 				</div>
 				<div id="offsets">
 					<h3>offset radians</h3>
 				</div>
-			</div>
+			</fieldset>
+
 			<fieldset class="form-group">
+				<input type="checkbox" id="use-sines" class="imitate" />
+				<label for="use-sines">Looped animation</label>
 				<input type="checkbox" id="animate-rotate" class="imitate" />
 				<label for="animate-rotate">Rotate 360</label>
 			</fieldset>
