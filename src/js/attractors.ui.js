@@ -39,6 +39,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmType = getElementById('type')
 		,elmFrames = getElementById('frames')
 		,elmTrack = getElementById('track')
+		,elmUseSines = getElementById('use-sines')
 		//
 		,iterations = 1E7
 		//
@@ -107,14 +108,30 @@ iddqd.ns('attractors.ui',(function(){
 		});
 		//
 		//
-		getElementById('use-sines').addEventListener('change',function(){
-			getElementById('use-sines-switch').checked = getElementById('use-sines').checked;
+		var fncApplySines = function(){ // todo: extract
+			var constantsFirst = animate.constantsFirst
+				,constantsLast = animate.constantsLast
+				,constants = attractor.constants
+				,sines = animate.sines
+				,diffFr = constantsFirst.length===0?constants:constantsFirst
+				,diffTo = constantsLast.length===0?constants:constantsLast
+			;
+			diffTo.forEach(function(f,i){
+				getElementById('sines'+i).value = sines[i] = f - diffFr[i];
+			});
+			dispatchSinesChanged();
+		};
+		//
+		elmUseSines.addEventListener('change',function(){
+			var isChecked = elmUseSines.checked;
+			getElementById('use-sines-switch').checked = isChecked;
+			isChecked&&fncApplySines();
 		});
 		//
 		//
 		/////////////////////////////////////////////
 		var lastFrame
-			,fnChange = function(force){
+			,fnChange = function(force){ // todo: extract
 				var anim = getAnimationFromTo() // todo: cache?
 					,frames = elmFrames.value
 					,frame = elmTrack.value;
@@ -133,6 +150,7 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		getElementById('store-first').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsFirst);
+			elmUseSines.checked&&fncApplySines();
 		});
 		/*getElementById('load-first').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
@@ -140,8 +158,10 @@ iddqd.ns('attractors.ui',(function(){
 			setCamera();
 			elmTrack.value = 0;
 		});*/
+		//
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsLast);
+			elmUseSines.checked&&fncApplySines();
 		});
 		/*getElementById('load-last').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));
@@ -150,30 +170,19 @@ iddqd.ns('attractors.ui',(function(){
 			elmTrack.value = elmFrames.value;
 		});*/
 		//
-		getElementById('set-sines').addEventListener('click',function(){
-			var constantsFirst = animate.constantsFirst
-				,constantsLast = animate.constantsLast
-				,constants = attractor.constants
-				,sines = animate.sines
-				,diffFr = constantsFirst.length===0?constants:constantsFirst
-				,diffTo = constantsLast.length===0?constants:constantsLast
-			;
-			diffTo.forEach(function(f,i){
-				getElementById('sines'+i).value = sines[i] = f - diffFr[i];
-			});
-			dispatchSinesChanged();
-		});
+		//getElementById('set-sines').addEventListener('click',fncApplySines);
 		/////////////////////////////////////////////
 		var svg = getElementById('wrapper-track').querySelector('svg');
-		SINES_CHANGED.add(function(){
+		SINES_CHANGED.add(function(){ // todo: extract
 			var constants = attractor.constants
 			  ,paths = svg.querySelectorAll('path')
 				,numPaths = paths.length
 				,numConstants = constants.length
 				,highest = -Infinity
-				,i;
+				,i = paths.length;
 			if (numPaths!==numConstants) {
-				while (paths.length>1) svg.removeChild(paths[0]);
+				while (i-->1) svg.removeChild(paths[i]);
+				//while (paths.length>1) svg.removeChild(paths[0]);
 				for (i=1;i<numConstants;i++) svg.appendChild(paths[0].cloneNode());
 			}
 			//
@@ -263,7 +272,7 @@ iddqd.ns('attractors.ui',(function(){
 		event.ANIMATION_DRAWN_WEBM.add(onAnimationDrawnWebm);
 	}
 
-	function initUIResult(undefined){
+	function initUIResult(){
 		var elmResult = getElementById('tabs-result').nextElementSibling;
 		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadClick);
 		elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
@@ -303,7 +312,6 @@ iddqd.ns('attractors.ui',(function(){
 			document.body.removeEventListener('touchstart',onBodyTouchStart);
 			document.body.removeEventListener('click',onBodyClickStart);
 		}
-
 	}
 
 	function onTabChange(e){
@@ -442,7 +450,10 @@ iddqd.ns('attractors.ui',(function(){
 				,colorAt = getElementById('attractor-color').value
 				,colorBg = getElementById('background-color').value
 				,bgRadial = getElementById('background-radial').checked
-				,render = renderer.render.bind(null,w,h,iterations)
+				,calcDistance = getElementById('coloring-distance').checked
+				,calcLyapunov = getElementById('coloring-lyapunov').checked
+				,calcSurface = getElementById('coloring-surface').checked
+				,render = renderer.render.bind(null,w,h,iterations,calcDistance,calcLyapunov,calcSurface)
 				,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch
 				;
@@ -576,6 +587,7 @@ iddqd.ns('attractors.ui',(function(){
 		return animate.getFromTo(
 			parseInt(elmFrames.value,10)
 			,getElementById('animate-rotate').checked
+			,elmUseSines.checked
 		);
 	}
 

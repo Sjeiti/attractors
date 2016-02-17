@@ -70,18 +70,14 @@ iddqd.ns('attractors.animate',(function() {
 		}
 	}
 
-	function getFromTo(frames,rotate) {
+	function getFromTo(frames,rotate,loop) {
 		var start = {}
-			,end = {}
-			,hasSines = (function(b,i){
-				while (i--) if (!b&&sines[i]!==0) b = true;
-				return b;
-			})(false,sines.length);
+			,end = {};
 		if (rotate) {
 			start.cameraRotationX = three.cameraRotationX;
 			end.cameraRotationX = three.cameraRotationX+(360-360/(frames+1));
 		}
-		if (hasSines) {
+		if (loop) {
 			start.sines = sines;
 			start.offsets = offsets;
 			if (constantsFirst.length===0) array2array(attractors.attractor.constants,constantsFirst);

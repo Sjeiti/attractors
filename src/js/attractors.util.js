@@ -45,9 +45,18 @@ iddqd.ns('attractors.util',(function() {
 		var max = -Infinity
 			,len = a.length
 			,value;
-		if (len<1E5) max = Math.max.apply(Math,a);
+		if (len<1) max = Math.max.apply(Math,a);//1E5
 		else while (len--) (value=a[len])>max&&(max = value);
 		return max;
+	}
+
+	function getMin(a) {
+		var min = Infinity
+			,len = a.length
+			,value;
+		if (len<1) min = Math.min.apply(Math,a);//1E5
+		else while (len--) (value=a[len])<min&&(min = value);
+		return min;
 	}
 
 	function promiseAnimationFrame(){
@@ -63,6 +72,7 @@ iddqd.ns('attractors.util',(function() {
 		,applyDragMove: applyDragMove
 		,dispatchEvent: dispatchEvent
 		,getMax: getMax
+		,getMin: getMin
 		,promiseAnimationFrame: promiseAnimationFrame
 	};
 })());

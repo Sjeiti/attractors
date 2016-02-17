@@ -80,10 +80,11 @@ h1 {
 	text-align: center;
 	label[for^=tabs-] {
 		box-shadow: none;
-		border-top-left-radius: 0;
+		//border-top-left-radius: 0;
 		border-top-right-radius: 0;
-		border-bottom-left-radius: 3px;
-		border-bottom-right-radius: 3px;
+		//border-bottom-left-radius: 3px;
+		//border-bottom-right-radius: 3px;
+		font-size: inherit;
 	}
 }
 h2 { font-size: 16px; }
@@ -123,6 +124,11 @@ input, select, option {
 
 .btn {
 	transition: background-color 200ms ease-in-out, padding 200ms ease-in-out;
+	&.btn-sm {
+		font-size: 12px;
+    line-height: 160%;
+    padding: 2px 10px 0;
+	}
 }
 
 .button(@fore,@background,@border){
@@ -178,13 +184,7 @@ input, select, option {
 	background-color: @uiBgColor;
 	transition: opacity 200ms linear;
 	.tab-title { margin: 1px 0; }
-	>.tab {
-		padding: 0;
-		/*.tab>* {
-			&:first-child { margin-top: 10px; }
-			&:last-child { margin-bottom: 10px; }
-		}*/
-	}
+	>.tab { padding: 0; }
 	@media (max-width:320px) {
 		min-width: 100%;
 	}
@@ -414,20 +414,26 @@ input, select, option {
 #stats {
 	position: absolute;
 	right: 0;
-	top: 0;
+	bottom: 0;
 }
 
 label[for^=tabs-]{
+	position: relative;
 	display: block;
 	margin-bottom: 0;
 	padding: 2px @padding 0;
+	font-size: 14px;
+	line-height: 120%;
 	color: @headerColor;
 	background-color: @headerBg;
 	cursor: pointer;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
-	//box-shadow: 0 0 16px darken(@headerBg,10%) inset;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
 	background: linear-gradient(to right, @headerBg 0%, darken(@headerBg,10%) 100%);
+	box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.4);
+}
+.tab label[for^=tabs-]{
+	background: linear-gradient(to right, darken(@headerBg,10%) 0%, darken(@headerBg,20%) 100%);
 }
 input.tabs {
 	display: none;
@@ -459,7 +465,7 @@ input.switch {
 	}
 }
 
-label[data-info] {
+[data-info] {
 	position: relative;
 	&:before {
 		content: attr(data-info);
@@ -482,7 +488,7 @@ label[data-info] {
 	}
 	&:hover:before {
 		visibility: visible;
-		opaci3ty: 1;
+		opacity: 1;
 		transition: opacity 200ms 1000ms linear, visibility 0ms 1000ms linear;
 	}
 }

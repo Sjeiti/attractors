@@ -33,7 +33,7 @@
 	<div class="tab">
 
 		<h2 class="tab-title"><label for="tabs-about">about</label></h2>
-		<input type="radio" name="tabs" id="tabs-about" class="tabs" />
+		<input type="checkbox" name="tabs" id="tabs-about" class="tabs" />
 		<div class="tab">
 			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
 		</div>
@@ -61,7 +61,7 @@
 		</div>
 
 		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" checked />
+		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" />
 		<div id="animate">
 			<fieldset class="form-group form-inline">
 				<label for="frames" class="form-control-label">frames</label>
@@ -84,8 +84,8 @@
 			<fieldset class="form-group">
 				<!--<a class="btn btn-secondary btn-sm" id="load-first">load first</a>-->
 				<!--<a class="btn btn-secondary btn-sm" id="load-last">load last</a>-->
-				<div class="brace down"></div>
-				<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>
+				<!--<div class="brace down"></div>-->
+				<!--<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>-->
 				<div id="sines">
 					<h3>sine height</h3>
 				</div>
@@ -96,9 +96,9 @@
 
 			<fieldset class="form-group">
 				<input type="checkbox" id="use-sines" class="imitate" />
-				<label for="use-sines">Looped animation</label>
+				<label for="use-sines" data-info="A looped animation draws circles onto the constants">Looped animation</label>
 				<input type="checkbox" id="animate-rotate" class="imitate" />
-				<label for="animate-rotate">Rotate 360</label>
+				<label for="animate-rotate" data-info="Rotate the camera around the attractor">Rotate 360</label>
 			</fieldset>
 			<fieldset class="form-group">
 				<a class="btn btn-secondary btn-sm animate">animate</a>
@@ -121,6 +121,12 @@
 			<fieldset class="form-group form-left">
 				<input type="checkbox" class="imitate" id="background-radial" />
 				<label for="background-radial" data-info="Apply a radial gradient to the background">Radial background</label>
+				<input type="checkbox" class="imitate" id="coloring-distance" />
+				<label for="coloring-distance" data-info="Use the iteration distance for coloring">Coloring distance</label>
+				<input type="checkbox" class="imitate" id="coloring-lyapunov" />
+				<label for="coloring-lyapunov" data-info="Use the Lyapunov exponent for coloring">Coloring Lyapunov</label>
+				<input type="checkbox" class="imitate" id="coloring-surface" />
+				<label for="coloring-surface" data-info="Apply shinines to the surface">Coloring surface</label>
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<label for="iterations">Iterations</label>

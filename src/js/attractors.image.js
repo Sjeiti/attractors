@@ -4,6 +4,7 @@ iddqd.ns('attractors.image',(function(){
 		,util = attractors.util
 		,wait = util.wait
 		,getMax = util.getMax
+		,getMin = util.getMin
 		//
 		,gammaValue = 0.4
 		//
@@ -12,6 +13,9 @@ iddqd.ns('attractors.image',(function(){
 		//
 		,canvasAttractor = document.createElement('canvas')
 		,contextAttractor = canvasAttractor.getContext('2d')
+		//
+		,canvasColor = document.createElement('canvas')
+		,contextColor = canvasColor.getContext('2d')
 		//
 		,canvasCode = document.createElement('canvas')
 		,contextCode = canvasCode.getContext('2d')
@@ -24,8 +28,8 @@ iddqd.ns('attractors.image',(function(){
 	event.ANIMATION_DONE.add(onAnimationFinished);
 
 	function onImageResize(w,h){
-		canvasBackground.width = canvasAttractor.width = w;
-		canvasBackground.height = canvasAttractor.height = h;
+		canvasBackground.width = canvasAttractor.width = canvasColor.width = w;
+		canvasBackground.height = canvasAttractor.height = canvasColor.height = h;
 	}
 
 	function onAnimationFinished(){
@@ -71,30 +75,70 @@ iddqd.ns('attractors.image',(function(){
 		];
 	}
 
-	function draw(w,h,colorAt,colorBg,radial,pixels){
-		var colorAtO = colorHexSplit(colorAt)
+	function draw(w,h,colorAt,colorBg,radial,result){
+		var pixels = result[0]
+			,distances = result[1]
+			,lyapunovs = result[2]
+			,surfaces = result[3]
+			,hasDistances = distances!==undefined
+			,hasLyapunovs = lyapunovs!==undefined
+			,hasSurfaces = surfaces!==undefined
+			,colorAtO = colorHexSplit(colorAt)
 			,colorBgO = colorHexSplit(colorBg)
 			,isBgLighter = colorBgO.reduce(function(a,b){return a+b;},0)>colorAtO.reduce(function(a,b){return a+b;},0)
 			//
 			,imagedataAttractor = new ImageData(w,h)
 			,dataAttractor = imagedataAttractor.data
 			//
+			,imagedataColor = new ImageData(w,h)
+			,dataColor = imagedataColor.data
+			//
 			,max = getMax(pixels)
+			,maxD = hasDistances&&getMax(distances)
+			,minD = hasDistances&&getMin(distances)
+			,maxL = hasLyapunovs&&getMax(lyapunovs)
+			,minL = hasLyapunovs&&getMin(lyapunovs)
+			,maxC = hasSurfaces&&getMax(surfaces)
+			,minC = hasSurfaces&&getMin(surfaces)
 			,i = pixels.length
 		;
-		canvasBackground.width = canvasAttractor.width = w;
-		canvasBackground.height = canvasAttractor.height = h;
+		//
+		//console.log('distances',distances); // todo: remove log
+		/*distances.forEach(function(val,j){
+			if (val===0) distances[j] = maxD;
+		});
+		minD = getMin(distances);*/
+		//
+		onImageResize(w,h);
 		//
 		setBackground(w,h,colorBg,radial);
 		//
+		console.log('minmaxD',minD,maxD); // todo: remove log
+		console.log('minmaxL',minL,maxL); // todo: remove log
+		console.log('minmaxC',minC,maxC); // todo: remove log
+		//
 		while (i--) {
-			var gamma = Math.pow(pixels[i]/max,gammaValue);
-			dataAttractor[4*i+3] = gamma*255<<0;
+			//dataAttractor[4*i+3] = Math.pow(distances[i]/maxD,gammaValue)*255<<0;
+			dataAttractor[4*i+3] = Math.pow(pixels[i]/max,gammaValue)*255<<0;
+			//
+			hasSurfaces&&(dataColor[4*i+0] = 255-(surfaces[i]-minC)/(maxC-minC)*255<<0);
+			hasDistances&&(dataColor[4*i+1] = (distances[i]-minD)/(maxD-minD)*255<<0);//Math.pow((distances[i]-minD)/(maxD-minD),gammaValue)*255<<0;
+			hasLyapunovs&&(dataColor[4*i+2] = (lyapunovs[i]-minL)/(maxL-minL)*255<<0);//Math.pow((lyapunovs[i]-minL)/(maxL-minL),gammaValue)*255<<0;
+			dataColor[4*i+3] = 255;//Math.pow((lyapunovs[i]-minL)/(maxL-minL),gammaValue)*255<<0;
+			//Math.random()<.001&&console.log(pixels[i]/max,distances[i]);
 		}
 		contextAttractor.putImageData(imagedataAttractor,0,0);
+		//contextAttractor.globalCompositeOperation = 'source-in';
+		//contextAttractor.fillStyle = colorAt;
+		//contextAttractor.fillRect(0,0,w,h);
+		//
+		contextColor.putImageData(imagedataColor,0,0);
+		contextColor.globalAlpha  = hasDistances||hasLyapunovs||hasSurfaces?0.5:1;
+		contextColor.globalCompositeOperation = 'screen';
+		contextColor.fillStyle = colorAt;
+		contextColor.fillRect(0,0,w,h);
 		contextAttractor.globalCompositeOperation = 'source-in';
-		contextAttractor.fillStyle = colorAt;
-		contextAttractor.fillRect(0,0,w,h);
+		contextAttractor.drawImage(canvasColor,0,0);
 		//
 		// draw attractor onto bg
 		contextBackground.globalCompositeOperation = isBgLighter?'multiply':'screen';

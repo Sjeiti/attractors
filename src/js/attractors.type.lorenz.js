@@ -15,4 +15,5 @@ attractors.create(
 		vec.z = z + c4*( -c2*z*c3 + x*y*c3 );
 		return vec;
 	}
+	,40
 );
