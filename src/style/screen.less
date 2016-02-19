@@ -198,15 +198,25 @@ input, select, option {
 #wrapper-track {
 	position: relative;
 	height: 64px;
-
-	#track::-webkit-slider-runnable-track {
-		height: 1px;
-		top: 11px;
-		background-color: @colorA1;
-		box-shadow: none;
-	}
-	#track::-webkit-slider-thumb {
-		transform: translateY(-9px);
+	#track {
+		&::-webkit-slider-runnable-track {
+			height: 1px;
+			top: 11px;
+			background-color: @colorA1;
+			box-shadow: none;
+		}
+		&::-moz-range-track {
+			height: 1px;
+			top: 11px;
+			background-color: @colorA1;
+			box-shadow: none;
+		}
+		&::-webkit-slider-thumb {
+			transform: translateY(-9px);
+		}
+		&::-moz-range-thumb {
+			transform: translateY(-9px);
+		}
 	}
 	svg {
 		position: absolute;
@@ -382,6 +392,14 @@ input, select, option {
 	fieldset:nth-of-type(5) input[type=range]::-webkit-slider-runnable-track { background-color: @colorConstant5; }
 	fieldset:nth-of-type(6) input[type=range]::-webkit-slider-runnable-track { background-color: @colorConstant6; }
 	fieldset:nth-of-type(7) input[type=range]::-webkit-slider-runnable-track { background-color: @colorConstant7; }
+
+	fieldset:nth-of-type(1) input[type=range]::-moz-range-track { background-color: @colorConstant1; }
+	fieldset:nth-of-type(2) input[type=range]::-moz-range-track { background-color: @colorConstant2; }
+	fieldset:nth-of-type(3) input[type=range]::-moz-range-track { background-color: @colorConstant3; }
+	fieldset:nth-of-type(4) input[type=range]::-moz-range-track { background-color: @colorConstant4; }
+	fieldset:nth-of-type(5) input[type=range]::-moz-range-track { background-color: @colorConstant5; }
+	fieldset:nth-of-type(6) input[type=range]::-moz-range-track { background-color: @colorConstant6; }
+	fieldset:nth-of-type(7) input[type=range]::-moz-range-track { background-color: @colorConstant7; }
 }
 
 #sines, #offsets {
@@ -570,8 +588,30 @@ input[type=range] {
 		box-shadow: 2px 2px 4px rgba(0,0,0,0.3) inset;
 		&:hover { background-color: darken(@btnHoverColorBg,20%); }
 	}
+	&::-moz-range-track {
+		width: 100%;
+		height: @rangeTrackH;
+		margin: 0;
+		background-color: darken(@btnColorBg,20%);
+		border-radius: @btnRadius;
+		border: 0;
+		box-shadow: 2px 2px 4px rgba(0,0,0,0.3) inset;
+		&:hover { background-color: darken(@btnHoverColorBg,20%); }
+	}
 	// thumb
 	&::-webkit-slider-thumb {
+		height: @rangeBtnH;
+		width: @rangeBtnW;
+		margin: 0;
+		transform: translateY(-(@rangeBtnH - @rangeTrackH)/2);
+		border: 1px solid @btnColorBorder;
+		border-radius: @btnRadius;
+		background: @btnColorBg;
+		cursor: pointer;
+		-webkit-appearance: none;
+		&:hover { background-color: @btnHoverColorBg; }
+	}
+	&::-moz-range-thumb {
 		height: @rangeBtnH;
 		width: @rangeBtnW;
 		margin: 0;

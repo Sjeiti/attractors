@@ -547,16 +547,20 @@ iddqd.ns('attractors.ui',(function(){
 	function onImageLoad(e){
 		var image = e.target
 			,readResult = attractors.image.read(image);
-		Array.prototype.forEach.call(elmType.querySelectorAll('option'),function(option,i){
+		setAttractor(readResult.name,readResult.constants);
+	}
+
+	function setAttractor(name,constants){
+		name&&Array.prototype.forEach.call(elmType.querySelectorAll('option'),function(option,i){
 			var name = option.textContent.toLowerCase();
-			if (name===readResult.name.toLowerCase()) {
+			if (name===name.toLowerCase()) {
 				if (elmType.value!==option.value) {
 					elmType.value = option.value;
 					dispatchEvent(elmType,'change');
 				}
 			}
 		});
-		dispatchConstantsChanged(array2array(readResult.constants,attractor.constants));
+		constants&&dispatchConstantsChanged(array2array(constants,attractor.constants));
 	}
 
 	function updateContantsInputs(){

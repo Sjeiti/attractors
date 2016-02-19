@@ -47,7 +47,6 @@ iddqd.ns('attractors.three',(function(){
 		initThreejs();
 		initEvents();
 		onTypeChanged();
-		resetAttractor();
 	}
 
 	function initThreejs(){
@@ -67,7 +66,8 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function initThreejsCameras(){
-		camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 1E4 );
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.01, 1E4 );
+		//camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 1E4 );
 		//cameraRender = camera.clone();//new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
 		setCamera();
 	}
@@ -161,7 +161,7 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function drag(touchOrE,offsetX,offsetY){
-		if (touchOrE.constructor===TouchEvent&&touchOrE.touches.length>1) {
+		if (window.TouchEvent&&touchOrE.constructor===TouchEvent&&touchOrE.touches.length>1) {
 			var pos = camera.position
 				,vecCam = cameraCenter.clone().sub(pos)
 				,sideVec = vecCam.clone().cross(vecZ)
@@ -220,11 +220,6 @@ iddqd.ns('attractors.three',(function(){
 
 	function onAnimate() {
 		renderer.render( scene, camera );
-	}
-
-	function resetAttractor(){
-		attractor = attractors.attractor;
-		redraw();
 	}
 
 	function redraw(){
@@ -306,6 +301,8 @@ iddqd.ns('attractors.three',(function(){
 		n = attractor.scale;
 		n2 = n/2;
 		redraw();
+		center();
+		geometry.computeBoundingSphere();
 	}
 
 	function resetMinMax(){
@@ -347,7 +344,6 @@ iddqd.ns('attractors.three',(function(){
 
 	return {
 		init: init
-		//,redraw: redraw
 		,center: center
 		,getCameraClone: getCameraClone
 		,iterate: iterate

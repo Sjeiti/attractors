@@ -12,11 +12,13 @@ iddqd.ns('attractors.animate',(function() {
 		,w = 1
 		,h = 1;
 
-	onTypeChanged();
+	function init() {
+		onTypeChanged();
 
-	event.ANIMATION_START.add(onAnimationStart);
-	event.ANIMATION_FRAME.add(onAnimationFrame);
-	event.TYPE_CHANGED.add(onTypeChanged);
+		event.ANIMATION_START.add(onAnimationStart);
+		event.ANIMATION_FRAME.add(onAnimationFrame);
+		event.TYPE_CHANGED.add(onTypeChanged);
+	}
 
 	function onAnimationStart(width,height){
 		frames.length = 0;
@@ -89,7 +91,7 @@ iddqd.ns('attractors.animate',(function() {
 		return {start:start,end:end};
 	}
 
-	return {
+	return iddqd.extend(init,{
 		setFrame: setFrame
 		,getFromTo: getFromTo
 		,get frames() { return frames; }
@@ -99,5 +101,5 @@ iddqd.ns('attractors.animate',(function() {
 		,get offsets() { return offsets; }
 		,get constantsFirst() { return constantsFirst; }
 		,get constantsLast() { return constantsLast; }
-	};
+	});
 })());

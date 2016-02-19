@@ -4,11 +4,33 @@ iddqd.ns('attractors',(function(){
 		,event;
 
 	function init(){
+		//
+		initCurrentAttractor();
+		//
 		event = attractors.event;
+		attractors.animate();
 		attractors.three.init();
 		attractors.ui();
 		attractors.location();
 		event.TYPE_CHANGED.add(onTypeChanged,null,1);
+	}
+
+	function initCurrentAttractor(){
+		var hash = location.hash;
+		if (hash!=='') {
+			var hashList = decodeURIComponent(hash.substr(1)).split(/,/g)
+				,name = hashList.shift()
+				,constants = hashList.map(parseFloat);
+			list.forEach(function(attr){
+				if (attr.name===name) {
+					attractor = attr;
+					constants.forEach(function(val,i){
+						attractor.constants[i] = val;
+					});
+				}
+			});
+		}
+		if (attractor===undefined) attractor = list[0];
 	}
 
 	Object.defineProperty(init, 'attractor', {
@@ -36,8 +58,6 @@ iddqd.ns('attractors',(function(){
 			for (var i=0,l=constants.length;i<l;i++) constants[i] = defaultConstants[i];
 		}
 		list.push(creation);
-		if (attractor===undefined) attractor = creation;
-		return creation;
 	}
 
 	function onTypeChanged(index){
