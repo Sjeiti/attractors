@@ -151,6 +151,7 @@ iddqd.ns('attractors.ui',(function(){
 		getElementById('store-first').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsFirst);
 			elmUseSines.checked&&fncApplySines();
+			animate.cameraFirst.update();
 		});
 		/*getElementById('load-first').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsFirst,attractor.constants));
@@ -162,6 +163,7 @@ iddqd.ns('attractors.ui',(function(){
 		getElementById('store-last').addEventListener('click',function(){
 			array2array(attractor.constants,animate.constantsLast);
 			elmUseSines.checked&&fncApplySines();
+			animate.cameraLast.update();
 		});
 		/*getElementById('load-last').addEventListener('click',function(){
 			dispatchConstantsChanged(array2array(animate.constantsLast,attractor.constants));

@@ -15,10 +15,12 @@ iddqd.ns('attractors.three',(function(){
 		,scene
 		,renderer
 		,geometry = new THREE.BufferGeometry()
+		//
 		,cameraCenter = new THREE.Vector3(0,0,0)
 		,cameraRotationX = 111
 		,cameraRotationY = 70
 		,cameraDistance = 2750 // todo: change for model
+		//
 		,colorBg = 0x222222
 		//
 		,elmContainer = document.getElementById('container')
@@ -177,11 +179,13 @@ iddqd.ns('attractors.three',(function(){
 			axis.position.y = cameraCenter.y;
 			axis.position.z = cameraCenter.z;
 		} else {
-			var oldCameraRotationY = cameraRotationY;
-			cameraRotationX = (cameraRotationX + 0.3*offsetX + 720)%360;
-			cameraRotationY = (cameraRotationY - 0.3*offsetY + 720)%360;
-			if (oldCameraRotationY<180===cameraRotationY>180) {
-				camera.up = new THREE.Vector3(0,0,cameraRotationY>180?-1:1);
+			var oldCameraRotationY = cameraRotationY
+				,cameraRotationY360;
+			cameraRotationX += 0.3*offsetX;
+			cameraRotationY -= 0.3*offsetY;
+			cameraRotationY360 = mod360(cameraRotationY);
+			if (mod360(oldCameraRotationY)<180===cameraRotationY360>180) {
+				camera.up = new THREE.Vector3(0,0,cameraRotationY360>180?-1:1);
 			}
 			setCamera();
 		}
@@ -344,6 +348,10 @@ iddqd.ns('attractors.three',(function(){
 		return camera.clone();
 	}
 
+	function mod360(i) {
+		return (i % 360 + 360) % 360;
+	}
+
 	return {
 		init: init
 		,center: center
@@ -351,9 +359,20 @@ iddqd.ns('attractors.three',(function(){
 		,iterate: iterate
 		,setCamera: setCamera
 		,get point() { return point; }
+		,get cameraCenter() { return cameraCenter; }
+		,get cameraDistance() { return cameraDistance; }
+		,set cameraDistance(f) {
+			cameraDistance = f;
+			setCamera();
+		}
 		,get cameraRotationX() { return cameraRotationX; }
 		,set cameraRotationX(f) {
 			cameraRotationX = f;
+			setCamera();
+		}
+		,get cameraRotationY() { return cameraRotationY; }
+		,set cameraRotationY(f) {
+			cameraRotationY = f;
 			setCamera();
 		}
 		,get computeBoundingSphere() { return geometry.computeBoundingSphere.bind(geometry); }

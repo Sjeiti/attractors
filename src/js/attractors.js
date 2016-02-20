@@ -8,8 +8,8 @@ iddqd.ns('attractors',(function(){
 		initCurrentAttractor();
 		//
 		event = attractors.event;
-		attractors.animate();
 		attractors.three.init();
+		attractors.animate();
 		attractors.ui();
 		attractors.location();
 		event.TYPE_CHANGED.add(onTypeChanged,null,1);
