@@ -153,7 +153,6 @@ iddqd.ns('attractors.three',(function(){
 
 	function initEvents(){
 		addDragEvent(elmContainer,drag);
-
 		signal.key.press.add(onKeyPress);
 		signal.mouseWheel.add(onMouseWheel);
 		signal.animate.add(onAnimate);
@@ -177,10 +176,13 @@ iddqd.ns('attractors.three',(function(){
 			axis.position.x = cameraCenter.x;
 			axis.position.y = cameraCenter.y;
 			axis.position.z = cameraCenter.z;
-			//console.log('touchOrE',touchOrE,touchOrE.constructor===TouchEvent); // todo: remove log
 		} else {
-			cameraRotationX += 0.3*offsetX;
-			cameraRotationY -= 0.3*offsetY;
+			var oldCameraRotationY = cameraRotationY;
+			cameraRotationX = (cameraRotationX + 0.3*offsetX + 720)%360;
+			cameraRotationY = (cameraRotationY - 0.3*offsetY + 720)%360;
+			if (oldCameraRotationY<180===cameraRotationY>180) {
+				camera.up = new THREE.Vector3(0,0,cameraRotationY>180?-1:1);
+			}
 			setCamera();
 		}
 	}
@@ -191,7 +193,6 @@ iddqd.ns('attractors.three',(function(){
 			,vecCam = cameraCenter.clone().sub(pos)
 			,sideVec = vecCam.clone().cross(vecZ)
 			,stepVec;
-		//console.log('keys',keys); // todo: remove log
 		if (keys[87]) stepVec = sideVec.cross(vecCam).setLength(-step); // up
 		if (keys[83]) stepVec = sideVec.cross(vecCam).setLength(step); // down
 		if (keys[65]) stepVec = sideVec.setLength(step); // left
