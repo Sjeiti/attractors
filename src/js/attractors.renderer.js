@@ -73,6 +73,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
 				y = -(position.y - 1)/2*h;
 				//
 				// todo: implement getColor here
+
 				//
 				distribute(pixels,x,y,w,h,1);
 				//

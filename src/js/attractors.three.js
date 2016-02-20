@@ -47,6 +47,7 @@ iddqd.ns('attractors.three',(function(){
 		initThreejs();
 		initEvents();
 		onTypeChanged();
+		onWindowResize();
 	}
 
 	function initThreejs(){
@@ -67,6 +68,7 @@ iddqd.ns('attractors.three',(function(){
 
 	function initThreejsCameras(){
 		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.01, 1E4 );
+		camera.up = new THREE.Vector3(0,0,1);
 		//camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 0.01, 1E4 );
 		//cameraRender = camera.clone();//new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 3500 );
 		setCamera();
@@ -208,7 +210,7 @@ iddqd.ns('attractors.three',(function(){
 	}
 
 	function onMouseWheel(i){
-		cameraDistance -= i/10;
+		cameraDistance = Math.max(cameraDistance - i/10,111);
 		setCamera();
 	}
 
@@ -288,11 +290,10 @@ iddqd.ns('attractors.three',(function(){
 			,sinY = Math.sin(radiansY)
 			,cosY = Math.cos(radiansY);
 		camera.position.set(
-			cameraDistance*sinY*sinX
-			,cameraDistance*sinY*cosX
-			,cameraDistance*cosY
+			 cameraCenter.x + cameraDistance*sinY*sinX
+			,cameraCenter.y + cameraDistance*sinY*cosX
+			,cameraCenter.z + cameraDistance*cosY
 		);
-		camera.up = new THREE.Vector3(0,0,1);
 		camera.lookAt(cameraCenter);
 	}
 
