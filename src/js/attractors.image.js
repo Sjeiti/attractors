@@ -20,6 +20,9 @@ iddqd.ns('attractors.image',(function(){
 		,canvasCode = document.createElement('canvas')
 		,contextCode = canvasCode.getContext('2d')
 		//
+		,canvasSurface = document.createElement('canvas')
+		,contextSurface = canvasSurface.getContext('2d')
+		//
 		,chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
 	;
 
@@ -28,19 +31,21 @@ iddqd.ns('attractors.image',(function(){
 	event.ANIMATION_DONE.add(onAnimationFinished);
 
 	function onImageResize(w,h){
-		canvasBackground.width = canvasAttractor.width = canvasColor.width = w;
-		canvasBackground.height = canvasAttractor.height = canvasColor.height = h;
+		canvasBackground.width = canvasAttractor.width = canvasColor.width = canvasSurface.width = w;
+		canvasBackground.height = canvasAttractor.height = canvasColor.height = canvasSurface.height = h;
 	}
 
 	function onAnimationFinished(){
 		var frames = attractors.animate.frames
-			,w = attractors.animate.w
-			,h = attractors.animate.h;
+			,w
+			,h;
 		var images = (function (a) {
 				frames.forEach(function (src) {
 					var img = document.createElement('img');
 					img.setAttribute('src',src);
 					a.push(img);
+					if (w===undefined) w = img.width;
+					if (h===undefined) h = img.height;
 				});
 				return a;
 			})([]);
@@ -93,6 +98,9 @@ iddqd.ns('attractors.image',(function(){
 			,imagedataColor = new ImageData(w,h)
 			,dataColor = imagedataColor.data
 			//
+			,imagedataSurface = new ImageData(w,h)
+			,dataSurface = imagedataSurface.data
+			//
 			,max = getMax(pixels)
 			,maxD = hasDistances&&getMax(distances)
 			,minD = hasDistances&&getMin(distances)
@@ -138,6 +146,38 @@ iddqd.ns('attractors.image',(function(){
 				dataColor[4*i+2] = rgb[2];
 			}
 			//
+			//
+			//
+			//
+			//
+			///
+			if (hasSurfaces) {
+				var px = i+1
+					,py = i+w
+					,clr = 0
+				;
+				if (px<pixels.length&&py<pixels.length) {
+					var dx = surfaces[i] - surfaces[px];
+					var dy = surfaces[i] - surfaces[py];
+					if (!isNaN(dx)&&!isNaN(dy)) {
+						clr = Math.max(0,255-(dx*dy*50<<0));
+					//console.log('dx*dy',dx*dy*50<<0); // todo: remove log
+					}
+				}
+				clr = 255-(surfaces[i]-minC)/(maxC-minC)*255<<0;
+				if (isNaN(clr)) clr = 0;
+				dataSurface[4*i+0] = clr;
+				dataSurface[4*i+1] = clr;
+				dataSurface[4*i+2] = clr;
+				dataSurface[4*i+3] = 255;
+			}
+			///
+			//
+			//
+			//
+			//
+			//
+			//
 			//hasDistances&&(dataColor[4*i+0] = 255-(distances[i]-minD)/(maxD-minD)*255<<0);//Math.pow((distances[i]-minD)/(maxD-minD),gammaValue)*255<<0;
 			//hasLyapunovs&&(dataColor[4*i+1] = (lyapunovs[i]-minL)/(maxL-minL)*255<<0);//Math.pow((lyapunovs[i]-minL)/(maxL-minL),gammaValue)*255<<0;
 			//hasSurfaces&&(dataColor[4*i+2] = 255-(surfaces[i]-minC)/(maxC-minC)*255<<0);
@@ -166,6 +206,22 @@ iddqd.ns('attractors.image',(function(){
 		setCode(w,contextBackground.getImageData(0,0,1,1).data);
 		contextBackground.globalCompositeOperation = 'source-over';
 		contextBackground.drawImage(canvasCode,0,0);
+		//
+		//
+		//
+		///
+		/*if (hasSurfaces) {
+			console.log('surfaces'); // todo: remove log
+			contextSurface.putImageData(imagedataSurface,0,0);
+			contextBackground.drawImage(canvasSurface,0,0);
+			document.body.appendChild(canvasSurface);
+			canvasSurface.style.position = 'absolute';
+			canvasSurface.style.top = '0';
+			canvasSurface.style.right = '0';
+		}*/
+		///
+		//
+		//
 		//
 		///////////////////////////////////////////////////////
 		// calc range

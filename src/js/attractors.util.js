@@ -1,5 +1,7 @@
 iddqd.ns('attractors.util',(function() {
 
+	var mathrandom = Math.random;
+
 	function wait(){
 		return new Promise(function(resolve){
 			requestAnimationFrame(resolve);
@@ -65,6 +67,10 @@ iddqd.ns('attractors.util',(function() {
 		});
 	}
 
+	function random(f){
+		return f*(mathrandom()-0.5);
+	}
+
 	return {
 		wait: wait
 		,array2array: array2array
@@ -74,5 +80,6 @@ iddqd.ns('attractors.util',(function() {
 		,getMax: getMax
 		,getMin: getMin
 		,promiseAnimationFrame: promiseAnimationFrame
+		,random: random
 	};
 })());

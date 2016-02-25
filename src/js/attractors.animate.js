@@ -18,9 +18,7 @@ iddqd.ns('attractors.animate',(function() {
 			cameraCenter: three.cameraCenter.clone()
 			,update: updateCamera
 		}
-		//
-		,w = 1
-		,h = 1;
+	;
 
 	function init() {
 		onTypeChanged();
@@ -33,8 +31,6 @@ iddqd.ns('attractors.animate',(function() {
 
 	function onAnimationStart(width,height){
 		frames.length = 0;
-		w = width;
-		h = height;
 	}
 
 	function onAnimationFrame(src){
@@ -131,8 +127,6 @@ iddqd.ns('attractors.animate',(function() {
 		setFrame: setFrame
 		,getFromTo: getFromTo
 		,get frames() { return frames; }
-		,get w() { return w; }
-		,get h() { return h; }
 		,get sines() { return sines; }
 		,get offsets() { return offsets; }
 		,get constantsFirst() { return constantsFirst; }

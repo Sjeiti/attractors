@@ -5,7 +5,8 @@ iddqd.ns('attractors.three',(function(){
 	var signal = iddqd.signal
 		,event = attractors.event
 		,isFinite = Number.isFinite
-		,random = Math.random
+		,random = attractors.util.random
+		,rndSize = 5
 		,abs = Math.abs
 		,attractor = attractors.attractor
 		,addDragEvent = attractors.util.addDragEvent
@@ -236,8 +237,9 @@ iddqd.ns('attractors.three',(function(){
 			,colorAttr = geometry.attributes.color
 			,colors = colorAttr.array
 			,color
-			,p = new THREE.Vector3(random(),0,0)
-			,i = 100;
+			,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
+			,i = 100
+			,t = Date.now();
 		// dry run
 		while (i--) iterate(p);
 		// wet run
@@ -266,6 +268,7 @@ iddqd.ns('attractors.three',(function(){
 		}
 		positionAttr.needsUpdate = true;
 		colorAttr.needsUpdate = true;
+		console.log('redraw',Date.now()-t); // todo: remove log
 	}
 
 	function getColor(x,y,z){
@@ -278,9 +281,9 @@ iddqd.ns('attractors.three',(function(){
 
 	function iterate(p){
 		attractor(p);
-		if (!isFinite(p.x)) p.x = random();
-		if (!isFinite(p.y)) p.y = random();
-		if (!isFinite(p.z)) p.z = random();
+		if (!isFinite(p.x)) p.x = random(rndSize);
+		if (!isFinite(p.y)) p.y = random(rndSize);
+		if (!isFinite(p.z)) p.z = random(rndSize);
 		point.x = p.x*n - n2;
 		point.y = p.y*n - n2;
 		point.z = p.z*n - n2;
@@ -329,12 +332,15 @@ iddqd.ns('attractors.three',(function(){
 		if (z>zmax) zmax = z;
 	}
 
-	function center(){
+	function center(x,y,z){
 		var vecOffset = cameraCenter.clone();
+		if (x===undefined) x = (xmin+xmax)/2;
+		if (y===undefined) y = (ymin+ymax)/2;
+		if (z===undefined) z = (zmin+zmax)/2;
 		//
-		cameraCenter.x = (xmin+xmax)/2;
-		cameraCenter.y = (ymin+ymax)/2;
-		cameraCenter.z = (zmin+zmax)/2;
+		cameraCenter.x = x;
+		cameraCenter.y = y;
+		cameraCenter.z = z;
 		//
 		vecOffset.sub(cameraCenter);
 		camera.position.sub(vecOffset);
@@ -342,6 +348,8 @@ iddqd.ns('attractors.three',(function(){
 		axis.position.x = cameraCenter.x;
 		axis.position.y = cameraCenter.y;
 		axis.position.z = cameraCenter.z;
+		//
+			setCamera();
 	}
 
 	function getCameraClone(){

@@ -1,26 +1,15 @@
 attractors.create(
 	'Peter de Jong'
 	,[3.1,-.1,6.1,4,4,0]
-	,function(constants,vec){
+	,function(vec,a,b,c,d,e,f){
 		var sin = Math.sin
 			,cos = Math.cos
 			,x = vec.x
 			,y = vec.y
-			,z = vec.z
-			,c0 = constants[0]
-			,c1 = constants[1]
-			,c2 = constants[2]
-			,c3 = constants[3]
-			,c4 = constants[4]
-			,c5 = constants[5];
-		vec.x = sin(c0*y) - cos(c3*x);
-		vec.y = sin(c1*z) - cos(c4*y);
-		vec.z = sin(c2*x) - cos(c5*z);
-
-		/*
-			x' = sin(ay) - cos(bx)
-			y' = sin(cx) - cos(dy )
-		*/
+			,z = vec.z;
+		vec.x = sin(a*y) - cos(d*x);
+		vec.y = sin(b*z) - cos(e*y);
+		vec.z = sin(c*x) - cos(f*z);
 		return vec;
 	}
 );

@@ -39,6 +39,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmType = getElementById('type')
 		,elmFrames = getElementById('frames')
 		,elmTrack = getElementById('track')
+		,elmAnimate = getElementById('animate')
 		,elmUseSines = getElementById('use-sines')
 		//
 		,iterations = 1E7
@@ -96,7 +97,8 @@ iddqd.ns('attractors.ui',(function(){
 		getElementById('constantsRandomize').addEventListener('click',onRandomizeClick);
 		getElementById('constantsRandomizeTiny').addEventListener('click',onRandomizeClick.bind(null,1E-3));
 		getElementById('constantsReset').addEventListener('click',onResetClick);
-		getElementById('centerAxis').addEventListener('click',center);
+		getElementById('centerAttractor').addEventListener('click',center);
+		getElementById('centerAxis').addEventListener('click',center.bind(null,0,0,0));
 	}
 
 	function initUIAnimate(){
@@ -124,6 +126,7 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		elmUseSines.addEventListener('change',function(){
 			var isChecked = elmUseSines.checked;
+			elmAnimate.classList.toggle('use-sines',isChecked);
 			getElementById('use-sines-switch').checked = isChecked;
 			isChecked&&fncApplySines();
 		});
@@ -207,7 +210,7 @@ iddqd.ns('attractors.ui',(function(){
 		dispatchSinesChanged();
 		/////////////////////////////////////////////
 		//
-		getElementById('animate').querySelector('.animate').addEventListener('click',onAnimateClick);
+		elmAnimate.querySelector('.animate').addEventListener('click',onAnimateClick);
 	}
 
 	function initUIRender(){
@@ -463,7 +466,7 @@ iddqd.ns('attractors.ui',(function(){
 				var i = frames
 					,anim = getAnimationFromTo()
 					,promise = util.emptyPromise();
-				ANIMATION_START.dispatch(w,h);
+				ANIMATION_START.dispatch();
 				while (i--) {
 					promise = promise
 						.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))

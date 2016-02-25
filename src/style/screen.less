@@ -195,27 +195,35 @@ input, select, option {
 	&:hover { opacity: 1; }
 }
 
+#animate {
+	#wrapper-track { height: auto; margin-bottom: 11px; }
+	svg { display: none; }
+	&.use-sines {
+		svg { display: block; }
+		#wrapper-track { height: 64px; margin-bottom: 0; }
+	}
+}
 #wrapper-track {
 	position: relative;
-	height: 64px;
+	//height: 64px;
 	#track {
 		&::-webkit-slider-runnable-track {
 			height: 1px;
-			top: 11px;
-			background-color: @colorA1;
+			background-color: @colorA2;
 			box-shadow: none;
+			//transform: translateY(5px);
 		}
 		&::-moz-range-track {
 			height: 1px;
-			top: 11px;
-			background-color: @colorA1;
+			background-color: @colorA2;
 			box-shadow: none;
+			//transform: translateY(5px);
 		}
 		&::-webkit-slider-thumb {
-			transform: translateY(-9px);
+			transform: translateY(-7px) rotate(45deg);
 		}
 		&::-moz-range-thumb {
-			transform: translateY(-9px);
+			transform: translateY(-7px) rotate(45deg);
 		}
 	}
 	svg {
@@ -248,7 +256,7 @@ input, select, option {
 @storeDiag: sqrt(2*@storeSize*@storeSize)/2.4;
 #store-first, #store-last {
 	position: absolute;
-	top: -20px;
+	top: -22px;
 	width: @storeSize;
 	height: @storeSize;
 	border-radius: 3px;
@@ -284,76 +292,11 @@ input, select, option {
 	}*/
 }
 #store-first {
-	left: -@storeSize/2 + 1px;
+	left: -11.5px;//-@storeSize/2 + 1px;
 }
 #store-last {
-	right: -@storeSize/2 + 1px;
+	right: -11.5px;//-@storeSize/2 + 1px;
 }
-
-@colorBrace: @colorA3;
-@braceThickness: 2px;
-@braceRadius: 20px;
-@braceBgWidth: 2*@braceRadius - @braceThickness;
-@braceRadiusStart: @braceRadius - @braceThickness;
-@braceRadiusStartA: @braceRadiusStart - 0.5px;
-@braceRadiusStartB: @braceRadiusStart + 0.5px;
-@braceRadiusEndA: @braceRadius - 0.5px;
-@braceRadiusEndB: @braceRadius + 0.5px;
-.brace {
-  width: auto;
-  min-width: @braceBgWidth;
-  padding-bottom: @braceRadius;
-  position: relative;
-  text-align: center;
-  vertical-align: middle;
-  margin: 0 @braceRadiusStart @braceRadiusStart;
-  border: none;
-  background-color: transparent;
-  background-image:
-    radial-gradient(circle at 0 0, fade(@colorBrace,0) @braceRadiusStartA, @colorBrace @braceRadiusStartB, @colorBrace @braceRadiusEndA, fade(@colorBrace,0) @braceRadiusEndB),
-    radial-gradient(circle at @braceBgWidth 0, fade(@colorBrace,0) @braceRadiusStartA, @colorBrace @braceRadiusStartB, @colorBrace @braceRadiusEndA, fade(@colorBrace,0) @braceRadiusEndB);
-  background-size: @braceBgWidth @braceRadius;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  color: @colorBrace;
-  &:before, &:after {
-    content: '';
-		position: absolute;
-		top: 100%;
-		display: block;
-    width: 50%;
-    height: 100%;
-		box-sizing: border-box;
-    margin-top: -@braceThickness;
-    border-top: @braceThickness solid @colorBrace;
-  }
-  &:before {
-    border-left: 1px solid transparent;
-    border-top-left-radius: 20% 30px;
-    height: 100%;
-  	left: -15px;
-  }
-  &:after {
-  	right: -15px;
-    border-right: 1px solid transparent;
-    border-top-right-radius: 20% 30px;
-  }
-	&.down {
-  	margin: @braceRadiusStart @braceRadiusStart 0;
-		background-image:
-			radial-gradient(circle at 0 @braceRadius, fade(@colorBrace,0) @braceRadiusStartA, @colorBrace @braceRadiusStartB, @colorBrace @braceRadiusEndA, fade(@colorBrace,0) @braceRadiusEndB),
-			radial-gradient(circle at @braceBgWidth @braceRadius, fade(@colorBrace,0) @braceRadiusStartA, @colorBrace @braceRadiusStartB, @colorBrace @braceRadiusEndA, fade(@colorBrace,0) @braceRadiusEndB);
-		&:before, &:after {
-			top: -100%;
-    	margin-top: @braceThickness;
-			border-top: 0;
-			border-bottom: @braceThickness solid @colorBrace;
-		}
-		&:before { border-bottom-left-radius: 20% 30px; }
-		&:after { border-bottom-right-radius: 20% 30px; }
-	}
-}
-.brace.down { margin-top: 10px; }
 
 #set-sines {
 	margin-left: 50%;
@@ -580,6 +523,7 @@ input[type=text], input[type=number], input[type=color], option, select {
 input[type=range] {
 	@rangeBtnW: 10px;
 	@rangeBtnH: 20px;
+	@rangeBtnSize: 15px;
 	@rangeTrackH: 6px;
   -webkit-appearance: none;
   width: 100%;
@@ -614,10 +558,10 @@ input[type=range] {
 	}
 	// thumb
 	&::-webkit-slider-thumb {
-		height: @rangeBtnH;
-		width: @rangeBtnW;
+		height: @rangeBtnSize;
+		width: @rangeBtnSize;
 		margin: 0;
-		transform: translateY(-(@rangeBtnH - @rangeTrackH)/2);
+		transform: translateY(-5px) rotate(45deg);
 		border: 1px solid @btnColorBorder;
 		border-radius: @btnRadius;
 		background: @btnColorBg;
@@ -626,10 +570,10 @@ input[type=range] {
 		&:hover { background-color: @btnHoverColorBg; }
 	}
 	&::-moz-range-thumb {
-		height: @rangeBtnH;
-		width: @rangeBtnW;
+		height: @rangeBtnSize;
+		width: @rangeBtnSize;
 		margin: 0;
-		transform: translateY(-(@rangeBtnH - @rangeTrackH)/2);
+		transform: translateY(-(@rangeBtnH - @rangeTrackH)/2) rotate(45deg);
 		border: 1px solid @btnColorBorder;
 		border-radius: @btnRadius;
 		background: @btnColorBg;

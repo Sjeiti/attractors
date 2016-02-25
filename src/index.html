@@ -56,7 +56,8 @@
 				<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
 				<a class="btn btn-secondary btn-sm" id="constantsRandomizeTiny">randomize a little</a>
 				<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
-				<a class="btn btn-secondary btn-sm" id="centerAxis">center</a>
+				<a class="btn btn-secondary btn-sm" id="centerAttractor">center</a>
+				<a class="btn btn-secondary btn-sm" id="centerAxis">center axis</a>
 			</fieldset>
 		</div>
 
@@ -125,7 +126,7 @@
 				<label for="coloring-distance" data-info="Use the iteration distance for coloring">Coloring distance</label>
 				<input type="checkbox" class="imitate" id="coloring-lyapunov" />
 				<label for="coloring-lyapunov" data-info="Use the Lyapunov exponent for coloring">Coloring Lyapunov</label>
-				<input type="checkbox" class="imitate" id="coloring-surface" />
+				<input type="checkbox" class="imitate" id="coloring-surface" checked />
 				<label for="coloring-surface" data-info="Apply shinines to the surface">Coloring surface</label>
 			</fieldset>
 			<fieldset class="form-group form-left">
@@ -198,6 +199,20 @@
 <script src="/js/attractors.util.addDragEvent.js"></script>
 <script src="/js/attractors.event.js"></script>
 
+<!---->
+
+<script src="/js/attractors.type.foo.js"></script>
+<script src="/js/attractors.type.tamari.js"></script>
+<script src="/js/attractors.type.chua.js"></script>
+<script src="/js/attractors.type.ikeda.js"></script>
+<script src="/js/attractors.type.bouali2.js"></script>
+<script src="/js/attractors.type.aizawa.js"></script>
+
+<script src="/js/attractors.type.thomas.js"></script>
+<script src="/js/attractors.type.luchen1.js"></script>
+<script src="/js/attractors.type.luchen2.js"></script>
+<script src="/js/attractors.type.dadras.js"></script>
+
 <script src="/js/attractors.type.lorenz84.js"></script>
 <script src="/js/attractors.type.lorenz.js"></script>
 <script src="/js/attractors.type.rossler.js"></script>
@@ -212,9 +227,7 @@
 <script src="/js/attractors.type.sprot.js"></script>
 <script src="/js/attractors.type.peterdejong.js"></script>
 
-<script src="/js/attractors.type.ikeda.js"></script>
-<script src="/js/attractors.type.chua.js"></script>
-<script src="/js/attractors.type.tamari.js"></script>
+<!---->
 
 <script src="/js/attractors.three.js"></script>
 <script src="/js/attractors.image.js"></script>

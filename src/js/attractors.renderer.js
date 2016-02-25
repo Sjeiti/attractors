@@ -2,9 +2,10 @@ iddqd.ns('attractors.renderer',(function(undefined){
 	var three = attractors.three
 		,iterate = three.iterate
 		,point = three.point//new THREE.Vector3(0,0,0)
+		,random = attractors.util.random
+		,rndSize = 5
 		//,animate = attractors.animate
 		,event = attractors.event
-		,random = Math.random
 		//
 		,cameraRender
 		//
@@ -27,9 +28,9 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			,distances = calcDistance?new Array(numPixels):undefined
 			,lyapunovs = calcLyapunov?new Array(numPixels):undefined
 			,surfaces = calcSurface?new Array(numPixels):undefined
-			,p = new THREE.Vector3(random(),0,0)
-			,pLast = new THREE.Vector3(random(),0,0)
-			,pLyapunov = new THREE.Vector3(random(),0,0)
+			,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
+			,pLast = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
+			,pLyapunov = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
 			,batch = Math.pow(2,14)
 			,progressLast = 0
 			,t = Date.now()

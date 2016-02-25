@@ -1,20 +1,16 @@
 attractors.create(
 	'Ikeda'
 	//,[1,0.9,0.4,6]
-	,[0.18,0.78,0.4,6]
-	,function(constants,vec){
+	,[0.18,0.78,0.4,6,1E-3]
+	,function(vec,a,b,c,d,e){
 		var x = vec.x
 			,y = vec.y
 			,z = vec.z
-			,c0 = constants[0]
-			,c1 = constants[1]
-			,c2 = constants[2]
-			,c3 = constants[3]
 			,coxz = Math.cos(z)
 			,sinz = Math.sin(z);
-		vec.x = c0 + c1*(x*coxz - y*sinz );
-		vec.y = c1*(x*sinz + y*coxz) ;
-		vec.z = c2 - c3 / (1 + x*2 + y*2);
+		vec.x = x + e*(a + b*(x*coxz - y*sinz ));
+		vec.y = y + e*(b*(x*sinz + y*coxz) );
+		vec.z = z + e*(c - d / (1 + x*2 + y*2));
 
 /*
 
@@ -27,5 +23,5 @@ a = 1 ,   b = 0.9 ,   c = 0.4 ,   d = 6
 
 		return vec;
 	}
-	,100
+	,6
 );
