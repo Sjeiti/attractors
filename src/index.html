@@ -49,6 +49,8 @@
 					<fieldset class="form-group form-left">
 						<input type="range" class="form-control form-control-sm" min="<%=min%>" max="<%=max%>" step="0.00001" value="<%=rangevalue%>" data-model="<%=model%>" data-index="<%=index%>" data-type="<%=type%>" />
 						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="<%=model%><%=index%>" />
+						<input type="checkbox" id="lock<%=index%>" data-index="<%=index%>" />
+						<label class="icon-lock" for="lock<%=index%>"></label>
 					</fieldset>
 				</script>
 			</div>

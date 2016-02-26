@@ -4,6 +4,8 @@ iddqd.ns('attractors.ui',(function(){
 		,animate = attractors.animate
 		,renderer = attractors.renderer
 		,image = attractors.image
+		,random = attractors.util.random
+		,rndSize = 5
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
@@ -384,19 +386,32 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function onRandomizeClick(rnd,e){
-		if (rnd===undefined) rnd = 1;
 		var iterations = 20
-			,p = new THREE.Vector3(Math.random(),Math.random(),Math.random())
+			,isMove = typeof rnd==='number'
+			,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
 			,pp
 			,size = 1E-3
-			,tries = 1E4
+			,tries = 1E6
 			,constants = attractor.constants
 			,maxConstant = attractor.constantSize
-			,i;
+			,unLocked = Array.prototype.filter.call(getElementById('constants').querySelectorAll('fieldset input[type=checkbox]'),function(input){
+					return !input.checked;
+				}).map(function(input){
+					return parseInt(input.getAttribute('data-index'),10);
+				})
+			,numUnlocked = unLocked.length
+			,unlockedIndex
+			,constantIndex
+			,i
+		;
+		if (!isMove) rnd = 1;
+		//
 		while (tries--&&(i===undefined||isNaN(size)||!isFinite(size))) { //size<0.02||
-			constants.forEach(function(val,j,a){
-				getElementById('constants'+j).value = a[j] = val + rnd*maxConstant*(Math.random()-0.5);
-			});
+			unlockedIndex = numUnlocked;
+			while (unlockedIndex--) {
+				constantIndex = unLocked[unlockedIndex];
+				constants[constantIndex] = (isMove?constants[constantIndex]:0) + random(rnd*maxConstant);
+			}
 			i = iterations;
 			while (i--) {
 				attractor(p);
@@ -404,8 +419,13 @@ iddqd.ns('attractors.ui',(function(){
 			}
 			size = p.distanceTo(pp);
 		}
+		constants.forEach(function(val,j,a){
+			getElementById('constants'+j).value = a[j];
+		});
 		dispatchConstantsChanged(constants);
-		center();
+		//if (isNaN(size)||!isFinite(size)) center(0,0,0);
+		//else center();
+		center(0,0,0);
 		setCamera();
 	}
 

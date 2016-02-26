@@ -30,8 +30,7 @@
 @colorConstant6: @colorC0;
 @colorConstant7: @colorD0;
 
-
-
+@import '/style/style.css';
 
 // header
 @headerColor: @colorA1;
@@ -339,6 +338,23 @@ input, select, option {
 #constants {
 	margin-bottom: 10px;
 	.form-group { margin-bottom: 3px; }
+	fieldset {
+		position: relative;
+		input {
+			&:nth-of-type(1), &:nth-of-type(2) { width: 50%; }
+			&[type=checkbox] {
+				display: none;
+				&:checked+label { color: @colorB3; }
+			}
+		}
+		label {
+			width: auto;
+			position: absolute;
+			top: 2px;
+			right: -16px;
+			color: @colorA0;
+		}
+	}
 }
 
 #constants, #sines, #offsets {

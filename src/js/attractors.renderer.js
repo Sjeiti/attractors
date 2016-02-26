@@ -28,8 +28,8 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			,distances = calcDistance?new Array(numPixels):undefined
 			,lyapunovs = calcLyapunov?new Array(numPixels):undefined
 			,surfaces = calcSurface?new Array(numPixels):undefined
-			,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
-			,pLast = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
+					,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
+				,pLast = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
 			,pLyapunov = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
 			,batch = Math.pow(2,14)
 			,progressLast = 0
