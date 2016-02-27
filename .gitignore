@@ -4,6 +4,8 @@
 /_backup
 /dist
 /src/vendor
+/src/fonts/icomoon.*
 /src/style/*.css
+/src/style/icons.less
 /temp
 /node_modules

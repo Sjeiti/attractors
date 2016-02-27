@@ -4,12 +4,16 @@ iddqd.ns('attractors.three',(function(){
 
 	var signal = iddqd.signal
 		,event = attractors.event
+		//
 		,isFinite = Number.isFinite
+		//
 		,random = attractors.util.random
 		,rndSize = 5
+		//
 		,abs = Math.abs
 		,attractor = attractors.attractor
 		,addDragEvent = attractors.util.addDragEvent
+		//
 		// threejs
 		,camera
 		,cameraFrameSize = 1
@@ -125,7 +129,7 @@ iddqd.ns('attractors.three',(function(){
 		//
 		geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
 		geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-		geometry.computeBoundingSphere();
+		isMinMaxFinite()&&geometry.computeBoundingSphere();
 		//
 		var textureLoader = new THREE.TextureLoader()
 			,material = new THREE.PointsMaterial({
@@ -311,7 +315,7 @@ iddqd.ns('attractors.three',(function(){
 		n2 = n/2;
 		redraw();
 		center();
-		geometry.computeBoundingSphere();
+		isMinMaxFinite()&&geometry.computeBoundingSphere();
 	}
 
 	function resetMinMax(){
@@ -332,11 +336,17 @@ iddqd.ns('attractors.three',(function(){
 		if (z>zmax) zmax = z;
 	}
 
+	function isMinMaxFinite(){
+		return isFinite(xmin)&&isFinite(xmax)
+			&&isFinite(ymin)&&isFinite(ymax)
+			&&isFinite(zmin)&&isFinite(zmax);
+	}
+
 	function center(x,y,z){
 		var vecOffset = cameraCenter.clone();
-		if (x===undefined) x = (xmin+xmax)/2;
-		if (y===undefined) y = (ymin+ymax)/2;
-		if (z===undefined) z = (zmin+zmax)/2;
+		if (typeof x!=='number') x = isFinite(xmin)&&isFinite(xmax)?(xmin+xmax)/2:0;
+		if (typeof y!=='number') y = isFinite(ymin)&&isFinite(ymax)?(ymin+ymax)/2:0;
+		if (typeof z!=='number') z = isFinite(zmin)&&isFinite(zmax)?(zmin+zmax)/2:0;
 		//
 		cameraCenter.x = x;
 		cameraCenter.y = y;
@@ -349,7 +359,7 @@ iddqd.ns('attractors.three',(function(){
 		axis.position.y = cameraCenter.y;
 		axis.position.z = cameraCenter.z;
 		//
-			setCamera();
+		setCamera();
 	}
 
 	function getCameraClone(){

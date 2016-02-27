@@ -7,13 +7,7 @@
 		,"Whammy": true
 		,"ImageData": true
 		,"signals": true
-
-		,"module": true
-		,"require": true
-		,"Promise": true
-		,"TweenMax": true
-		,"Strong": true
-		,"Packery": true
+		,"tinycolor": true
 	},
     "esnext": true,
     "eqeqeq": true,

@@ -30,7 +30,7 @@
 @colorConstant6: @colorC0;
 @colorConstant7: @colorD0;
 
-@import '/style/style.css';
+@import './src/style/icons';
 
 // header
 @headerColor: @colorA1;
@@ -108,6 +108,8 @@ input, select, option {
 	color: #333;
 }
 
+button:focus {outline:0;}
+
 .form-group {
 	margin-bottom: .5rem;
 	&:last-child { margin-bottom: 0; }
@@ -146,8 +148,16 @@ input, select, option {
 
 .btn-primary { .button(#e3ffff, #0072ff, #394857); }
 .btn-secondary { .button(@btnColor, @btnColorBg, @btnColorBorder); }
+.btn-icon {
+	.button(@colorA0, transparent, transparent);
+	width: 13px;
+	height: 13px;
+	font-size: 13px;
+	line-height: 13px;
+	text-shadow: none;
+}
 
-.form-left {
+.form-left, .form-left-2 {
 	&:after {
 		content: '';
 		display: block;
@@ -156,6 +166,10 @@ input, select, option {
 	>* {
 		float: left;
 		vertical-align: middle;
+	}
+}
+.form-left {
+	>* {
 		&:first-child:nth-last-child(1) {
 			width: 100%;
 		}
@@ -169,6 +183,18 @@ input, select, option {
 			&:nth-child(1) { width: 30%; }
 			&:nth-child(2) { width: 40%; }
 			&:nth-child(3) { width: 30%; }
+		}
+	}
+}
+.form-left-2 {
+	position: relative;
+	>* {
+		&:nth-child(1) { width: 70%; }
+		&:nth-child(2) { width: 30%; }
+		&:last-child {
+			position: absolute;
+			top: 2px;
+			right: -14px;
 		}
 	}
 }
@@ -353,6 +379,7 @@ input, select, option {
 			top: 2px;
 			right: -16px;
 			color: @colorA0;
+			cursor: pointer;
 		}
 	}
 }

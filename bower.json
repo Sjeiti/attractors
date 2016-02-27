@@ -21,6 +21,7 @@
     "iddqd": "2.5.9",
     "jszip": "~2.5.0",
     "gifshot": "~0.3.2",
-    "whammy": "*"
+    "whammy": "*",
+    "tinycolor": "~1.3.0"
   }
 }

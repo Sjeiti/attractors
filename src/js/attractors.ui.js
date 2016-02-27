@@ -247,6 +247,7 @@ iddqd.ns('attractors.ui',(function(){
 		var sizes = {
 				128:128
 				,256:256
+				,512:512
 				,320:240
 				,640:480
 				,800:600
@@ -269,6 +270,9 @@ iddqd.ns('attractors.ui',(function(){
 			}
 		}
 		sizes[availWidth] = availHeight;
+		// color
+		getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,getElementById('background-color')));
+		getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,getElementById('attractor-color')));
 		// render
 		elmRender.addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
@@ -389,7 +393,7 @@ iddqd.ns('attractors.ui',(function(){
 		var iterations = 20
 			,isMove = typeof rnd==='number'
 			,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
-			,pp
+			,pp = new THREE.Vector3(0,0,0)
 			,size = 1E-3
 			,tries = 1E6
 			,constants = attractor.constants
@@ -406,7 +410,7 @@ iddqd.ns('attractors.ui',(function(){
 		;
 		if (!isMove) rnd = 1;
 		//
-		while (tries--&&(i===undefined||isNaN(size)||!isFinite(size))) { //size<0.02||
+		while (tries--&&(i===undefined||isNaN(size)||!isFinite(size)||size<0.02)) { //size<0.02||
 			unlockedIndex = numUnlocked;
 			while (unlockedIndex--) {
 				constantIndex = unLocked[unlockedIndex];
@@ -415,17 +419,20 @@ iddqd.ns('attractors.ui',(function(){
 			i = iterations;
 			while (i--) {
 				attractor(p);
-				if (i===1) pp = p.clone();
+				if (i===1) {
+					pp.x = p.x;
+					pp.y = p.y;
+					pp.z = p.z;
+				}
 			}
 			size = p.distanceTo(pp);
 		}
+		console.log('rnd',tries,!isFinite(size),size<0.02,size,p); // todo: remove log
 		constants.forEach(function(val,j,a){
 			getElementById('constants'+j).value = a[j];
 		});
 		dispatchConstantsChanged(constants);
-		//if (isNaN(size)||!isFinite(size)) center(0,0,0);
-		//else center();
-		center(0,0,0);
+		center();
 		setCamera();
 	}
 
@@ -456,6 +463,10 @@ iddqd.ns('attractors.ui',(function(){
 				})(frames-i-1))
 				.then(util.promiseAnimationFrame);
 		}
+	}
+
+	function onRandomizeColorClick(elm){
+		elm.value = tinycolor(elm.value).spin(random(360)).toString();
 	}
 
 	function onRenderClick(){

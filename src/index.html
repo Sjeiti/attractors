@@ -111,15 +111,17 @@
 		<h2 class="tab-title"><label for="tabs-render">render</label></h2>
 		<input type="checkbox" name="tabs" id="tabs-render" class="tabs" checked />
 		<div class="tab">
-			<fieldset class="form-group form-left">
+			<fieldset class="form-group form-left-2">
 				<label for="background-color">Background color</label>
 				<!--<input type="color" class="form-control-sm" id="background-color" value="#FFFFFF" />-->
 				<input type="color" class="form-control-sm" id="background-color" value="#2f002f" />
+				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-background-color"></button>
 			</fieldset>
-			<fieldset class="form-group form-left">
+			<fieldset class="form-group form-left-2">
 				<label for="attractor-color">Attractor color</label>
 				<!--<input type="color" class="form-control-sm" id="attractor-color" value="#000000" />-->
 				<input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />
+				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-foreground-color"></button>
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<input type="checkbox" class="imitate" id="background-radial" />
@@ -128,7 +130,7 @@
 				<label for="coloring-distance" data-info="Use the iteration distance for coloring">Coloring distance</label>
 				<input type="checkbox" class="imitate" id="coloring-lyapunov" />
 				<label for="coloring-lyapunov" data-info="Use the Lyapunov exponent for coloring">Coloring Lyapunov</label>
-				<input type="checkbox" class="imitate" id="coloring-surface" checked />
+				<input type="checkbox" class="imitate" id="coloring-surface" />
 				<label for="coloring-surface" data-info="Apply shinines to the surface">Coloring surface</label>
 			</fieldset>
 			<fieldset class="form-group form-left">
@@ -195,6 +197,7 @@
 <script src="/vendor/jszip/dist/jszip.min.js"></script>
 <script src="/vendor/gifshot/build/gifshot.js"></script>
 <script src="/vendor/whammy/whammy.js"></script>
+<script src="/vendor/tinycolor/dist/tinycolor-min.js"></script>
 
 <script src="/js/attractors.js"></script>
 <script src="/js/attractors.util.js"></script>
@@ -203,17 +206,13 @@
 
 <!---->
 
-<script src="/js/attractors.type.foo.js"></script>
-<script src="/js/attractors.type.tamari.js"></script>
-<script src="/js/attractors.type.chua.js"></script>
-<script src="/js/attractors.type.ikeda.js"></script>
-<script src="/js/attractors.type.bouali2.js"></script>
-<script src="/js/attractors.type.aizawa.js"></script>
+<!--<script src="/js/attractors.type.foo.js"></script>-->
+<!--<script src="/js/attractors.type.tamari.js"></script>-->
+<!--<script src="/js/attractors.type.chua.js"></script>-->
+<!--<script src="/js/attractors.type.ikeda.js"></script>-->
+<!--<script src="/js/attractors.type.bouali2.js"></script>-->
+<!--<script src="/js/attractors.type.aizawa.js"></script>-->
 
-<script src="/js/attractors.type.thomas.js"></script>
-<script src="/js/attractors.type.luchen1.js"></script>
-<script src="/js/attractors.type.luchen2.js"></script>
-<script src="/js/attractors.type.dadras.js"></script>
 
 <script src="/js/attractors.type.lorenz84.js"></script>
 <script src="/js/attractors.type.lorenz.js"></script>
@@ -225,6 +224,12 @@
 <script src="/js/attractors.type.latoocarfian.js"></script>
 <script src="/js/attractors.type.kamtorus.js"></script>
 <script src="/js/attractors.type.clifford3d.js"></script>
+<script src="/js/attractors.type.hadley.js"></script>
+<script src="/js/attractors.type.dequanli.js"></script>
+<script src="/js/attractors.type.thomas.js"></script>
+<script src="/js/attractors.type.luchen1.js"></script>
+<script src="/js/attractors.type.luchen2.js"></script>
+<script src="/js/attractors.type.dadras.js"></script>
 
 <script src="/js/attractors.type.sprot.js"></script>
 <script src="/js/attractors.type.peterdejong.js"></script>
