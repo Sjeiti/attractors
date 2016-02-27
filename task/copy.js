@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp')
 Promise.all([
 	glomise('./src/*')
 	,glomise('./src/img/*')
+	,glomise('./src/fonts/*')
 	,glomise('./src/style/*.css')
 ]).then(function(results){
 	Array.prototype.concat.apply(results.pop(),results).forEach(function(file){

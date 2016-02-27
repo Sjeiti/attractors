@@ -7,5 +7,7 @@
 /src/fonts/icomoon.*
 /src/style/*.css
 /src/style/icons.less
+/src/img/icon-*.png
+/src/js/*.as
 /temp
 /node_modules
