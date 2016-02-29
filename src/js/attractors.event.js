@@ -22,4 +22,7 @@ iddqd.ns('attractors.event',{
 	,IMAGE_DRAWN: new signals.Signal()
 	,IMAGE_GAMMA_CHANGED: new signals.Signal()
 	//
+	,COLOR_BACKGROUND_CHANGED: new signals.Signal()
+	,COLOR_FOREGROUND_CHANGED: new signals.Signal()
+	,COLOR_STATIC_CHANGED: new signals.Signal()
 });

@@ -48,6 +48,9 @@ iddqd.ns('attractors.three',(function(){
 		,ymax = -Infinity
 		,zmin = Infinity
 		,zmax = -Infinity
+		//
+		,colorFg
+		,isColorStatic = false
 	;
 
 	function init() {
@@ -145,6 +148,11 @@ iddqd.ns('attractors.three',(function(){
 		var particleSystem = new THREE.Points( geometry, material );
 		particleSystem.sortParticles = true;
 		scene.add( particleSystem );
+		//
+		event.COLOR_STATIC_CHANGED.add(function(checked){
+			isColorStatic = checked;
+			redraw();
+		});
 	}
 
 	function initThreejsRenderer(){
@@ -166,6 +174,8 @@ iddqd.ns('attractors.three',(function(){
 		window.addEventListener( 'resize', onWindowResize, false );
 		event.TYPE_CHANGED.add(onTypeChanged);
 		event.CONSTANTS_CHANGED.add(redraw);
+		event.COLOR_BACKGROUND_CHANGED.add(onBackgroundChanged);
+		event.COLOR_FOREGROUND_CHANGED.add(onForegroundChanged);
 	}
 
 	function drag(touchOrE,offsetX,offsetY){
@@ -259,16 +269,18 @@ iddqd.ns('attractors.three',(function(){
 			positions[i]   = x;
 			positions[i+1] = y;
 			positions[i+2] = z;
-			//colors[i]   = 1;
-			//colors[i+1] = 1;
-			//colors[i+2] = 1;
-			color = getColor(x,y,z);
-			colors[i]   = color[0];
-			colors[i+1] = color[1];
-			colors[i+2] = color[2];
-			//colors[i]   = (x-xmin)/(xmax-xmin);
-			//colors[i+1] = (y-ymin)/(ymax-ymin);
-			//colors[i+2] = (z-zmin)/(zmax-zmin);
+			//
+			if (isColorStatic) {
+				var rgb = tinycolor(colorFg).toRgb();
+				colors[i]   = rgb.r/255;
+				colors[i+1] = rgb.g/255;
+				colors[i+2] = rgb.b/255;
+			} else {
+				color = getColor(x,y,z);
+				colors[i]   = color[0];
+				colors[i+1] = color[1];
+				colors[i+2] = color[2];
+			}
 		}
 		positionAttr.needsUpdate = true;
 		colorAttr.needsUpdate = true;
@@ -316,6 +328,15 @@ iddqd.ns('attractors.three',(function(){
 		redraw();
 		center();
 		isMinMaxFinite()&&geometry.computeBoundingSphere();
+	}
+
+	function onBackgroundChanged(color){
+		renderer.setClearColor( color );
+	}
+
+	function onForegroundChanged(color){
+		colorFg = color;
+		isColorStatic&&redraw();
 	}
 
 	function resetMinMax(){
@@ -375,6 +396,7 @@ iddqd.ns('attractors.three',(function(){
 		,center: center
 		,getCameraClone: getCameraClone
 		,iterate: iterate
+		,getColor: getColor
 		,setCamera: setCamera
 		,get point() { return point; }
 		,get cameraCenter() { return cameraCenter; }

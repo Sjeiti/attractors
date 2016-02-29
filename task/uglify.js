@@ -60,13 +60,18 @@ function findJs(data){
 }
 
 function loadJs(js){
+	console.log('uglify','\n\t- '+js.map(function(o){
+		return o.src;
+	}).filter(function(o){
+		return o;
+	}).join('\n\t- '));
 	return Promise.all(js.map(function(o){
 		return o.src&&read('./src'+o.src)||(new Promise(function(r){r(o.text);}));
 	}));
 }
 
 function minify(files){
-	return uglify.minify(files.join(';'), {
+	return uglify.minify(files.join('\n;'), {
 		fromString: true
 		,pure_getters: true
 	}).code;//files.join(';');//

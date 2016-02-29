@@ -82,9 +82,11 @@ iddqd.ns('attractors.image',(function(){
 
 	function draw(w,h,colorAt,colorBg,radial,result){
 		var pixels = result[0]
-			,distances = result[1]
-			,lyapunovs = result[2]
-			,surfaces = result[3]
+			,spaces = result[1]
+			,distances = result[2]
+			,lyapunovs = result[3]
+			,surfaces = result[4]
+			,hasSpaces = spaces!==undefined
 			,hasDistances = distances!==undefined
 			,hasLyapunovs = lyapunovs!==undefined
 			,hasSurfaces = surfaces!==undefined
@@ -102,6 +104,7 @@ iddqd.ns('attractors.image',(function(){
 			,dataSurface = imagedataSurface.data
 			//
 			,max = getMax(pixels)
+			,maxS = hasSpaces&&getMax(spaces)
 			,maxD = hasDistances&&getMax(distances)
 			,minD = hasDistances&&getMin(distances)
 			,maxL = hasLyapunovs&&getMax(lyapunovs)
@@ -111,7 +114,6 @@ iddqd.ns('attractors.image',(function(){
 			,i = pixels.length
 		;
 		//
-		//console.log('distances',distances); // todo: remove log
 		/*distances.forEach(function(val,j){
 			if (val===0) distances[j] = maxD;
 		});
@@ -121,15 +123,22 @@ iddqd.ns('attractors.image',(function(){
 		//
 		setBackground(w,h,colorBg,radial);
 		//
-		//console.log('minmaxD',minD,maxD); // todo: remove log
-		//console.log('minmaxL',minL,maxL); // todo: remove log
-		//console.log('minmaxC',minC,maxC); // todo: remove log
 		//
 		while (i--) {
 			//dataAttractor[4*i+3] = Math.pow(distances[i]/maxD,gammaValue)*255<<0;
 			dataAttractor[4*i+3] = Math.pow(pixels[i]/max,gammaValue)*255<<0;
 			//
-			if (hasDistances&&hasLyapunovs) {
+			if (hasSpaces) {
+				//dataColor[4*i+0] = spaces[3*i+0]/maxS*255<<0;
+				//dataColor[4*i+1] = spaces[3*i+1]/maxS*255<<0;
+				//dataColor[4*i+2] = spaces[3*i+2]/maxS*255<<0;
+				var gammaSpace = 0.9
+					,gt = 1.6;
+				dataColor[4*i+0] = gt*Math.pow(spaces[3*i+0]/maxS,gammaSpace)*255<<0;
+				dataColor[4*i+1] = gt*Math.pow(spaces[3*i+1]/maxS,gammaSpace)*255<<0;
+				dataColor[4*i+2] = gt*Math.pow(spaces[3*i+2]/maxS,gammaSpace)*255<<0;
+				//gammaValue
+			} else if (hasDistances&&hasLyapunovs) {
 				var rgb = hslToRgb((distances[i]-minD)/(maxD-minD),(lyapunovs[i]-minL)/(maxL-minL),.5);
 				dataColor[4*i+0] = rgb[0];
 				dataColor[4*i+1] = rgb[1];
@@ -161,7 +170,6 @@ iddqd.ns('attractors.image',(function(){
 					var dy = surfaces[i] - surfaces[py];
 					if (!isNaN(dx)&&!isNaN(dy)) {
 						clr = Math.max(0,255-(dx*dy*50<<0));
-					//console.log('dx*dy',dx*dy*50<<0); // todo: remove log
 					}
 				}
 				clr = 255-(surfaces[i]-minC)/(maxC-minC)*255<<0;
@@ -189,6 +197,19 @@ iddqd.ns('attractors.image',(function(){
 		contextAttractor.fillStyle = colorAt;
 		contextAttractor.fillRect(0,0,w,h);
 		//
+		if (hasSpaces) {
+			contextColor.putImageData(imagedataColor,0,0);
+			contextAttractor.globalCompositeOperation = 'source-in';
+			contextAttractor.drawImage(canvasColor,0,0);
+		}
+		//
+		/*if (hasSpaces) {
+			document.body.appendChild(canvasColor);
+			canvasColor.style.position = 'absolute';
+			canvasColor.style.top = '0';
+			canvasColor.style.right = '0';
+		}*/
+		//
 		//contextColor.putImageData(imagedataColor,0,0);
 		////contextColor.globalAlpha  = hasDistances||hasLyapunovs||hasSurfaces?0.5:1;
 		////contextColor.globalCompositeOperation = 'screen';
@@ -211,7 +232,6 @@ iddqd.ns('attractors.image',(function(){
 		//
 		///
 		/*if (hasSurfaces) {
-			console.log('surfaces'); // todo: remove log
 			contextSurface.putImageData(imagedataSurface,0,0);
 			contextBackground.drawImage(canvasSurface,0,0);
 			document.body.appendChild(canvasSurface);
@@ -244,12 +264,8 @@ iddqd.ns('attractors.image',(function(){
 				var hh = (o.color[i]/o.max*255)<<0;
 				contextBackground.fillStyle = o.hex;
 				contextBackground.fillRect(i,256-hh,1,hh);
-				//console.log('h',red[i],redMax,hh); // todo: remove log
 			}
 		});*/
-		//console.log('rgb',red.length,green.length,blue.length); // todo: remove log
-		//console.log('rgb',redMax,greenMax,blueMax); // todo: remove log
-		//console.log('rgb',red,green,blue); // todo: remove log
 		///////////////////////////////////////////////////////
 		//
 		event.IMAGE_DRAWN.dispatch(canvasBackground);

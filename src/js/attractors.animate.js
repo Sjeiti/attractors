@@ -93,6 +93,9 @@ iddqd.ns('attractors.animate',(function() {
 		if (rotate) {
 			start.cameraRotationX = three.cameraRotationX;
 			end.cameraRotationX = three.cameraRotationX+(360-360/(frames+1));
+		} else if (loop) {
+			start.camera = cameraFirst;
+			end.camera = cameraFirst;
 		} else {
 			start.camera = cameraFirst;
 			end.camera = cameraLast;

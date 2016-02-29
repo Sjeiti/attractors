@@ -49,7 +49,7 @@
 					<fieldset class="form-group form-left">
 						<input type="range" class="form-control form-control-sm" min="<%=min%>" max="<%=max%>" step="0.00001" value="<%=rangevalue%>" data-model="<%=model%>" data-index="<%=index%>" data-type="<%=type%>" />
 						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="<%=model%><%=index%>" />
-						<input type="checkbox" id="lock<%=index%>" data-index="<%=index%>" />
+						<input type="checkbox" id="lock<%=index%>" class="hide" data-index="<%=index%>" />
 						<label class="icon-lock" for="lock<%=index%>"></label>
 					</fieldset>
 				</script>
@@ -117,13 +117,17 @@
 				<input type="color" class="form-control-sm" id="background-color" value="#2f002f" />
 				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-background-color"></button>
 			</fieldset>
-			<fieldset class="form-group form-left-2">
+			<fieldset class="form-group form-left-2 hide">
 				<label for="attractor-color">Attractor color</label>
 				<!--<input type="color" class="form-control-sm" id="attractor-color" value="#000000" />-->
 				<input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />
 				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-foreground-color"></button>
 			</fieldset>
 			<fieldset class="form-group form-left">
+
+				<input type="checkbox" class="imitate" id="static-color" />
+				<label for="static-color">Static color</label>
+
 				<input type="checkbox" class="imitate" id="background-radial" />
 				<label for="background-radial" data-info="Apply a radial gradient to the background">Radial background</label>
 				<!--<input type="checkbox" class="imitate" id="coloring-distance" />
@@ -175,8 +179,13 @@
 <div id="stats"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
+
 <!--script-->
 <script src="/vendor/signals/dist/signals.js"></script>
+<script src="/vendor/jszip/dist/jszip.min.js"></script>
+<script src="/vendor/gifshot/build/gifshot.js"></script>
+<script src="/vendor/whammy/whammy.js"></script>
+<script src="/vendor/tinycolor/dist/tinycolor-min.js"></script>
 
 <script src="/vendor/iddqd/src/iddqd.js"></script>
 <script src="/vendor/iddqd/src/iddqd.pattern.js"></script>
@@ -194,10 +203,7 @@
 <script src="/vendor/three.js/examples/js/Detector.js"></script>
 <script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
 
-<script src="/vendor/jszip/dist/jszip.min.js"></script>
-<script src="/vendor/gifshot/build/gifshot.js"></script>
-<script src="/vendor/whammy/whammy.js"></script>
-<script src="/vendor/tinycolor/dist/tinycolor-min.js"></script>
+<!---->
 
 <script src="/js/attractors.js"></script>
 <script src="/js/attractors.util.js"></script>

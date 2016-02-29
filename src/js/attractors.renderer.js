@@ -1,6 +1,7 @@
 iddqd.ns('attractors.renderer',(function(undefined){
 	var three = attractors.three
 		,iterate = three.iterate
+		,getColor = three.getColor
 		,point = three.point//new THREE.Vector3(0,0,0)
 		,random = attractors.util.random
 		,rndSize = 5
@@ -14,7 +15,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
 		,cancelRenderRequest = false
 	;
 
-	function render(w,h,iterations,calcDistance,calcLyapunov,calcSurface,frame,frames){
+	function render(w,h,iterations,calcSpace,calcDistance,calcLyapunov,calcSurface,frame,frames){
 		console.log('three.render',w,h,iterations,frame,frames); // todo: remove log
 		isRendering = true;
 		cameraRender = three.getCameraClone();
@@ -25,6 +26,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
 					while (i--) a[i] = 0;
 					return a;
 				})([],numPixels)
+			,spaces = calcSpace?new Array(3*numPixels):undefined
 			,distances = calcDistance?new Array(numPixels):undefined
 			,lyapunovs = calcLyapunov?new Array(numPixels):undefined
 			,surfaces = calcSurface?new Array(numPixels):undefined
@@ -38,11 +40,11 @@ iddqd.ns('attractors.renderer',(function(undefined){
 		;
 		while (i--) iterate(p);
 		return new Promise(function(resolve,reject){
-			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,distances,lyapunovs,surfaces,w,h,iterations,iterations,batch,p,pLast,pLyapunov,progressLast,t,t,frame,frames));
+			requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,spaces,distances,lyapunovs,surfaces,w,h,iterations,iterations,batch,p,pLast,pLyapunov,progressLast,t,t,frame,frames));
 		});
 	}
 
-	function renderCycle(resolve,reject,pixels,distances,lyapunovs,surfaces,w,h,iterations,iteration,batch,p,pLast,pLyapunov,progressLast,t,start,frame,frames){
+	function renderCycle(resolve,reject,pixels,spaces,distances,lyapunovs,surfaces,w,h,iterations,iteration,batch,p,pLast,pLyapunov,progressLast,t,start,frame,frames){
 		var i = batch
 			,progress
 			,deltaT
@@ -51,9 +53,11 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			,cameraPosition = cameraRender.position
 			,x
 			,y
+			,hasSpaces = spaces!==undefined
 			,hasDistances = distances!==undefined
 			,hasLyapunovs = lyapunovs!==undefined
 			,hasSurfaces = surfaces!==undefined
+			,pointx,pointy,pointz
 		;
 		if (cancelRenderRequest===true) {
 			cancelRenderRequest = false;
@@ -69,16 +73,19 @@ iddqd.ns('attractors.renderer',(function(undefined){
 				}
 				//
 				iterate(p);
+				if (hasSpaces) {
+					pointx = point.x;
+					pointy = point.y;
+					pointz = point.z;
+				}
 				position = point.project(cameraRender);
 				x =  (position.x + 1)/2*w;
 				y = -(position.y - 1)/2*h;
 				//
-				// todo: implement getColor here
-
-				//
 				distribute(pixels,x,y,w,h,1);
 				//
-				// iteration distance, lyapunov exponent, camera distance
+				// relative space, iteration distance, lyapunov exponent, camera distance
+				hasSpaces&&distribute(spaces,x,y,w,h,getColor(pointx,pointy,pointz));
 				hasDistances&&distribute(distances,x,y,w,h,p.distanceTo(pLast));
 				hasLyapunovs&&distribute(lyapunovs,x,y,w,h,p.distanceTo(pLyapunov));
 				if (hasSurfaces) {
@@ -103,25 +110,28 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			now = Date.now();
 			deltaT = now-t;
 			t = now;
-			//console.log('deltaT',deltaT,batch);
 			if (deltaT<60) batch *= 2;
 			else batch = Math.ceil(batch/2);
 			if (iteration>0) {
-				requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,distances,lyapunovs,surfaces,w,h,iterations,iteration,batch,p,pLast,pLyapunov,progressLast,t,start,frame,frames));
+				requestAnimationFrame(renderCycle.bind(null,resolve,reject,pixels,spaces,distances,lyapunovs,surfaces,w,h,iterations,iteration,batch,p,pLast,pLyapunov,progressLast,t,start,frame,frames));
 			} else {
-				//console.log('pixels,distances',pixels,distances); // todo: remove log
-				if (hasDistances||hasLyapunovs) {
+				if (hasSpaces||hasDistances||hasLyapunovs) {
 					i = w*h;
 					while (i--) {
 						var pixel = pixels[i];
 						if (pixel!==0) {
+							if (hasSpaces) {
+								spaces[3*i] /= pixel;
+								spaces[3*i+1] /= pixel;
+								spaces[3*i+2] /= pixel;
+							}
 							hasDistances&&(distances[i] /= pixel);
 							hasLyapunovs&&(lyapunovs[i] /= pixel);
 							//depths[i] /= pixel;
 						}
 					}
 				}
-				resolve([pixels,distances,lyapunovs,surfaces]);
+				resolve([pixels,spaces,distances,lyapunovs,surfaces]);
 				isRendering = false;
 				//event.RENDER_DONE.dispatch();
 			}
@@ -148,10 +158,27 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			,pos11 = pos01 + 1
 		;
 		if (floorX>=0&&floorX<(w-1)&&floorY>=0&&floorY<(h-1)) {
-			a[pos00] = (a[pos00]||0) + weight*fx0*fy0;
-			a[pos10] = (a[pos10]||0) + weight*fx1*fy0;
-			a[pos01] = (a[pos01]||0) + weight*fx0*fy1;
-			a[pos11] = (a[pos11]||0) + weight*fx1*fy1;
+			if (typeof weight==='number') {
+				a[pos00] = (a[pos00]||0) + weight*fx0*fy0;
+				a[pos10] = (a[pos10]||0) + weight*fx1*fy0;
+				a[pos01] = (a[pos01]||0) + weight*fx0*fy1;
+				a[pos11] = (a[pos11]||0) + weight*fx1*fy1;
+			} else {
+				a[pos00*3] = (a[pos00*3]||0) + weight[0]*fx0*fy0;
+				a[pos10*3] = (a[pos10*3]||0) + weight[0]*fx1*fy0;
+				a[pos01*3] = (a[pos01*3]||0) + weight[0]*fx0*fy1;
+				a[pos11*3] = (a[pos11*3]||0) + weight[0]*fx1*fy1;
+				//
+				a[pos00*3+1] = (a[pos00*3+1]||0) + weight[1]*fx0*fy0;
+				a[pos10*3+1] = (a[pos10*3+1]||0) + weight[1]*fx1*fy0;
+				a[pos01*3+1] = (a[pos01*3+1]||0) + weight[1]*fx0*fy1;
+				a[pos11*3+1] = (a[pos11*3+1]||0) + weight[1]*fx1*fy1;
+				//
+				a[pos00*3+2] = (a[pos00*3+2]||0) + weight[2]*fx0*fy0;
+				a[pos10*3+2] = (a[pos10*3+2]||0) + weight[2]*fx1*fy0;
+				a[pos01*3+2] = (a[pos01*3+2]||0) + weight[2]*fx0*fy1;
+				a[pos11*3+2] = (a[pos11*3+2]||0) + weight[2]*fx1*fy1;
+			}
 		}
 	}
 

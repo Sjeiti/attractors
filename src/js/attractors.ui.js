@@ -43,6 +43,9 @@ iddqd.ns('attractors.ui',(function(){
 		,elmTrack = getElementById('track')
 		,elmAnimate = getElementById('animate')
 		,elmUseSines = getElementById('use-sines')
+		,elmColorBg = getElementById('background-color')
+		,elmColorFg = getElementById('attractor-color')
+		,elmStaticColor = getElementById('static-color')
 		//
 		,iterations = 1E7
 		//
@@ -221,6 +224,15 @@ iddqd.ns('attractors.ui',(function(){
 			,elmIterations = getElementById('iterations')
 			,elmIterationsRange = getElementById('iterationsRange')
 		;
+		//
+		elmStaticColor.addEventListener('change',function(){
+			event.COLOR_STATIC_CHANGED.dispatch(elmStaticColor.checked);
+		});
+		//
+		event.COLOR_STATIC_CHANGED.add(function(checked){
+			elmColorFg.parentNode.classList.toggle('hide',!checked);
+		});
+		//
 		// gamma
 		elmGamma.addEventListener('change',function(){
 			event.IMAGE_GAMMA_CHANGED.dispatch(parseFloat(elmGamma.value));
@@ -271,8 +283,16 @@ iddqd.ns('attractors.ui',(function(){
 		}
 		sizes[availWidth] = availHeight;
 		// color
-		getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,getElementById('background-color')));
-		getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,getElementById('attractor-color')));
+		event.COLOR_BACKGROUND_CHANGED.dispatch(elmColorBg.value);
+		elmColorBg.addEventListener('change',function(){
+			event.COLOR_BACKGROUND_CHANGED.dispatch(elmColorBg.value);
+		});
+		event.COLOR_FOREGROUND_CHANGED.dispatch(elmColorFg.value);
+		elmColorFg.addEventListener('change',function(){
+			event.COLOR_FOREGROUND_CHANGED.dispatch(elmColorFg.value);
+		});
+		getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorBg));
+		getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorFg));
 		// render
 		elmRender.addEventListener('click',onRenderClick);
 		event.RENDER_PROGRESS.add(onRenderProgress);
@@ -427,7 +447,6 @@ iddqd.ns('attractors.ui',(function(){
 			}
 			size = p.distanceTo(pp);
 		}
-		console.log('rnd',tries,!isFinite(size),size<0.02,size,p); // todo: remove log
 		constants.forEach(function(val,j,a){
 			getElementById('constants'+j).value = a[j];
 		});
@@ -467,6 +486,7 @@ iddqd.ns('attractors.ui',(function(){
 
 	function onRandomizeColorClick(elm){
 		elm.value = tinycolor(elm.value).spin(random(360)).toString();
+		(elm===elmColorBg&&event.COLOR_BACKGROUND_CHANGED||event.COLOR_FOREGROUND_CHANGED).dispatch(elm.value);
 	}
 
 	function onRenderClick(){
@@ -483,13 +503,14 @@ iddqd.ns('attractors.ui',(function(){
 				,h = size[1]
 				,frames = parseInt(elmFrames.value,10)
 				,doAnimate = getElementById('render-animate').checked
-				,colorAt = getElementById('attractor-color').value
-				,colorBg = getElementById('background-color').value
+				,colorAt = elmColorFg.value
+				,colorBg = elmColorBg.value
 				,bgRadial = getElementById('background-radial').checked
-				,calcDistance = getElementById('coloring-distance').checked
-				,calcLyapunov = getElementById('coloring-lyapunov').checked
-				,calcSurface = getElementById('coloring-surface').checked
-				,render = renderer.render.bind(null,w,h,iterations,calcDistance,calcLyapunov,calcSurface)
+				,calcDistance = false//getElementById('coloring-distance').checked
+				,calcLyapunov = false//getElementById('coloring-lyapunov').checked
+				,calcSurface = false//getElementById('coloring-surface').checked
+				,calcSpace = !calcDistance&&!calcLyapunov&&!calcSurface&&!elmStaticColor.checked
+				,render = renderer.render.bind(null,w,h,iterations,calcSpace,calcDistance,calcLyapunov,calcSurface)
 				,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch
 				;
@@ -619,6 +640,13 @@ iddqd.ns('attractors.ui',(function(){
 		elmConstants.innerHTML = htmlConstants;
 		elmSines.innerHTML = htmlsines;
 		elmOffsets.innerHTML = htmlOffsets;
+		//
+		Array.prototype.forEach.call(elmSines.querySelectorAll('.hide,.icon-lock'),function(elm){
+			elm.parentNode.removeChild(elm);
+		});
+		Array.prototype.forEach.call(elmOffsets.querySelectorAll('.hide,.icon-lock'),function(elm){
+			elm.parentNode.removeChild(elm);
+		});
 		//
 		return elmConstants;
 	}
