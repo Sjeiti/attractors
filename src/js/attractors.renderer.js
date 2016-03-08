@@ -157,7 +157,8 @@ iddqd.ns('attractors.renderer',(function(undefined){
 			,pos01 = pos00 + w
 			,pos11 = pos01 + 1
 		;
-		if (floorX>=0&&floorX<(w-1)&&floorY>=0&&floorY<(h-1)) {
+		//if (floorX>=0&&floorX<(w-1)&&floorY>=0&&floorY<(h-1)) {
+		if (floorX>=1&&floorX<(w-2)&&floorY>=1&&floorY<(h-2)) { // 1px from egdge otherwise spaces calculation weirds up over edges
 			if (typeof weight==='number') {
 				a[pos00] = (a[pos00]||0) + weight*fx0*fy0;
 				a[pos10] = (a[pos10]||0) + weight*fx1*fy0;

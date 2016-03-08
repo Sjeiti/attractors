@@ -124,6 +124,7 @@ iddqd.ns('attractors.image',(function(){
 		setBackground(w,h,colorBg,radial);
 		//
 		//
+		console.log('maxS',maxS); // todo: remove log
 		while (i--) {
 			//dataAttractor[4*i+3] = Math.pow(distances[i]/maxD,gammaValue)*255<<0;
 			dataAttractor[4*i+3] = Math.pow(pixels[i]/max,gammaValue)*255<<0;
@@ -159,7 +160,7 @@ iddqd.ns('attractors.image',(function(){
 			//
 			//
 			//
-			///
+			/// is disabled
 			if (hasSurfaces) {
 				var px = i+1
 					,py = i+w

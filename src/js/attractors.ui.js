@@ -257,7 +257,8 @@ iddqd.ns('attractors.ui',(function(){
 		},true);
 		// image size
 		var sizes = {
-				128:128
+				16:16
+				,128:128
 				,256:256
 				,512:512
 				,320:240
