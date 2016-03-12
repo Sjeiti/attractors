@@ -8,12 +8,12 @@ iddqd.ns('attractors.event',{
 	//
 	,RANGE_CHANGED: new signals.Signal()
 	//
+	,RENDER_START: new signals.Signal()
 	,RENDER_PROGRESS: new signals.Signal()
 	,RENDER_CANCELED: new signals.Signal()
 	,RENDER_DONE: new signals.Signal()
 	//
 	,ANIMATION_START: new signals.Signal()
-	,ANIMATION_FRAME: new signals.Signal()
 	,ANIMATION_DONE: new signals.Signal()
 	,ANIMATION_DRAWN: new signals.Signal()
 	,ANIMATION_DRAWN_WEBM: new signals.Signal()

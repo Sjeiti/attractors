@@ -169,8 +169,9 @@
 		<div class="tab">
 			<div id="image"><img /></div>
 			<fieldset>
-				<a class="btn btn-primary btn-sm img">download img</a>
-				<a class="btn btn-primary btn-sm video">download video</a>
+				<button class="btn btn-primary btn-sm hide img">download img</button>
+				<button class="btn btn-primary btn-sm hide sequence">download image sequence</button>
+				<!--<a class="btn btn-primary btn-sm video">download video</a>-->
 			</fieldset>
 		</div>
 	</div>
@@ -183,6 +184,7 @@
 <!--script-->
 <script src="/vendor/signals/dist/signals.js"></script>
 <script src="/vendor/jszip/dist/jszip.min.js"></script>
+<script src="/vendor/FileSaver/FileSaver.js"></script>
 <script src="/vendor/gifshot/build/gifshot.js"></script>
 <script src="/vendor/whammy/whammy.js"></script>
 <script src="/vendor/tinycolor/dist/tinycolor-min.js"></script>
@@ -198,6 +200,8 @@
 <script src="/vendor/iddqd/src/iddqd.signal.mouseWheel.js"></script>
 <script src="/vendor/iddqd/src/iddqd.signal.drag.js"></script>
 <script src="/vendor/iddqd/src/iddqd.utils.tmpl.js"></script>
+<script src="/vendor/iddqd/src/iddqd.internal.js"></script>
+<script src="/vendor/iddqd/src/iddqd.internal.native.string.js"></script>
 
 <!--<script src="/vendor/three.js/build/three.min.js"></script>-->
 <script src="/vendor/three.js/examples/js/Detector.js"></script>

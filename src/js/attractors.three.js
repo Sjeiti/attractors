@@ -104,6 +104,7 @@ iddqd.ns('attractors.three',(function(){
 			vertices.push(vec1);
 			vertices.push(vec2);
 			line = new THREE.Line(geometry, lineMaterial);
+			//
 			axis.add(line);
 		});
 		//
@@ -183,13 +184,17 @@ iddqd.ns('attractors.three',(function(){
 			var pos = camera.position
 				,vecCam = cameraCenter.clone().sub(pos)
 				,sideVec = vecCam.clone().cross(vecZ)
-				,stepVec;
-			stepVec = sideVec.cross(vecCam).setLength(offsetY);
+				,stepVec
+				,incr = 2;
+			//
+			stepVec = sideVec.clone().cross(vecCam).setLength(-incr*offsetY);
 			pos.sub(stepVec);
 			cameraCenter.sub(stepVec);
-			stepVec = sideVec.setLength(offsetX);
+			//
+			stepVec = sideVec.setLength(incr*offsetX);
 			pos.sub(stepVec);
 			cameraCenter.sub(stepVec);
+			//
 			axis.position.x = cameraCenter.x;
 			axis.position.y = cameraCenter.y;
 			axis.position.z = cameraCenter.z;

@@ -25,11 +25,11 @@ iddqd.ns('attractors.util.addDragEvent',(function() {
 	}
 
 	function onTouchMove(callback,e){
-		var touches = e.touches
-			,touchesNum = touches.length;
-		if (touchesNum===1) {
+		var touches = e.touches/*
+			,touchesNum = touches.length*/;
+		//if (touchesNum===1) {
 			drag(callback,e,touches[0]);
-		}
+		//}
 	}
 
 	function onMouseDown(callback,e){

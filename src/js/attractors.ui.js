@@ -1,14 +1,16 @@
 /* globals Stats */
 iddqd.ns('attractors.ui',(function(){
-	var three = attractors.three
+	var pad = iddqd.internal.native.string.pad
+		,three = attractors.three
 		,animate = attractors.animate
 		,renderer = attractors.renderer
 		,image = attractors.image
-		,random = attractors.util.random
 		,rndSize = 5
 		,setFrame = animate.setFrame
 		,getElementById = document.getElementById.bind(document)
 		,util = attractors.util
+		,random = util.random
+		,b64toBlob = util.b64toBlob
 		,dispatchEvent = util.dispatchEvent
 		,addDragEvent = util.addDragEvent
 		,wait = util.wait
@@ -16,8 +18,8 @@ iddqd.ns('attractors.ui',(function(){
 		,array2array = util.array2array
 		,signal = iddqd.signal
 		,event = attractors.event
+		,RENDER_START = event.RENDER_START
 		,ANIMATION_START = event.ANIMATION_START
-		,ANIMATION_FRAME = event.ANIMATION_FRAME
 		,CONSTANTS_CHANGED = event.CONSTANTS_CHANGED
 		,dispatchConstantsChanged = CONSTANTS_CHANGED.dispatch
 		,SINES_CHANGED = event.SINES_CHANGED
@@ -46,6 +48,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmColorBg = getElementById('background-color')
 		,elmColorFg = getElementById('attractor-color')
 		,elmStaticColor = getElementById('static-color')
+		,elmResult = getElementById('tabs-result').nextElementSibling
 		//
 		,iterations = 1E7
 		//
@@ -305,14 +308,14 @@ iddqd.ns('attractors.ui',(function(){
 	}
 
 	function initUIResult(){
-		var elmResult = getElementById('tabs-result').nextElementSibling;
-		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadClick);
-		elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
+		elmResult.querySelector('.btn.img').addEventListener('click',onDownloadImgClick);
+		elmResult.querySelector('.btn.sequence').addEventListener('click',onDownloadSequenceClick);
+		//elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
 		//
 		var image = document.createElement('img');
 		var input = document.createElement('input');
 		input.setAttribute('type','file');
-		elmResult.appendChild(input);
+		//elmResult.appendChild(input);
 		image.addEventListener('load',onImageLoad);
 		input.addEventListener('change', onFilesChange.bind(null,image), false);
 		document.body.addEventListener('dragover',function(e){e.preventDefault();});
@@ -321,6 +324,7 @@ iddqd.ns('attractors.ui',(function(){
 		elmImageWrapper.addEventListener('click',function(){elmImageWrapper.classList.toggle('zoom');});
 		//
 		event.IMAGE_DRAWN.add(onImageDrawn);
+		event.RENDER_START.add(onRenderStart);
 	}
 
 	function initStats(){
@@ -515,6 +519,7 @@ iddqd.ns('attractors.ui',(function(){
 				,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch
 				;
+			RENDER_START.dispatch(doAnimate);
 			if (doAnimate) {
 				var i = frames
 					,anim = getAnimationFromTo()
@@ -525,12 +530,11 @@ iddqd.ns('attractors.ui',(function(){
 						.then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
 						.then(wait)
 						.then(render.bind(null,frames-i-1,frames))
-						.then(rendered)
-						.then(ANIMATION_FRAME.dispatch);
+						.then(rendered);
 				}
 				promise
 					.then(event.ANIMATION_DONE.dispatch)
-					.then(dispatchRenderDone);
+					.then(dispatchRenderDone.bind(null,true));
 			} else {
 				render()
 					.then(rendered)
@@ -552,11 +556,14 @@ iddqd.ns('attractors.ui',(function(){
 		elmRender.classList.remove(classnameRendering);
 	}
 
-	function onRenderDone() {
+	function onRenderDone(isAnimation) {
 		getElementById('tabs-attractor').checked = false;
 		getElementById('tabs-result').checked = true;
 		dispatchEvent(getElementById('tabs-attractor'),'change');
 		dispatchEvent(getElementById('tabs-result'),'change');
+		//
+		elmResult.querySelector('.btn.img').classList.remove('hide');
+		isAnimation&&elmResult.querySelector('.btn.sequence').classList.remove('hide');
 	}
 
 	function onAnimationDrawn(image){
@@ -573,14 +580,35 @@ iddqd.ns('attractors.ui',(function(){
 		elmImage.setAttribute('src',canvas.toDataURL('image/png'));
 	}
 
-	function onDownloadClick(e){
-			var elm = e.currentTarget
-				,isImage = elm.classList.contains('img')
-				,elmMedium = isImage?elmImage:elmVideo
-				,src = elmMedium.getAttribute('src')
-				,extension = src.match(/\/(\w+);/).pop();
-			elm.setAttribute('href',src);
-			elm.setAttribute('download',attractor.name+'.'+extension);
+	function onRenderStart(){//isAnimation
+		Array.prototype.forEach.call(elmResult.querySelector('.btn'),function(elm){
+			elm.classList.add('hide');
+		});
+	}
+
+	function onDownloadImgClick(e){
+		e.preventDefault();
+		var src = elmImage.getAttribute('src')
+			,fileType = src.match(/:([^;]+)/).pop()
+			,extension = fileType.split('/').pop()
+			,base64 = src.split(',').pop()
+			,blob = b64toBlob(base64,fileType)
+			,fileName = attractor.name+'.'+extension
+		;
+		saveAs(blob,fileName);
+	}
+
+	function onDownloadSequenceClick(){
+		var frames = attractors.animate.frames
+			,zip = new JSZip()
+			,fileName = attractors.attractor.name.replace(/\s/g,'')
+			,digits = String(frames.length).length;
+		frames.forEach(function(src,i) {
+			var ext = src.match(/\/([^;]+)/).pop()
+				,base64 = src.split(',').pop();
+			zip.file(fileName+'_'+pad(String(i),digits,'0',true)+'.'+ext, base64, {base64: true});
+		});
+		saveAs(zip.generate({type:'blob'}), fileName+'.zip');
 	}
 
 	function onDrop(image,e){
@@ -605,13 +633,14 @@ iddqd.ns('attractors.ui',(function(){
 	function onImageLoad(e){
 		var image = e.target
 			,readResult = attractors.image.read(image);
+		console.log('readResult',readResult); // todo: remove log
 		setAttractor(readResult.name,readResult.constants);
 	}
 
-	function setAttractor(name,constants){
-		name&&Array.prototype.forEach.call(elmType.querySelectorAll('option'),function(option,i){
+	function setAttractor(attractorName,constants){
+		attractorName&&Array.prototype.forEach.call(elmType.querySelectorAll('option'),function(option,i){
 			var name = option.textContent.toLowerCase();
-			if (name===name.toLowerCase()) {
+			if (name===attractorName.toLowerCase()) {
 				if (elmType.value!==option.value) {
 					elmType.value = option.value;
 					dispatchEvent(elmType,'change');

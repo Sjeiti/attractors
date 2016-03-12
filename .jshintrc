@@ -8,6 +8,8 @@
 		,"ImageData": true
 		,"signals": true
 		,"tinycolor": true
+		,"JSZip": true
+		,"saveAs": true
 	},
     "esnext": true,
     "eqeqeq": true,

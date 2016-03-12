@@ -23,7 +23,7 @@ iddqd.ns('attractors.animate',(function() {
 	function init() {
 		onTypeChanged();
 		event.ANIMATION_START.add(onAnimationStart);
-		event.ANIMATION_FRAME.add(onAnimationFrame);
+		event.IMAGE_DRAWN.add(onAnimationFrame);
 		event.TYPE_CHANGED.add(onTypeChanged);
 		cameraFirst.update();
 		cameraLast.update();
@@ -33,8 +33,9 @@ iddqd.ns('attractors.animate',(function() {
 		frames.length = 0;
 	}
 
-	function onAnimationFrame(src){
-		frames.push(src);
+	function onAnimationFrame(canvas){
+		//frames.push(canvas.toDataURL('image/png'));
+		frames.push(canvas.toDataURL('image/webp',1));
 	}
 
 	function onTypeChanged() {
