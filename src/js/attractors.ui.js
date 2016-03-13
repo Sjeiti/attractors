@@ -30,6 +30,7 @@ iddqd.ns('attractors.ui',(function(){
 		//
 		,moveConstant
 		//
+		,elmUi = getElementById('ui')
 		,elmConstants = getElementById('constants')
 		,elmSines = getElementById('sines')
 		,elmOffsets = getElementById('offsets')
@@ -48,6 +49,7 @@ iddqd.ns('attractors.ui',(function(){
 		,elmColorBg = getElementById('background-color')
 		,elmColorFg = getElementById('attractor-color')
 		,elmStaticColor = getElementById('static-color')
+		,elmColoration = getElementById('coloration')
 		,elmResult = getElementById('tabs-result').nextElementSibling
 		//
 		,iterations = 1E7
@@ -63,6 +65,8 @@ iddqd.ns('attractors.ui',(function(){
 
 	function init() {
 		attractor = attractors.attractor;
+		//
+		initUi();
 		initTabs();
 		initUIAttractor();
 		initUIAnimate();
@@ -72,6 +76,18 @@ iddqd.ns('attractors.ui',(function(){
 		initTouch();
 	}
 
+	function initUi(){
+		var uiClassList = elmUi.classList;
+		//elmUi.addEventListener('mouseleave',DOMTokenList.prototype.remove.bind(uiClassList,'hover'));
+		//elmUi.addEventListener('mouseup',DOMTokenList.prototype.add.bind(uiClassList,'hover'));
+		//$timeout(DOMTokenList.prototype.add.bind(elm.classList,'scroll-fixed'));
+		elmUi.addEventListener('mouseleave',function(){
+			uiClassList.remove('hover');
+		});
+		elmUi.addEventListener('mouseup',function(){
+			uiClassList.add('hover');
+		});
+	}
 
 	function initTabs(){
 		Array.prototype.forEach.call(elmsInputTabs,function(input){
@@ -227,13 +243,14 @@ iddqd.ns('attractors.ui',(function(){
 			,elmIterations = getElementById('iterations')
 			,elmIterationsRange = getElementById('iterationsRange')
 		;
-		//
-		elmStaticColor.addEventListener('change',function(){
-			event.COLOR_STATIC_CHANGED.dispatch(elmStaticColor.checked);
+		event.COLORATION_CHANGED.add(function(type){
+			console.log('type',type); // todo: remove log
 		});
 		//
-		event.COLOR_STATIC_CHANGED.add(function(checked){
-			elmColorFg.parentNode.classList.toggle('hide',!checked);
+		elmColoration.addEventListener('change',function(e){
+			var coloration = e.currentTarget.value;
+			event.COLORATION_CHANGED.dispatch(coloration);
+			elmColorFg.parentNode.classList.toggle('hide',coloration!=='static');
 		});
 		//
 		// gamma
@@ -514,7 +531,7 @@ iddqd.ns('attractors.ui',(function(){
 				,calcDistance = false//getElementById('coloring-distance').checked
 				,calcLyapunov = false//getElementById('coloring-lyapunov').checked
 				,calcSurface = false//getElementById('coloring-surface').checked
-				,calcSpace = !calcDistance&&!calcLyapunov&&!calcSurface&&!elmStaticColor.checked
+				,calcSpace = elmColoration.value==='space'//!calcDistance&&!calcLyapunov&&!calcSurface&&!elmStaticColor.checked
 				,render = renderer.render.bind(null,w,h,iterations,calcSpace,calcDistance,calcLyapunov,calcSurface)
 				,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
 				,dispatchRenderDone = event.RENDER_DONE.dispatch

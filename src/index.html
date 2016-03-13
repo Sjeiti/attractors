@@ -124,18 +124,18 @@
 				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-foreground-color"></button>
 			</fieldset>
 			<fieldset class="form-group form-left">
-
-				<input type="checkbox" class="imitate" id="static-color" />
-				<label for="static-color">Static color</label>
-
+				<label for="coloration">Coloration</label>
+				<select name="coloration" id="coloration" class="form-control-sm">
+					<option value="static">static</option>
+					<option value="space" selected>space</option>
+					<option value="distance">distance</option>
+					<option value="distance">distance</option>
+					<option value="lyapunov">lyapunov</option>
+				</select>
+			</fieldset>
+			<fieldset class="form-group form-left">
 				<input type="checkbox" class="imitate" id="background-radial" />
 				<label for="background-radial" data-info="Apply a radial gradient to the background">Radial background</label>
-				<!--<input type="checkbox" class="imitate" id="coloring-distance" />
-				<label for="coloring-distance" data-info="Use the iteration distance for coloring">Coloring distance</label>
-				<input type="checkbox" class="imitate" id="coloring-lyapunov" />
-				<label for="coloring-lyapunov" data-info="Use the Lyapunov exponent for coloring">Coloring Lyapunov</label>
-				<input type="checkbox" class="imitate" id="coloring-surface" />
-				<label for="coloring-surface" data-info="Apply shinines to the surface">Coloring surface</label>-->
 			</fieldset>
 			<fieldset class="form-group form-left">
 				<label for="iterations">Iterations</label>

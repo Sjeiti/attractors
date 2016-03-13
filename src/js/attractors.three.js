@@ -150,10 +150,14 @@ iddqd.ns('attractors.three',(function(){
 		particleSystem.sortParticles = true;
 		scene.add( particleSystem );
 		//
-		event.COLOR_STATIC_CHANGED.add(function(checked){
-			isColorStatic = checked;
+		event.COLORATION_CHANGED.add(function(type){
+			isColorStatic = type==='static';
 			redraw();
 		});
+		/*event.COLOR_STATIC_CHANGED.add(function(checked){
+			isColorStatic = checked;
+			redraw();
+		});*/
 	}
 
 	function initThreejsRenderer(){

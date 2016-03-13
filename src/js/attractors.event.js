@@ -25,4 +25,5 @@ iddqd.ns('attractors.event',{
 	,COLOR_BACKGROUND_CHANGED: new signals.Signal()
 	,COLOR_FOREGROUND_CHANGED: new signals.Signal()
 	,COLOR_STATIC_CHANGED: new signals.Signal()
+	,COLORATION_CHANGED: new signals.Signal()
 });

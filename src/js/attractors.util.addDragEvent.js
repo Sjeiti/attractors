@@ -53,7 +53,7 @@ iddqd.ns('attractors.util.addDragEvent',(function() {
 			,offsetX = x - pointerVector.x
 			,offsetY = y - pointerVector.y
 			,offsetSize = size!==null&&pointerSize!==null?size - pointerSize:0;
-		if (pointerNum!==touchesNum) {
+		if (pointerNum>0&&touchesNum>0&&pointerNum!==touchesNum) {
 			offsetX = 0;
 			offsetY = 0;
 		}

@@ -1,6 +1,7 @@
 {
     "globals": {
 		"TouchEvent": true
+		,"DOMTokenList": true
 		,"iddqd": true
 		,"attractors": true
 		,"THREE": true
