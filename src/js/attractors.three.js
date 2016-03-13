@@ -179,13 +179,19 @@ iddqd.ns('attractors.three',(function(){
 		event.COLOR_FOREGROUND_CHANGED.add(onForegroundChanged);
 	}
 
-	function drag(touchOrE,offsetX,offsetY){
+	function drag(touchOrE,offsetX,offsetY,offsetSize){
+		//console.log('offsetSize',offsetSize); // todo: remove log
+		if (offsetSize) { // todo: offsetSize still wrong
+			cameraDistance = Math.max(cameraDistance - 10*offsetSize,111);// todo: set min/max see onMouseWheel
+			setCamera();
+		}
 		if (window.TouchEvent&&touchOrE.constructor===TouchEvent&&touchOrE.touches.length>1) {
 			var pos = camera.position
 				,vecCam = cameraCenter.clone().sub(pos)
 				,sideVec = vecCam.clone().cross(vecZ)
 				,stepVec
 				,incr = 2;
+			//
 			//
 			stepVec = sideVec.clone().cross(vecCam).setLength(-incr*offsetY);
 			pos.sub(stepVec);

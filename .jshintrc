@@ -1,6 +1,7 @@
 {
     "globals": {
-		"iddqd": true
+		"TouchEvent": true
+		,"iddqd": true
 		,"attractors": true
 		,"THREE": true
 		,"gifshot": true
