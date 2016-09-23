@@ -204,32 +204,37 @@ iddqd.ns('attractors.ui',(function(){
     var svg = getElementById('wrapper-track').querySelector('svg');
     SINES_CHANGED.add(function(){ // todo: extract
       var constants = attractor.constants
-        ,paths = svg.querySelectorAll('path')
-        ,numPaths = paths.length
-        ,numConstants = constants.length
-        ,highest = -Infinity
-        ,i = paths.length;
+          ,paths = svg.querySelectorAll('path')
+          ,numPaths = paths.length
+          ,numConstants = constants.length
+          ,getValues = function(type){
+            var a = []
+                ,i = numConstants;
+            while (i--) a.push(Math.abs(parseFloat(getElementById(type+(numConstants-1-i)).value)));
+            return a;
+          }
+          ,values = getValues('sines')
+          ,offsets = getValues('offsets')
+          ,highest = Math.max.apply(null,values)//-Infinity
+          ,i = paths.length
+      ;
       if (numPaths!==numConstants) {
         while (i-->1) svg.removeChild(paths[i]);
-        //while (paths.length>1) svg.removeChild(paths[0]);
         for (i=1;i<numConstants;i++) svg.appendChild(paths[0].cloneNode());
       }
       //
       paths = svg.querySelectorAll('path');
       //
-      for (i=0;i<numConstants;i++) {
-        var high = Math.abs(parseFloat(getElementById('sines'+i).value));
-        if (high>highest) highest = high;
-      }
       svg.classList.toggle(classnameHide,highest===0);
       //
       for (i=0;i<numConstants;i++) {
         var path = paths[i]
-          ,sine = Math.abs(parseFloat(getElementById('sines'+i).value))
-          ,part = sine/highest
-          ,offset = getElementById('offsets'+i).value;
-        part&&path.setAttribute('transform','translate('+-offset*128+','+(1-part)*64+') scale(1,'+part+')');
+          ,sine = values[i]
+          ,offset = offsets[i]
+          ,part = highest&&sine/highest||0;
+        path.setAttribute('transform','translate('+-offset*128+','+(1-part)*64+') scale(1,'+part+')');
       }
+      dispatchConstantsChanged();
     });
     dispatchSinesChanged();
     /////////////////////////////////////////////
