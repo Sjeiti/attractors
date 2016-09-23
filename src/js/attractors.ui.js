@@ -507,7 +507,7 @@ iddqd.ns('attractors.ui',(function(){
   }
 
   function onRandomizeColorClick(elm){
-    elm.value = tinycolor(elm.value).spin(random(360)).toString();
+    elm.value = iddqd.math.color(elm.value).huey(Math.random()).toString();
     (elm===elmColorBg&&event.COLOR_BACKGROUND_CHANGED||event.COLOR_FOREGROUND_CHANGED).dispatch(elm.value);
   }
 
