@@ -42,6 +42,7 @@ iddqd.ns('attractors.three',(function(){
     ,n2 = n / 2
     //
     ,particles = 1E5
+    ,particlesMaterial
     //
     ,xmin = Infinity
     ,xmax = -Infinity
@@ -138,18 +139,17 @@ iddqd.ns('attractors.three',(function(){
     geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
     isMinMaxFinite()&&geometry.computeBoundingSphere();
     //
-    var textureLoader = new THREE.TextureLoader()
-      ,material = new THREE.PointsMaterial({
-        //color: 0xFFFFFF,
-        size: 16,
-        map: textureLoader.load('img/particle.png'),
-        vertexColors: THREE.VertexColors,
-        blending: THREE.AdditiveBlending,
-        transparent: true
-      })
-    ;
+    var textureLoader = new THREE.TextureLoader();
+    particlesMaterial = new THREE.PointsMaterial({
+      //color: 0xFFFFFF,
+      size: 16,
+      map: textureLoader.load('img/particle.png'),
+      vertexColors: THREE.VertexColors,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
     //var material = new THREE.PointsMaterial( { size: 1, vertexColors: THREE.VertexColors } );
-    var particleSystem = new THREE.Points( geometry, material );
+    var particleSystem = new THREE.Points( geometry, particlesMaterial );
     particleSystem.sortParticles = true;
     scene.add( particleSystem );
     //
@@ -349,12 +349,12 @@ iddqd.ns('attractors.three',(function(){
   }
 
   function onBackgroundChanged(color){
-    var lightness = iddqd.math.color(color).lightness();
-    console.log('onBackgroundChanged',color,lightness); // todo: remove log
     renderer.setClearColor(color);
   }
 
   function onForegroundChanged(color){
+    var lightness = iddqd.math.color(color).lightness();
+    particlesMaterial.blending = lightness>0.5?THREE.AdditiveBlending:THREE.MultiplyBlending;
     colorFg = color;
     isColorStatic&&redraw();
   }
