@@ -39,7 +39,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
       ,i = 100
     ;
     while (i--) iterate(p);
-    return new Promise(function(resolve,reject){
+    return /*cancelRenderRequest&&Promise.reject()||*/new Promise(function(resolve,reject){
       requestAnimationFrame(renderCycle.bind(null
           ,resolve
           ,reject
@@ -65,7 +65,8 @@ iddqd.ns('attractors.renderer',(function(undefined){
     });
   }
 
-  function renderCycle(resolve
+  function renderCycle(
+      resolve
       ,reject
       ,pixels
       ,spaces
@@ -101,6 +102,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
       ,pointx,pointy,pointz
     ;
     if (cancelRenderRequest===true) {
+      reject('render canceled');
       cancelRenderRequest = false;
       isRendering = false;
       event.RENDER_CANCELED.dispatch();
@@ -174,14 +176,12 @@ iddqd.ns('attractors.renderer',(function(undefined){
           }
         }
         resolve([pixels,spaces,distances,lyapunovs,surfaces]);
-        isRendering = false;
-        //event.RENDER_DONE.dispatch();
+        isRendering = frame===undefined&&frames===undefined?false:frame!==frames-1;
       }
     }
   }
 
   function cancelRender(){
-    console.log('three.cancelRender'); // todo: remove log
     cancelRenderRequest = true;
   }
 

@@ -490,7 +490,7 @@ iddqd.ns('attractors.ui',(function(){
     var anim = getAnimationFromTo()
       ,frames = parseInt(elmFrames.value,10)
       ,i = frames
-      ,frame = util.emptyPromise()
+      ,frame = Promise.resolve()
     ;
     while (i--) {
       frame = frame
@@ -537,10 +537,10 @@ iddqd.ns('attractors.ui',(function(){
         ,dispatchRenderDone = event.RENDER_DONE.dispatch
         ;
       RENDER_START.dispatch(doAnimate);
-      if (doAnimate) {
+      if (doAnimate) { // todo: maybe move to renderer
         var i = frames
             ,anim = getAnimationFromTo()
-            ,promise = util.emptyPromise()
+            ,promise = Promise.resolve()
             ,start = Date.now();
         ANIMATION_START.dispatch();
         while (i--) {
@@ -548,11 +548,14 @@ iddqd.ns('attractors.ui',(function(){
             .then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
             .then(wait)
             .then(render.bind(null,frames-i-1,frames,start))
-            .then(rendered);
+            .then(rendered)
+          ;
         }
         promise
           .then(event.ANIMATION_DONE.dispatch)
-          .then(dispatchRenderDone.bind(null,true));
+          .then(dispatchRenderDone.bind(null,true))
+          .catch(console.warn.bind(console))
+        ;
       } else {
         render()
           .then(rendered)
