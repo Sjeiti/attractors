@@ -67,8 +67,10 @@ iddqd.ns('attractors.three',(function(){
 		initThreejsParticles();
 		initThreejsRenderer();
 		//
-		requestAnimationFrame(center);
-		requestAnimationFrame(setCamera);
+		requestAnimationFrame(function(){
+			center();
+			setCamera();
+		});
 	}
 
 	function initThreejsScene(){
