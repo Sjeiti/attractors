@@ -351,7 +351,7 @@ iddqd.ns('attractors.three',(function(){
 
   function onBackgroundChanged(color){
     var lightness = iddqd.math.color(color).lightness();
-    lineMaterial.color = lightness>0.5?0:0xffffff;
+    lineMaterial.color = new THREE.Color(lightness>0.5?0:0xffffff);
     renderer.setClearColor(color);
   }
 
