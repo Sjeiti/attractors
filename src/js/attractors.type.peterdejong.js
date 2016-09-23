@@ -1,6 +1,6 @@
 attractors.create(
 	'Peter de Jong'
-	,[3.1,-.1,6.1,4,4,0]
+	,[3.1,-0.1,6.1,4,4,0]
 	,function(vec,a,b,c,d,e,f){
 		var sin = Math.sin
 			,cos = Math.cos

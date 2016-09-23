@@ -29,7 +29,7 @@ iddqd.ns('attractors.animate',(function() {
 		cameraLast.update();
 	}
 
-	function onAnimationStart(width,height){
+	function onAnimationStart(){
 		frames.length = 0;
 	}
 

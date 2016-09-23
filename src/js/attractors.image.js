@@ -131,6 +131,7 @@ iddqd.ns('attractors.image',(function(){
 			//dataAttractor[4*i+3] = Math.pow(distances[i]/maxD,gammaValue)*255<<0;
 			dataAttractor[4*i+3] = Math.pow(pixels[i]/max,gammaValue)*255<<0;
 			//
+			var rgb;
 			if (hasSpaces) {
 				//dataColor[4*i+0] = spaces[3*i+0]/maxS*255<<0;
 				//dataColor[4*i+1] = spaces[3*i+1]/maxS*255<<0;
@@ -142,17 +143,17 @@ iddqd.ns('attractors.image',(function(){
 				dataColor[4*i+2] = gt*Math.pow(spaces[3*i+2]/maxS,gammaSpace)*255<<0;
 				//gammaValue
 			} else if (hasDistances&&hasLyapunovs) {
-				var rgb = hslToRgb((distances[i]-minD)/(maxD-minD),(lyapunovs[i]-minL)/(maxL-minL),.5);
+				rgb = hslToRgb((distances[i]-minD)/(maxD-minD),(lyapunovs[i]-minL)/(maxL-minL),0.5);
 				dataColor[4*i+0] = rgb[0];
 				dataColor[4*i+1] = rgb[1];
 				dataColor[4*i+2] = rgb[2];
 			} else if (hasDistances) {
-				var rgb = hslToRgb((distances[i]-minD)/(maxD-minD),1,.5);
+				rgb = hslToRgb((distances[i]-minD)/(maxD-minD),1,0.5);
 				dataColor[4*i+0] = rgb[0];
 				dataColor[4*i+1] = rgb[1];
 				dataColor[4*i+2] = rgb[2];
 			} else if (hasLyapunovs) {
-				var rgb = hslToRgb((lyapunovs[i]-minL)/(maxL-minL),1,.5);
+				rgb = hslToRgb((lyapunovs[i]-minL)/(maxL-minL),1,0.5);
 				dataColor[4*i+0] = rgb[0];
 				dataColor[4*i+1] = rgb[1];
 				dataColor[4*i+2] = rgb[2];

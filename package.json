@@ -1,6 +1,6 @@
 {
   "name": "Attractors",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "",
   "license": "none",
   "devDependencies": {
@@ -10,6 +10,7 @@
     "glob": "^6.0.4",
     "gm": "^1.21.1",
     "htmlparser2": "^3.9.0",
+    "jshint": "^2.9.1",
     "less": "^2.5.3",
     "mkdirp": "^0.5.1",
     "open": "0.0.5",

@@ -1,6 +1,7 @@
 var mkdirp = require('mkdirp')
 	,glob = require('glob')
 	,fs = require('fs')
+	,glomise = require(__dirname+'/util/glomise')
 ;
 
 Promise.all([
@@ -17,14 +18,6 @@ Promise.all([
 		}
 	});
 });
-
-function glomise(globstring) {
-	return new Promise(function (resolve,reject) {
-		glob(globstring,function(err,result){
-			resolve(result);
-		});
-	});
-}
 
 function getDirName(file){
 	return file.replace(/[^\/\\]*\.\w{0,4}$/,'');
