@@ -43,6 +43,7 @@ iddqd.ns('attractors.three',(function(){
     //
     ,particles = 1E5
     ,particlesMaterial
+    ,lineMaterial
     //
     ,xmin = Infinity
     ,xmax = -Infinity
@@ -90,7 +91,6 @@ iddqd.ns('attractors.three',(function(){
 
   function initThreejsAxis(){
     var lineSize = 1E4
-      ,lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3})
       ,cubeSize = 50
       ,cubeGeometry = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize)
       ,cubeFaces = cubeGeometry.faces
@@ -98,6 +98,7 @@ iddqd.ns('attractors.three',(function(){
       ,cubeMaterial
       ,cube
     ;
+    lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3})
     axis = new THREE.Group();
     [vecX,vecY,vecZ].forEach(function(v){
       var geometry = new THREE.Geometry()
@@ -349,6 +350,8 @@ iddqd.ns('attractors.three',(function(){
   }
 
   function onBackgroundChanged(color){
+    var lightness = iddqd.math.color(color).lightness();
+    lineMaterial.color = lightness>0.5?0:0xffffff;
     renderer.setClearColor(color);
   }
 
