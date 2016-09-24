@@ -1,256 +1,253 @@
 <!DOCTYPE html>
 <html lang="en" manifest="attractors.appcache">
 <head>
-	<meta charset="utf-8">
-	<title>Strange Attractors</title>
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<!--<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css"/>-->
-	<link rel="stylesheet" href="/style/bootstrap.min.css"/>
-	<link rel="stylesheet" href="/style/screen.css"/>
-	<link href='https://fonts.googleapis.com/css?family=Cousine:400,700|Nova+Mono' rel='stylesheet' type='text/css' />
-	<!-- old style favicon -->
-	<link rel="shortcut icon" type="image/x-icon" href="/img/icon.png">
-	<!-- IOS icons and web application -->
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<link rel="apple-touch-startup-image" href="/img/icon-329x460.png" data-shouldbe="320x460">
-	<link rel="apple-touch-icon" href="/img/icon-57x57.png"/>
-	<link rel="apple-touch-icon" sizes="72x72" href="/img/icon-72x72.png"/>
-	<link rel="apple-touch-icon" sizes="114x114" href="/img/icon-114x114.png"/>
-	<!-- Android icons and web application -->
-	<meta name="mobile-web-app-capable" content="yes">
-	<link rel="shortcut icon" sizes="196x196" href="/img/icon-196x196.png">
-	<link rel="shortcut icon" sizes="128x128" href="/img/icon-128x128.png">
+  <meta charset="utf-8">
+  <title>Strange Attractors</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!--<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css"/>-->
+  <link rel="stylesheet" href="/style/bootstrap.min.css"/>
+  <link rel="stylesheet" href="/style/screen.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Cousine:400,700|Nova+Mono' rel='stylesheet' type='text/css' />
+  <!-- old style favicon -->
+  <link rel="shortcut icon" type="image/x-icon" href="/img/icon.png">
+  <!-- IOS icons and web application -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="apple-touch-startup-image" href="/img/icon-329x460.png" data-shouldbe="320x460">
+  <link rel="apple-touch-icon" href="/img/icon-57x57.png"/>
+  <link rel="apple-touch-icon" sizes="72x72" href="/img/icon-72x72.png"/>
+  <link rel="apple-touch-icon" sizes="114x114" href="/img/icon-114x114.png"/>
+  <!-- Android icons and web application -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" sizes="196x196" href="/img/icon-196x196.png">
+  <link rel="shortcut icon" sizes="128x128" href="/img/icon-128x128.png">
 </head>
 <body>
 
-<div id="container"></div>
+  <div id="container"></div>
 
-<div id="ui">
-	<h1><label for="tabs-main">Strange attractors</label></h1>
-	<input type="checkbox" name="main-tab" id="tabs-main" class="tabs" checked />
-	<div class="tab">
+  <div id="ui">
+    <h1><label for="tabs-main">Strange attractors</label></h1>
+    <input type="checkbox" name="main-tab" id="tabs-main" class="tabs" checked />
+    <div class="tab">
 
-		<h2 class="tab-title"><label for="tabs-about">about</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-about" class="tabs" />
-		<div class="tab">
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
-		</div>
+      <h2 class="tab-title"><label for="tabs-about">about</label></h2>
+      <input type="checkbox" name="tabs" id="tabs-about" class="tabs" />
+      <div class="tab">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error provident, soluta. Ad architecto assumenda commodi cum distinctio doloremque et, exercitationem impedit magnam, maiores nemo nihil qui sapiente veniam veritatis vero.</p>
+      </div>
 
-		<h2 class="tab-title"><label for="tabs-attractor">attractor</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-attractor" class="tabs" checked />
-		<div class="tab">
-			<fieldset class="form-group">
-				<select name="type" id="type" class="form-control"></select>
-			</fieldset>
-			<div id="constants">
-				<script type="text/html" id="constant">
-					<fieldset class="form-group form-left">
-						<input type="range" class="form-control form-control-sm" min="<%=min%>" max="<%=max%>" step="0.00001" value="<%=rangevalue%>" data-model="<%=model%>" data-index="<%=index%>" data-type="<%=type%>" />
-						<input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="<%=model%><%=index%>" />
-						<input type="checkbox" id="lock<%=index%>" class="hide" data-index="<%=index%>" />
-						<label class="icon-lock" for="lock<%=index%>"></label>
-					</fieldset>
-				</script>
-			</div>
-			<fieldset class="form-group">
-				<a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
-				<a class="btn btn-secondary btn-sm" id="constantsRandomizeTiny">randomize a little</a>
-				<a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
-				<a class="btn btn-secondary btn-sm" id="centerAttractor">center</a>
-				<a class="btn btn-secondary btn-sm" id="centerAxis">center axis</a>
-			</fieldset>
-		</div>
+      <h2 class="tab-title"><label for="tabs-attractor">attractor</label></h2>
+      <input type="checkbox" name="tabs" id="tabs-attractor" class="tabs" checked />
+      <div class="tab">
+        <fieldset class="form-group">
+          <select name="type" id="type" class="form-control"></select>
+        </fieldset>
+        <div id="constants">
+          <script type="text/html" id="constant">
+            <fieldset class="form-group form-left">
+              <input type="range" class="form-control form-control-sm" min="<%=min%>" max="<%=max%>" step="0.00001" value="<%=rangevalue%>" data-model="<%=model%>" data-index="<%=index%>" data-type="<%=type%>" />
+              <input type="number" class="form-control form-control-sm constant" value="<%=value%>" data-model="<%=model%>" data-index="<%=index%>" id="<%=model%><%=index%>" />
+              <input type="checkbox" id="lock<%=index%>" class="hide" data-index="<%=index%>" />
+              <label class="icon-lock" for="lock<%=index%>"></label>
+            </fieldset>
+          </script>
+        </div>
+        <fieldset class="form-group">
+          <a class="btn btn-secondary btn-sm" id="constantsRandomize">randomize</a>
+          <a class="btn btn-secondary btn-sm" id="constantsRandomizeTiny">randomize a little</a>
+          <a class="btn btn-secondary btn-sm" id="constantsReset">reset</a>
+          <a class="btn btn-secondary btn-sm" id="centerAttractor">center</a>
+          <a class="btn btn-secondary btn-sm" id="centerAxis">center axis</a>
+        </fieldset>
+      </div>
 
-		<h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-animation" class="tabs" />
-		<div id="animate">
-			<fieldset class="form-group form-inline">
-				<label for="frames" class="form-control-label">frames</label>
-				<input type="number" value="100" id="frames" class="form-control form-control-sm" />
-			</fieldset>
-			<fieldset id="wrapper-track" class="form-group form-inline flat">
-				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 128" preserveAspectRatio="none">
-					<path d="M0,64C128-147,128,275,256,64s128,211,255,0" vector-effect="non-scaling-stroke" />
-					<!--<path d="M0.1,64C128-157.6,128,285.6,256,64s128,221.6,255.9,0" />-->
-				</svg>
-				<input type="range" min="0" max="100" step="1" value="0" id="track" class="form-control form-control-sm" />
-			</fieldset>
+      <h2 class="tab-title"><label for="tabs-animation">animation</label></h2>
+      <input type="checkbox" name="tabs" id="tabs-animation" class="tabs" />
+      <div id="animate">
+        <fieldset class="form-group form-inline">
+          <label for="frames" class="form-control-label">frames</label>
+          <input type="number" value="100" id="frames" class="form-control form-control-sm" />
+        </fieldset>
+        <fieldset id="wrapper-track" class="form-group form-inline flat">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 128" preserveAspectRatio="none">
+            <path d="M0,64C128-147,128,275,256,64s128,211,255,0" vector-effect="non-scaling-stroke" />
+            <!--<path d="M0.1,64C128-157.6,128,285.6,256,64s128,221.6,255.9,0" />-->
+          </svg>
+          <input type="range" min="0" max="100" step="1" value="0" id="track" class="form-control form-control-sm" />
+        </fieldset>
 
-			<fieldset class="form-group flat">
-				<a class="btn btn-secondary btn-sm" id="store-first">store first</a>
-				<a class="btn btn-secondary btn-sm" id="store-last">store last</a>
-			</fieldset>
+        <fieldset class="form-group flat">
+          <a class="btn btn-secondary btn-sm" id="store-first">store first</a>
+          <a class="btn btn-secondary btn-sm" id="store-last">store last</a>
+        </fieldset>
 
-			<input type="checkbox" id="use-sines-switch" class="switch" />
-			<fieldset class="form-group">
-				<!--<a class="btn btn-secondary btn-sm" id="load-first">load first</a>-->
-				<!--<a class="btn btn-secondary btn-sm" id="load-last">load last</a>-->
-				<!--<div class="brace down"></div>-->
-				<!--<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>-->
-				<div id="sines">
-					<h3>sine height</h3>
-				</div>
-				<div id="offsets">
-					<h3>offset radians</h3>
-				</div>
-			</fieldset>
+        <input type="checkbox" id="use-sines-switch" class="switch" />
+        <fieldset class="form-group">
+          <!--<a class="btn btn-secondary btn-sm" id="load-first">load first</a>-->
+          <!--<a class="btn btn-secondary btn-sm" id="load-last">load last</a>-->
+          <!--<div class="brace down"></div>-->
+          <!--<a class="btn btn-secondary btn-sm" id="set-sines">set sines</a>-->
+          <div id="sines">
+            <h3>sine height</h3>
+          </div>
+          <div id="offsets">
+            <h3>offset radians</h3>
+          </div>
+        </fieldset>
 
-			<fieldset class="form-group">
-				<input type="checkbox" id="use-sines" class="imitate" />
-				<label for="use-sines" data-info="A looped animation draws circles onto the constants">Looped animation</label>
-				<input type="checkbox" id="animate-rotate" class="imitate" />
-				<label for="animate-rotate" data-info="Rotate the camera around the attractor">Rotate 360</label>
-			</fieldset>
-			<fieldset class="form-group">
-				<a class="btn btn-secondary btn-sm animate">animate</a>
-			</fieldset>
-		</div>
+        <fieldset class="form-group">
+          <input type="checkbox" id="use-sines" class="imitate" />
+          <label for="use-sines" data-info="A looped animation draws circles onto the constants">Looped animation</label>
+          <input type="checkbox" id="animate-rotate" class="imitate" />
+          <label for="animate-rotate" data-info="Rotate the camera around the attractor">Rotate 360</label>
+        </fieldset>
+        <fieldset class="form-group">
+          <a class="btn btn-secondary btn-sm animate">animate</a>
+        </fieldset>
+      </div>
 
-		<h2 class="tab-title"><label for="tabs-render">render</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-render" class="tabs" checked />
-		<div class="tab">
-			<fieldset class="form-group form-left-2">
-				<label for="background-color">Background color</label>
-				<!--<input type="color" class="form-control-sm" id="background-color" value="#FFFFFF" />-->
-				<input type="color" class="form-control-sm" id="background-color" value="#2f002f" />
-				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-background-color"></button>
-			</fieldset>
-			<fieldset class="form-group form-left-2 hide">
-				<label for="attractor-color">Attractor color</label>
-				<!--<input type="color" class="form-control-sm" id="attractor-color" value="#000000" />-->
-				<input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />
-				<button class="btn btn-sm btn-icon icon-refresh" id="randomize-foreground-color"></button>
-			</fieldset>
-			<fieldset class="form-group form-left">
-				<label for="coloration">Coloration</label>
-				<select name="coloration" id="coloration" class="form-control-sm">
-					<option value="static">static</option>
-					<option value="space" selected>space</option>
-					<option value="distance">distance</option>
-					<option value="distance">distance</option>
-					<option value="lyapunov">lyapunov</option>
-				</select>
-			</fieldset>
-			<fieldset class="form-group form-left">
-				<input type="checkbox" class="imitate" id="background-radial" />
-				<label for="background-radial" data-info="Apply a radial gradient to the background">Radial background</label>
-			</fieldset>
-			<fieldset class="form-group form-left">
-				<label for="iterations">Iterations</label>
-				<input type="range" class="form-control" min="0" max="1" step="0.00001" id="iterationsRange" />
-				<input type="text" class="form-control form-control-sm constant" disabled value="1" id="iterations" />
-			</fieldset>
-			<fieldset class="form-group form-left">
-				<label for="gamma">Gamma</label>
-				<input type="range" class="form-control" min="0" max="1" step="0.00001" value="0.5" id="gammaRange" />
-				<input type="text" class="form-control form-control-sm constant" disabled value="1" id="gamma" />
-			</fieldset>
-			<fieldset class="form-group form-left">
-				<label>image size</label>
-				<select name="image-size" id="image-size" class="form-control-sm"></select>
-			</fieldset>
-			<fieldset class="form-group">
-				<input type="checkbox" id="render-animate" class="imitate" />
-				<label for="render-animate">Animate</label>
-			</fieldset>
-			<fieldset class="form-group">
-				<a class="btn btn-primary" id="render">
-					<div class="progress"></div>
-					<div class="render">render</div>
-					<div class="cancel">cancel rendering <span></span></div>
-				</a>
-			</fieldset>
-		</div>
+      <h2 class="tab-title"><label for="tabs-render">render</label></h2>
+      <input type="checkbox" name="tabs" id="tabs-render" class="tabs" checked />
+      <div class="tab">
+        <fieldset class="form-group form-left-2">
+          <label for="background-color">Background color</label>
+          <!--<input type="color" class="form-control-sm" id="background-color" value="#FFFFFF" />-->
+          <input type="color" class="form-control-sm" id="background-color" value="#2f002f" />
+          <button class="btn btn-sm btn-icon icon-refresh" id="randomize-background-color"></button>
+        </fieldset>
+        <fieldset class="form-group form-left-2 hide">
+          <label for="attractor-color">Attractor color</label>
+          <!--<input type="color" class="form-control-sm" id="attractor-color" value="#000000" />-->
+          <input type="color" class="form-control-sm" id="attractor-color" value="#fbc6ff" />
+          <button class="btn btn-sm btn-icon icon-refresh" id="randomize-foreground-color"></button>
+        </fieldset>
+        <fieldset class="form-group form-left">
+          <label for="coloration">Coloration</label>
+          <select name="coloration" id="coloration" class="form-control-sm">
+            <option value="static">static</option>
+            <option value="space" selected>space</option>
+            <option value="distance">distance</option>
+            <option value="distance">distance</option>
+            <option value="lyapunov">lyapunov</option>
+          </select>
+        </fieldset>
+        <fieldset class="form-group form-left">
+          <input type="checkbox" class="imitate" id="background-radial" />
+          <label for="background-radial" data-info="Apply a radial gradient to the background">Radial background</label>
+        </fieldset>
+        <fieldset class="form-group form-left">
+          <label for="iterations">Iterations</label>
+          <input type="range" class="form-control" min="0" max="1" step="0.00001" id="iterationsRange" />
+          <input type="text" class="form-control form-control-sm constant" disabled value="1" id="iterations" />
+        </fieldset>
+        <fieldset class="form-group form-left">
+          <label for="gamma">Gamma</label>
+          <input type="range" class="form-control" min="0" max="1" step="0.00001" value="0.5" id="gammaRange" />
+          <input type="text" class="form-control form-control-sm constant" disabled value="1" id="gamma" />
+        </fieldset>
+        <fieldset class="form-group form-left">
+          <label>image size</label>
+          <select name="image-size" id="image-size" class="form-control-sm"></select>
+        </fieldset>
+        <fieldset class="form-group">
+          <input type="checkbox" id="render-animate" class="imitate" />
+          <label for="render-animate">Animate</label>
+        </fieldset>
+        <fieldset class="form-group">
+          <a class="btn btn-primary" id="render">
+            <div class="progress"></div>
+            <div class="render">render</div>
+            <div class="cancel">cancel rendering <span></span></div>
+          </a>
+        </fieldset>
+      </div>
 
-		<h2 class="tab-title"><label for="tabs-result">result</label></h2>
-		<input type="checkbox" name="tabs" id="tabs-result" class="tabs" />
-		<div class="tab">
-			<div id="image"><img /></div>
-			<fieldset>
-				<button class="btn btn-primary btn-sm hide img">download img</button>
-				<button class="btn btn-primary btn-sm hide sequence">download image sequence</button>
-				<!--<a class="btn btn-primary btn-sm video">download video</a>-->
-			</fieldset>
-		</div>
-	</div>
-</div>
+      <h2 class="tab-title"><label for="tabs-result">result</label></h2>
+      <input type="checkbox" name="tabs" id="tabs-result" class="tabs" />
+      <div class="tab">
+        <div id="image"><img /></div>
+        <fieldset>
+          <button class="btn btn-primary btn-sm hide img">download img</button>
+          <button class="btn btn-primary btn-sm hide sequence">download image sequence</button>
+          <!--<a class="btn btn-primary btn-sm video">download video</a>-->
+        </fieldset>
+      </div>
+    </div>
+  </div>
 
-<div id="stats"></div>
+  <div id="stats"></div>
 
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>-->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>-->
 
-<!--script:/js/vendor.js-->
-<script src="/vendor/signals/dist/signals.js"></script>
-<script src="/vendor/jszip/dist/jszip.min.js"></script>
-<script src="/vendor/FileSaver/FileSaver.js"></script>
-<script src="/vendor/gifshot/build/gifshot.js"></script>
-<script src="/vendor/whammy/whammy.js"></script>
+  <!-- build:minify /js/vendor.js -->
+  <script src="/vendor/signals/dist/signals.js"></script>
+  <script src="/vendor/jszip/dist/jszip.min.js"></script>
+  <script src="/vendor/FileSaver/FileSaver.js"></script>
+  <script src="/vendor/gifshot/build/gifshot.js"></script>
+  <script src="/vendor/whammy/whammy.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.pattern.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.math.vector.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.capabilities.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.requestAnimationFrame.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.signal.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.signal.animate.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.signal.key.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.signal.mouseWheel.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.signal.drag.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.utils.tmpl.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.internal.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.internal.native.string.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.math.color.js"></script>
+  <script src="/vendor/three.js/build/three.min.js"></script>
+  <script src="/vendor/three.js/examples/js/Detector.js"></script>
+  <script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
+  <!-- /build -->
 
-<script src="/vendor/iddqd/src/iddqd.js"></script>
-<script src="/vendor/iddqd/src/iddqd.pattern.js"></script>
-<script src="/vendor/iddqd/src/iddqd.math.vector.js"></script>
-<script src="/vendor/iddqd/src/iddqd.capabilities.js"></script>
-<script src="/vendor/iddqd/src/iddqd.requestAnimationFrame.js"></script>
-<script src="/vendor/iddqd/src/iddqd.signal.js"></script>
-<script src="/vendor/iddqd/src/iddqd.signal.animate.js"></script>
-<script src="/vendor/iddqd/src/iddqd.signal.key.js"></script>
-<script src="/vendor/iddqd/src/iddqd.signal.mouseWheel.js"></script>
-<script src="/vendor/iddqd/src/iddqd.signal.drag.js"></script>
-<script src="/vendor/iddqd/src/iddqd.utils.tmpl.js"></script>
-<script src="/vendor/iddqd/src/iddqd.internal.js"></script>
-<script src="/vendor/iddqd/src/iddqd.internal.native.string.js"></script>
-<script src="/vendor/iddqd/src/iddqd.math.color.js"></script>
+  <!--:jshint-->
 
-<script src="/vendor/three.js/build/three.min.js"></script>
-<script src="/vendor/three.js/examples/js/Detector.js"></script>
-<script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
-<!--/script-->
+  <!-- build:minify /js/main.js -->
+  <script src="/js/attractors.js"></script>
+  <script src="/js/attractors.util.js"></script>
+  <script src="/js/attractors.util.addDragEvent.js"></script>
+  <script src="/js/attractors.event.js"></script>
 
-<!--<script src="/js/attractors.type.foo.js"></script>-->
-<!--<script src="/js/attractors.type.tamari.js"></script>-->
-<!--<script src="/js/attractors.type.chua.js"></script>-->
-<!--<script src="/js/attractors.type.ikeda.js"></script>-->
-<!--<script src="/js/attractors.type.bouali2.js"></script>-->
-<!--<script src="/js/attractors.type.aizawa.js"></script>-->
+  <script src="/js/attractors.type.lorenz84.js"></script>
+  <script src="/js/attractors.type.lorenz.js"></script>
+  <script src="/js/attractors.type.rossler.js"></script>
+  <script src="/js/attractors.type.pickover.js"></script>
+  <script src="/js/attractors.type.polynomiala.js"></script>
+  <script src="/js/attractors.type.polynomialb.js"></script>
+  <script src="/js/attractors.type.polynomialc.js"></script><!---->
+  <script src="/js/attractors.type.latoocarfian.js"></script>
+  <script src="/js/attractors.type.kamtorus.js"></script>
+  <script src="/js/attractors.type.clifford3d.js"></script>
+  <script src="/js/attractors.type.hadley.js"></script>
+  <script src="/js/attractors.type.dequanli.js"></script>
+  <script src="/js/attractors.type.thomas.js"></script>
+  <script src="/js/attractors.type.luchen1.js"></script>
+  <script src="/js/attractors.type.luchen2.js"></script>
+  <script src="/js/attractors.type.dadras.js"></script>
+  <!--<script src="/js/attractors.type.foo.js"></script>-->
+  <!--<script src="/js/attractors.type.tamari.js"></script>-->
+  <!--<script src="/js/attractors.type.chua.js"></script>-->
+  <!--<script src="/js/attractors.type.ikeda.js"></script>-->
+  <!--<script src="/js/attractors.type.bouali2.js"></script>-->
+  <!--<script src="/js/attractors.type.aizawa.js"></script>-->
+  <script src="/js/attractors.type.sprot.js"></script>
+  <script src="/js/attractors.type.peterdejong.js"></script>
 
-<!--script:/js/main.js:jshint-->
-<script src="/js/attractors.js"></script>
-<script src="/js/attractors.util.js"></script>
-<script src="/js/attractors.util.addDragEvent.js"></script>
-<script src="/js/attractors.event.js"></script>
+  <script src="/js/attractors.three.js"></script>
+  <script src="/js/attractors.image.js"></script>
+  <script src="/js/attractors.renderer.js"></script>
+  <script src="/js/attractors.animate.js"></script>
+  <script src="/js/attractors.ui.js"></script>
+  <script src="/js/attractors.location.js"></script>
+  <!-- /build -->
 
+  <script>attractors();</script>
 
-<script src="/js/attractors.type.lorenz84.js"></script>
-<script src="/js/attractors.type.lorenz.js"></script>
-<script src="/js/attractors.type.rossler.js"></script>
-<script src="/js/attractors.type.pickover.js"></script>
-<script src="/js/attractors.type.polynomiala.js"></script>
-<script src="/js/attractors.type.polynomialb.js"></script>
-<script src="/js/attractors.type.polynomialc.js"></script><!---->
-<script src="/js/attractors.type.latoocarfian.js"></script>
-<script src="/js/attractors.type.kamtorus.js"></script>
-<script src="/js/attractors.type.clifford3d.js"></script>
-<script src="/js/attractors.type.hadley.js"></script>
-<script src="/js/attractors.type.dequanli.js"></script>
-<script src="/js/attractors.type.thomas.js"></script>
-<script src="/js/attractors.type.luchen1.js"></script>
-<script src="/js/attractors.type.luchen2.js"></script>
-<script src="/js/attractors.type.dadras.js"></script>
-
-<script src="/js/attractors.type.sprot.js"></script>
-<script src="/js/attractors.type.peterdejong.js"></script>
-
-<!---->
-
-<script src="/js/attractors.three.js"></script>
-<script src="/js/attractors.image.js"></script>
-<script src="/js/attractors.renderer.js"></script>
-<script src="/js/attractors.animate.js"></script>
-<script src="/js/attractors.ui.js"></script>
-<script src="/js/attractors.location.js"></script>
-<!--/script-->
-<script>attractors();</script>
 </body>
 </html>

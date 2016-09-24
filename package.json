@@ -1,6 +1,6 @@
 {
   "name": "Attractors",
-  "version": "1.0.23",
+  "version": "1.0.26",
   "description": "",
   "license": "none",
   "devDependencies": {
@@ -11,7 +11,8 @@
     "connect": "^3.4.1",
     "glob": "^6.0.4",
     "gm": "^1.21.1",
-    "htmlparser2": "^3.9.0",
+    "html-minifier": "^3.0.3",
+    "htmlparser2": "^3.9.1",
     "jshint": "^2.9.1",
     "less": "^2.5.3",
     "mkdirp": "^0.5.1",
@@ -24,12 +25,12 @@
   },
   "dependencies": {},
   "scripts": {
-    "build": "node task/build +copy +less +uglify",
+    "build": "node task/build +copy +less +minify",
     "serve": "node task/serve",
     "serve:dist": "node task/serve --root=dist --port=8283",
     "less": "node task/less",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",
-    "uglify": "node task/uglify",
+    "minify": "node task/minify",
     "copy": "node task/copy",
     "version": "node task/version patch",
     "icons": "node task/icons",
