@@ -3,7 +3,9 @@ var less = require('less')
 	,mkdirp = require('mkdirp')
 	,postcss = require('postcss')
 	,autoprefixer = require('autoprefixer')
-	,warn = console.warn.bind(console)
+	,utils = require(__dirname+'/util/utils')
+	,logElapsed = utils.logElapsed
+	,warn = utils.warn
 	//
 	,srcLess = './src/style/screen.less'
 	,targetCss = [
@@ -14,7 +16,7 @@ var less = require('less')
 read(srcLess)
 	.then(parseLess,warn)
 	.then(saveFiles,warn)
-	.then(console.log.bind(console,'done'),warn)
+	.then(logElapsed,warn)
 ;
 
 function read(file){

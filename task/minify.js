@@ -34,6 +34,8 @@ var uglify = require('uglify-js'),
     pass = o=>o,
     blockReplace = utils.blockReplace,
     logElapsed = utils.logElapsed,
+    inlinePrefix = '/*inline23*/\n',
+    inlinePrefixRegex = /^\/\*inline23\*\/\n/,
     /*warnxit = msg=>{
       console.warn(msg);
       process.exit(1);
@@ -66,14 +68,16 @@ var uglify = require('uglify-js'),
     injectGlob = commander.injectGlob
 ;
 
-console.log('Minifying',sourcePath+htmlPath,'to',targetPath); // todo: remove log
+console.log('Minifying',sourcePath+htmlPath,'to',targetPath);
 
 read(sourceHTML)
     .then(htmlSource=>{
       var buildComments = parseBuildComments(htmlSource);
       Promise.all(buildComments.map(buildComment=>
         // annotate and minify
-        Promise.all(buildComment.scripts.map(file=>read(sourcePath+file)))
+        Promise.all(buildComment.scripts.map(file=>{
+          return inlinePrefixRegex.test(file)?file:read(sourcePath+file);
+        }))
             .then(sources=>sources.join('\n;//////////////////////////////////////////////////////////\n'))
             .then(source=>{
               var resolved = Promise.resolve(source);
@@ -119,11 +123,12 @@ read(sourceHTML)
  *   }
  */
 function parseBuildComments(htmlSource){
-  var buildComments = [],
-      startBuild = /build((:\w+)+)\s+([^\s]*)/,
-      endBuild = /\/build/,
-      current,
-      parser = new htmlparser.Parser({
+  var buildComments = []
+      ,startBuild = /build((:\w+)+)\s+([^\s]*)/
+      ,endBuild = /\/build/
+      ,current
+      ,hasContent = false
+      ,parser = new htmlparser.Parser({
         oncomment: comment=>{
           var isEndBuild = endBuild.test(comment)
               ,isStartBuild = startBuild.test(comment)
@@ -131,7 +136,7 @@ function parseBuildComments(htmlSource){
               ,target = matchTarget&&matchTarget.pop()
               ,processes = matchTarget&&matchTarget[1].substr(1).split(':');
           //
-          //if (processes.indexOf('annotate')!==-1) ngAnnotate = require('ng-annotate');
+          if (processes&&processes.indexOf('annotate')!==-1) ngAnnotate = require('ng-annotate');
           //
           if (isEndBuild) {
             if (current) {
@@ -146,10 +151,18 @@ function parseBuildComments(htmlSource){
               scripts: []
             };
           }
-        },
-        onopentag: (name,attribs)=>{
-          var src = attribs.src;
-          current&&current.scripts&&name==='script'&&src&&current.scripts.push(src);
+        }
+        ,onopentag: (name,attribs)=>{
+          var isScript = name==='script'
+              ,src = attribs.src;
+          if (isScript&&!src) hasContent = true;
+          current&&current.scripts&&isScript&&src&&current.scripts.push(src);
+        }
+        ,onclosetag: name=>{
+          if (name==='script') hasContent = false;
+        }
+        ,ontext: text=>{
+          current&&current.scripts&&hasContent&&text&&current.scripts.push(inlinePrefix+text);
         }
       }, {decodeEntities: true});
   parser.write(htmlSource);

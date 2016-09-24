@@ -95,7 +95,7 @@ function mkdirp(dir, opts) {
  * @returns {string}
  */
 function getDirName(file){
-  return file.replace(/[^\/\\]*\.\w{0,4}$/,'');
+  return file.replace(/[^\/\\]*\.\w{0,8}$/,'');
 }
 
 /**
