@@ -174,6 +174,27 @@ function formatBytes(bytes,decimals) {
    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+function promiseRestJSON(host,port,endpoint){
+  return new Promise((resolve,reject)=>{
+    require('http').get({host,port,path:endpoint,method:'GET'},res=>{
+      res.setEncoding('utf8');
+      var body = '';
+      res.on('data',d=>body+=d);
+      res.on('end', function() {
+        try {
+          resolve(JSON.parse(body));
+        } catch (err) {
+          error('Failed to parse json:', body);
+          return reject(err);
+        }
+      });
+    }).on('error', function(err) {
+      error('Error with the request:', err.message);
+      reject(err);
+    });
+  });
+}
+
 module.exports = {
   glomise
   ,read
@@ -187,6 +208,8 @@ module.exports = {
     return ()=>console.log(require('chalk').bold.yellow.inverse('elapsed: '+(Date.now()-t)/1000+'s'));
   }
   ,formatBytes
+  ,promiseRestJSON
   ,log: console.log.bind(console)
   ,warn: console.warn.bind(console)
+  ,error: console.error.bind(console)
 };

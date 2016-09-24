@@ -98,7 +98,7 @@ iddqd.ns('attractors.three',(function(){
       ,cubeMaterial
       ,cube
     ;
-    lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3})
+    lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3});
     axis = new THREE.Group();
     [vecX,vecY,vecZ].forEach(function(v){
       var geometry = new THREE.Geometry()

@@ -1,3 +1,6 @@
+/**
+ * http://www.internonlinearscience.org/upload/papers/20110618025420887.pdf
+ */
 attractors.create(
 	'Lu Chen 1'
 	,[40,5/6,0.5,0.65,20,0.001]
@@ -12,4 +15,3 @@ attractors.create(
 	}
 	,12
 );
-//http://www.internonlinearscience.org/upload/papers/20110618025420887.pdf

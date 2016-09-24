@@ -3,9 +3,10 @@ CACHE MANIFEST
 # v1.0.23
 
 index.html
-js/attractors.min.js
-css/bootstrap.min.css
-css/screen.css
+js/vendor.js
+js/main.js
+style/bootstrap.min.css
+style/screen.css
 img/icon.png
 img/particle.png
 
