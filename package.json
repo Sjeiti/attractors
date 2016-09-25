@@ -29,7 +29,7 @@
 
     "copy": "node task/copy --source=./src/ --target=./dist/ *.* img/* fonts/* style/*.css",
 
-    "serve": "node task/serve",
+    "serve": "node task/serve --root=src",
     "serve:dist": "node task/serve --root=dist --port=8283",
     "less": "node task/less",
     "less:watch": "watch-run \"npm run less\" ./src/style/screen.less",

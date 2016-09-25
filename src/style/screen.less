@@ -210,6 +210,26 @@ button:focus {outline:0;}
 	max-width: 100%;
 	background-color: @uiBgColor;
 	transition: opacity 200ms linear;
+
+	max-height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	@scrollSize: 8px;
+	&::-webkit-scrollbar {
+    width: @scrollSize;
+	}
+	&::-webkit-scrollbar-track {
+		//box-shadow: inset 0 0 6px fade(@btnColorBg,0.3);
+		//border-radius: @scrollSize/2;
+		//background-color: red;
+	}
+	&::-webkit-scrollbar-thumb {
+		border-radius: 1px;
+		background-color: #212c34;
+		//-webkit-box-shadow: inset 0 0 6px @btnColorBg;
+	}
+
 	.tab-title { margin: 1px 0; }
 	>.tab { padding: 0; }
 	@media (max-width:320px) {

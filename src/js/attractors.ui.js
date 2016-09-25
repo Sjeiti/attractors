@@ -87,6 +87,9 @@ iddqd.ns('attractors.ui',(function(){
     elmUi.addEventListener('mouseup',function(){
       uiClassList.add('hover');
     });
+    elmUi.addEventListener('mousewheel',function(e){
+      e.stopPropagation();
+    });
   }
 
   function initTabs(){
@@ -334,19 +337,47 @@ iddqd.ns('attractors.ui',(function(){
     elmResult.querySelector('.btn.sequence').addEventListener('click',onDownloadSequenceClick);
     //elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);
     //
-    var image = document.createElement('img');
-    var input = document.createElement('input');
-    input.setAttribute('type','file');
-    //elmResult.appendChild(input);
-    image.addEventListener('load',onImageLoad);
-    input.addEventListener('change', onFilesChange.bind(null,image), false);
-    document.body.addEventListener('dragover',function(e){e.preventDefault();});
-    document.body.addEventListener('drop',onDrop.bind(null,image));
-    //elmImageWrapper.addEventListener('click',DOMTokenList.prototype.toggle.bind(elmImageWrapper.classList,'zoom',undefined));
-    elmImageWrapper.addEventListener('click',function(){elmImageWrapper.classList.toggle('zoom');});
-    //
     event.IMAGE_DRAWN.add(onImageDrawn);
     event.RENDER_START.add(onRenderStart);
+    //
+    // reading dropped image data
+    var image = document.createElement('img');
+    image.addEventListener('load',onImageLoad);
+    //
+    var input = document.createElement('input');
+    input.setAttribute('type','file');
+    input.addEventListener('change', onFilesChange.bind(null,image), false);
+    //elmResult.appendChild(input);
+    document.body.addEventListener('dragover',function(e){e.preventDefault();});
+    document.body.addEventListener('drop',onDrop.bind(null,image));
+    //
+    // zoom and drag zoomed
+    var hammertime = new Hammer(elmImage, {})
+        ,percentStartX = 50
+        ,percentStartY = 50
+        ,elmImageStyle = elmImage.style
+        ,matchScale = iddqd.style.select('#image.zoom img').pop().style.transform.match(/scale\(\s?([^,]+)/)
+        ,imageScale = parseFloat(matchScale&&matchScale.pop()||1)
+    ;
+    hammertime.on('tap', onResultImageClick);
+    function onResultImageClick(){
+    	var isZoom = elmImageWrapper.classList.toggle('zoom');
+      if (isZoom) {
+        hammertime.on('pan', onResultImageDrag);
+        hammertime.on('panend', onResultImagePanEnd);
+      } else {
+        hammertime.off('pan', onResultImageDrag);
+        hammertime.off('panend', onResultImagePanEnd);
+      }
+    }
+    function onResultImageDrag(e){
+      elmImageStyle.left = (percentStartX + e.deltaX/imageScale) + '%';
+      elmImageStyle.top  = (percentStartY + e.deltaY/imageScale) + '%';
+    }
+    function onResultImagePanEnd(e){
+      percentStartX = percentStartX + e.deltaX/imageScale;
+      percentStartY = percentStartY + e.deltaY/imageScale;
+    }
   }
 
   function initStats(){
@@ -378,7 +409,7 @@ iddqd.ns('attractors.ui',(function(){
       ,index = openTabs.indexOf(input);
     index!==-1&&openTabs.splice(index,1);
     checked&&openTabs.unshift(input);
-    openTabs.length>2&&(openTabs.pop().checked = false);
+    //openTabs.length>2&&(openTabs.pop().checked = false);
   }
 
   function onTypeChange(e){

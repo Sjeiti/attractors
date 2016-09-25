@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" manifest="attractors.appcache">
+<html lang="en"><!-- manifest="attractors.appcache" -->
 <head>
   <meta charset="utf-8">
   <title>Strange Attractors</title>
@@ -167,7 +167,7 @@
       <h2 class="tab-title"><label for="tabs-result">result</label></h2>
       <input type="checkbox" name="tabs" id="tabs-result" class="tabs" />
       <div class="tab">
-        <div id="image"><img /></div>
+        <div id="image"><img draaggable="false" /></div>
         <fieldset>
           <button class="btn btn-primary btn-sm hide img">download img</button>
           <button class="btn btn-primary btn-sm hide sequence">download image sequence</button>
@@ -201,9 +201,11 @@
   <script src="/vendor/iddqd/src/iddqd.internal.js"></script>
   <script src="/vendor/iddqd/src/iddqd.internal.native.string.js"></script>
   <script src="/vendor/iddqd/src/iddqd.math.color.js"></script>
+  <script src="/vendor/iddqd/src/iddqd.style.js"></script>
   <script src="/vendor/three.js/build/three.min.js"></script>
   <script src="/vendor/three.js/examples/js/Detector.js"></script>
   <script src="/vendor/three.js/examples/js/libs/stats.min.js"></script>
+  <script src="/vendor/hammerjs/hammer.js"></script>
   <!-- /build -->
 
   <!--:jshint-->
