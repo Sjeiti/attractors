@@ -1,61 +1,96 @@
 iddqd.ns('attractors.util.addDragEvent',(function() {
 
   var movesAdded = []
+    ,startVector = {x:0,y:0}
     ,pointerVector = {x:0,y:0}
     ,pointerSize = null
     ,pointerNum = 1
     ,isDragging = false
   ;
 
-  function addDragEvent(element,callback){
-    element.addEventListener('touchstart',onTouchStart.bind(null,callback));
-    document.addEventListener('touchend',onTouchEnd);
-    element.addEventListener('mousedown',onMouseDown.bind(null,callback));
-    document.addEventListener('mouseup',onMouseUp);
+  /**
+   * Adds a drag event to an element
+   * @param {HTMLElement} element
+   * @param {function} onDrag
+   * @returns {function} Returns a method to remove all event listeners
+   */
+  function addDragEvent(element,onDrag){
+    var touchStart = onStart.bind(null,onDrag,true)
+        ,mouseStart = onStart.bind(null,onDrag,false)
+    ;
+    element.addEventListener('touchstart',touchStart);
+    document.addEventListener('touchend',onEnd);
+    element.addEventListener('mousedown',mouseStart);
+    document.addEventListener('mouseup',onEnd);
+    return removeDragEvent.bind(null,element,touchStart,mouseStart);
   }
 
-  function onTouchStart(callback,e){
-    addMove('touchmove',onMove,callback);
-    onMove(callback,e);
+  /**
+   * Remove all event listeners
+   * @param {HTMLElement} element
+   * @param {function} touchStart
+   * @param {function} mouseStart
+   */
+  function removeDragEvent(element,touchStart,mouseStart){
+    element.removeEventListener('touchstart',touchStart);
+    document.removeEventListener('touchend',onEnd);
+    element.removeEventListener('mousedown',mouseStart);
+    document.removeEventListener('mouseup',onEnd);
+    removeOldMoves();
   }
 
-  function onTouchEnd(e){
-    if (e.touches.length===0) {
+  /**
+   * Mousedown or touchstart initiates dragging.
+   * Either add mousemove or touchmove event listener
+   * @param {function} callback
+   * @param {boolean} touch
+   * @param {Event} e
+   */
+  function onStart(callback,touch,e){
+    addMove(touch&&'touchmove'||'mousemove',onMove,callback);
+    onMove(callback,e,true);
+  }
+
+  /**
+   * Mouseup or touchend ends dragging.
+   * Remove all added listeners
+   * @param {Event} e
+   */
+  function onEnd(e){
+  	if (!e.touches||e.touches.length===0) {
       removeOldMoves();
       isDragging = false;
     }
   }
 
-  function onMouseDown(callback,e){
-    addMove('mousemove',onMove,callback);
-    onMove(callback,e);
-  }
-
-  function onMouseUp(){
-    removeOldMoves();
-    isDragging = false;
-  }
-
   /**
    * @param {Function} callback
    * @param {MouseEvent|TouchEvent} e
-   * @todo add difference when switching from one to two e.touchess
+   * @param {boolean} first
+   * @todo add difference when switching from one to two e.touches
    */
-  function onMove(callback,e){
+  function onMove(callback,e,first){
     var isTouch = isTouchEvent(e)
-      ,touches = isTouch&&e.touches
-      ,touchesNum = isTouch&&touches.length
-      ,isMultiTouch = isTouch&&touchesNum>1
-      ,pos = isTouch?(isMultiTouch?touchesDeltaPosition(e):touches[0]):e
-      ,x = pos.pageX
-      ,y = pos.pageY
-      ,size = isTouch&&isMultiTouch?touchesLength(e):null
-      ,offsetX = x - pointerVector.x
-      ,offsetY = y - pointerVector.y
-      ,offsetSize = size!==null&&pointerSize!==null?size - pointerSize:0;
+        ,touches = isTouch&&e.touches
+        ,touchesNum = isTouch&&touches.length
+        ,isMultiTouch = isTouch&&touchesNum>1
+        ,pos = isTouch?(isMultiTouch?touchesDeltaPosition(e):touches[0]):e
+        ,x = pos.pageX
+        ,y = pos.pageY
+        ,size = isTouch&&isMultiTouch?touchesLength(e):null
+        ,offsetX = x - pointerVector.x
+        ,offsetY = y - pointerVector.y
+        ,offsetSize = size!==null&&pointerSize!==null?size - pointerSize:0
+        ,deltaX = first?0:x - startVector.x
+        ,deltaY = first?0:y - startVector.y
+    ;
     if (pointerNum>0&&touchesNum>0&&pointerNum!==touchesNum) {
       offsetX = 0;
       offsetY = 0;
+    }
+    if (first) {
+      startVector.x = x;
+      startVector.y = y;
     }
     pointerVector.x = x;
     pointerVector.y = y;
@@ -64,7 +99,7 @@ iddqd.ns('attractors.util.addDragEvent',(function() {
     if (isDragging===false) {
       isDragging = true;
     } else {
-      callback(e,offsetX,offsetY,offsetSize);
+      callback(e,offsetX,offsetY,offsetSize,deltaX,deltaY);
     }
   }
 

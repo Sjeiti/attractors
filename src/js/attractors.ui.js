@@ -352,31 +352,45 @@ iddqd.ns('attractors.ui',(function(){
     document.body.addEventListener('drop',onDrop.bind(null,image));
     //
     // zoom and drag zoomed
-    var hammertime = new Hammer(elmImage, {})
-        ,percentStartX = 50
+    var percentStartX = 50
         ,percentStartY = 50
         ,elmImageStyle = elmImage.style
         ,matchScale = iddqd.style.select('#image.zoom img').pop().style.transform.match(/scale\(\s?([^,]+)/)
         ,imageScale = parseFloat(matchScale&&matchScale.pop()||1)
+        ,removeDragEvent
+        ,isNextClickInvalid = false
     ;
-    hammertime.on('tap', onResultImageClick);
-    function onResultImageClick(){
-    	var isZoom = elmImageWrapper.classList.toggle('zoom');
-      if (isZoom) {
-        hammertime.on('pan', onResultImageDrag);
-        hammertime.on('panend', onResultImagePanEnd);
+    elmImageWrapper.addEventListener('click',onResultImageClick);
+    function onResultImageClick(e){
+      if (!isNextClickInvalid) {
+        var isZoom = elmImageWrapper.classList.toggle('zoom');
+        if (isZoom) {
+          removeDragEvent = addDragEvent(elmImage,onResultImageDrag);
+          var rect = elmImageWrapper.getBoundingClientRect()
+              ,clickX = e.pageX - rect.left
+              ,clickY = e.pageY - rect.top
+              ,clickPartX = clickX/rect.width
+              ,clickPartY = clickY/rect.height
+          ;
+          clickPartX = 0.5 - imageScale*(clickPartX-0.5);
+          clickPartY = 0.5 - imageScale*(clickPartY-0.5);
+          percentStartX = 100*clickPartX;
+          percentStartY = 100*clickPartY;
+          elmImageStyle.left = percentStartX + '%';
+          elmImageStyle.top  = percentStartY + '%';
+        } else {
+          removeDragEvent&&removeDragEvent();
+        }
       } else {
-        hammertime.off('pan', onResultImageDrag);
-        hammertime.off('panend', onResultImagePanEnd);
+        isNextClickInvalid = false;
       }
     }
-    function onResultImageDrag(e){
-      elmImageStyle.left = (percentStartX + e.deltaX/imageScale) + '%';
-      elmImageStyle.top  = (percentStartY + e.deltaY/imageScale) + '%';
-    }
-    function onResultImagePanEnd(e){
-      percentStartX = percentStartX + e.deltaX/imageScale;
-      percentStartY = percentStartY + e.deltaY/imageScale;
+    function onResultImageDrag(e,offsetX,offsetY){
+      percentStartX = percentStartX + offsetX/imageScale;
+      percentStartY = percentStartY + offsetY/imageScale;
+      elmImageStyle.left = percentStartX + '%';
+      elmImageStyle.top  = percentStartY + '%';
+      isNextClickInvalid = true;
     }
   }
 

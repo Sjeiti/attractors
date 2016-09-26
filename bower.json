@@ -22,7 +22,6 @@
     "jszip": "~2.5.0",
     "gifshot": "~0.3.2",
     "whammy": "*",
-    "FileSaver": "*",
-    "hammerjs": "^2.0.8"
+    "FileSaver": "*"
   }
 }
