@@ -18,7 +18,15 @@ iddqd.ns('attractors.ui.animate',(function(){
       ,elmTrack = getElementById('track')
       ,elmUseSines = getElementById('use-sines')
       ,elmAnimate = getElementById('animate')
+      //
+      ,returnValue = iddqd.extend(init,{
+        getAnimationFromTo: getAnimationFromTo
+      })
   ;
+
+  Object.defineProperty(returnValue, 'frames', {
+    get: getFrames
+  });
 
   function init(){
     var attractor = attractors.attractor;
@@ -165,13 +173,17 @@ iddqd.ns('attractors.ui.animate',(function(){
     });
   }
 
-  function getAnimationFromTo(){ // todo duplicate in ui.render
+  function getAnimationFromTo(){
     return animate.getFromTo(
-      parseInt(elmFrames.value,10)
+      getFrames()
       ,getElementById('animate-rotate').checked
       ,elmUseSines.checked
     );
   }
 
-  return init;
+  function getFrames(){
+  	return parseInt(elmFrames.value,10);
+  }
+
+  return returnValue;
 })());

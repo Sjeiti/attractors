@@ -81,7 +81,8 @@ iddqd.ns('attractors',(function(){
 
   return iddqd.extend(init,{
     create: create
-    ,get list() { return list; }
+    ,version: '1.0.29'
+    ,get list() { return list; } // todo this works... but not as you'd expect (extend and getters on object literals)
     //,get attractor() { return attractor; }
   });
 })());

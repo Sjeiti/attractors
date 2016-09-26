@@ -49,6 +49,8 @@ iddqd.ns('attractors.ui',(function(){
     elmUi.addEventListener('mousewheel',function(e){
       e.stopPropagation();
     });
+
+    getElementById('ui').querySelector('h1 span').textContent = attractors.version;
   }
 
   function initTabs(){

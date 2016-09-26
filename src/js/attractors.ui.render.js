@@ -3,12 +3,13 @@ iddqd.ns('attractors.ui.render',(function(){
   var renderer = attractors.renderer
       ,image = attractors.image
       ,event = attractors.event
+      ,uiAnimate = attractors.ui.animate
+      ,getAnimationFromTo = uiAnimate.getAnimationFromTo
       ,animate = attractors.animate
       ,setFrame = animate.setFrame
       ,RENDER_START = event.RENDER_START
       ,ANIMATION_START = event.ANIMATION_START
       ,util = attractors.util
-      ,dispatchEvent = util.dispatchEvent
       ,wait = util.wait
       ,applyDragMove = util.applyDragMove
       ,getElementById = document.getElementById.bind(document)
@@ -21,15 +22,9 @@ iddqd.ns('attractors.ui.render',(function(){
       ,elmColoration = getElementById('coloration')
       ,elmColorBg = getElementById('background-color')
       ,elmColorFg = getElementById('attractor-color')
-      ,elmVideo = document.createElement('video')
       ,elmRender = getElementById('render')
       ,elmRenderTime = elmRender.querySelector('.cancel span')
       ,elmRenderIndicator = elmRender.querySelector('.progress')
-      ,elmFrames = getElementById('frames')
-      ,elmUseSines = getElementById('use-sines')
-      ,elmResult = getElementById('tabs-result').nextElementSibling
-      ,elmImageWrapper = getElementById('image')
-      ,elmImage = elmImageWrapper.querySelector('img')
   ;
 
   function init(){
@@ -114,9 +109,6 @@ iddqd.ns('attractors.ui.render',(function(){
     event.RENDER_PROGRESS.add(onRenderProgress);
     event.RENDER_CANCELED.add(onRenderStopped);
     event.RENDER_DONE.add(onRenderStopped);
-    event.RENDER_DONE.add(onRenderDone);
-    event.ANIMATION_DRAWN.add(onAnimationDrawn);
-    event.ANIMATION_DRAWN_WEBM.add(onAnimationDrawnWebm);
   }
 
   function onRandomizeColorClick(elm){
@@ -136,7 +128,7 @@ iddqd.ns('attractors.ui.render',(function(){
         })(getElementById('image-size').value)
         ,w = size[0]
         ,h = size[1]
-        ,frames = parseInt(elmFrames.value,10)
+        ,frames = uiAnimate.frames
         ,doAnimate = getElementById('render-animate').checked
         ,colorAt = elmColorFg.value
         ,colorBg = elmColorBg.value
@@ -203,33 +195,6 @@ iddqd.ns('attractors.ui.render',(function(){
   function onRenderStopped(){
     elmRender.classList.remove(classnameRendering);
   }
-
-  function onRenderDone(isAnimation) {
-    getElementById('tabs-attractor').checked = false;
-    getElementById('tabs-result').checked = true;
-    dispatchEvent(getElementById('tabs-attractor'),'change');
-    dispatchEvent(getElementById('tabs-result'),'change');
-    //
-    elmResult.querySelector('.btn.img').classList.remove('hide');
-    isAnimation&&elmResult.querySelector('.btn.sequence').classList.remove('hide');
-  }
-
-  function onAnimationDrawn(image){
-    elmImage.setAttribute('src',image);
-  }
-
-  function onAnimationDrawnWebm(output){
-    elmVideo.src = (window.webkitURL || window.URL).createObjectURL(output);
-  }
-
-  function getAnimationFromTo(){ // todo: duplicate in ui.animate
-    return animate.getFromTo(
-      parseInt(elmFrames.value,10)
-      ,getElementById('animate-rotate').checked
-      ,elmUseSines.checked
-    );
-  }
-
 
   return init;
 })());
