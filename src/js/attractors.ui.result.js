@@ -15,13 +15,15 @@ iddqd.ns('attractors.ui.result',(function(){
       ,percentStartX = 50
       ,percentStartY = 50
       ,elmImageStyle = elmImage.style
-      ,matchScale = iddqd.style.select('#image.zoom img').pop().style.transform.match(/scale\(\s?([^,]+)/)
-      ,imageScale = parseFloat(matchScale&&matchScale.pop()||1)
+      ,imageScale
       ,removeDragEvent
       ,isNextClickInvalid = false
   ;
 
   function init(){
+    var matchScale = iddqd.style.select('#image.zoom img').pop().style.transform.match(/scale\(\s?([^,]+)/);
+    imageScale = parseFloat(matchScale&&matchScale.pop()||1);
+    //
     elmResult.querySelector('.btn.img').addEventListener('click',onDownloadImgClick);
     elmResult.querySelector('.btn.sequence').addEventListener('click',onDownloadSequenceClick);
     //elmResult.querySelector('.btn.video').addEventListener('click',onDownloadClick);

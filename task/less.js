@@ -1,61 +1,86 @@
-var less = require('less')
-	,fs = require('fs')
-	,mkdirp = require('mkdirp')
-	,postcss = require('postcss')
-	,autoprefixer = require('autoprefixer')
-	,utils = require(__dirname+'/util/utils')
-	,logElapsed = utils.logElapsed
-	,warn = utils.warn
-	//
-	,srcLess = './src/style/screen.less'
-	,targetCss = [
-		'./src/style/screen.css'
-	]
+/**
+ * Build script to parse LESS files and vendor prefix the CSS results.
+ * Arguments:
+ *   --cwd = Current working directory
+ *   --source = Source LESS
+ *   --target = Target CSS
+ * Example usage: node conf/node/shopLess --source=less/style.less --target=css/style.css --cwd=src/project-c/_assets/
+ */
+var less = require('less'),
+    postcss = require('postcss'),
+    autoprefixer = require('autoprefixer'),
+    utils = require(__dirname+'/util/utils'),
+    commander = require('commander')
+        .usage('[options] <files ...>')
+        .option('--source [source]', 'Source LESS')
+        .option('--target [target]', 'Target CSS')
+        .option('--cwd [cwd]', 'Current working directory')
+        .parse(process.argv),
+    read = utils.read,
+    save = utils.save,
+    warn = utils.warn,
+    logElapsed = utils.logElapsed,
+    //
+    // build key-value pairs for source-target prepended with cwd
+    sourceTargets = (function(sources,targets,cwd,sourceTargets){
+      if (sources.length===targets.length) {
+        sources.forEach((sourceUriComponent,i)=>{sourceTargets[cwd+sourceUriComponent] = cwd+targets[i];});
+      } else {
+        console.warn('The number of sources and targets are not equal.');
+      }
+      return sourceTargets;
+    })(commander.source.split(','),commander.target.split(','),commander.cwd,{}),
+    //
+    // supported browser versions for autoPrefixer
+    browsers = [
+      'Android >= 4',
+      'Chrome >= 40',
+      'Firefox >= 40',
+      'Explorer >= 11',
+      'Edge >= 12',
+      'iOS >= 7',
+      'Opera >= 30',
+      'Safari >= 8'
+    ]
 ;
 
-read(srcLess)
-	.then(parseLess,warn)
-	.then(saveFiles,warn)
-	.then(logElapsed,warn)
-;
-
-function read(file){
-	return new Promise(function(resolve,reject){
-		fs.readFile(file, function (err, data) {
-			if (err) reject(err);
-			else resolve(data.toString());
-		});
-	});
+for (var source in sourceTargets) {
+  var target = sourceTargets[source];
+  read(source)
+    .then(parseLess,warn)
+    .then(prefix,warn)
+    .then(save.bind(null,target),warn)
+    .then(logElapsed,warn)
+  ;
 }
 
+/**
+ * Parse LESS to CSS
+ * @param {string} data
+ * @returns {Promise}
+ */
 function parseLess(data){
-	return new Promise(function(resolve,reject){
-		less.render(data,{compress:true}, function (err, output) {
-			if (err) reject(err);
-			else resolve(output.css);
-		});
-	});
+  return new Promise(function(resolve,reject){
+    less.render(data,{
+      compress:true,
+      paths: ['./src/project-c/_assets/less'],
+      plugins: [require('less-plugin-glob')]
+    }, function (err, output) {
+      if (err) reject(err);
+      else resolve(output.css);
+    });
+  });
 }
 
-function saveFiles(data) {
-	targetCss.forEach(function(file){
-		save(file,data);
-	});
-}
-
-function save(file,data) {
-	console.log('save',file); // todo: remove log
-	return new Promise(function(resolve,reject){
-		mkdirp(getDirName(file), function(err) {
-			err&&reject(err);
-			postcss([autoprefixer]).process(data).then(function (result) {
-					result.warnings().forEach(warn);
-					fs.writeFile(file, result.css, resolve);
-			});
-		});
-	});
-}
-
-function getDirName(file){
-	return file.replace(/[^\/\\]*\.\w{0,4}$/,'');
+/**
+ * AutoPrefix CSS
+ * @param {string} data
+ * @returns {Promise}
+ */
+function prefix(data) {
+  return postcss([autoprefixer({browsers:browsers})]).process(data)
+    .then(function (result) {
+      result.warnings().forEach(warn);
+      return result.css;
+    });
 }

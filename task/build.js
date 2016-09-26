@@ -1,6 +1,8 @@
 /**
  * Run the tasks specified by process.argv.
- * A task prefixed with + is read as an npm task, others are run as node tasks.
+ * Regular node tasks are expected (so tasks are prefixed with 'node ').
+ * A task prefixed with + is executed as an npm task.
+ * A task prefixed with * is executed as is ().
  */
 var childProcess = require('child_process')
     ,chalk = require('chalk')
@@ -11,7 +13,11 @@ var childProcess = require('child_process')
 	  ,logElapsed = utils.logElapsed;
 
 tasks.forEach(task=>{
-  promise = promise.then(runScript.bind(null,task[0]==='+'?'npm run '+task.substr(1):'node ./task/'+task));
+  var taskChar = task[0]
+      ,taskToRun = 'node '+task;
+  if (taskChar==='+') taskToRun = 'npm run '+task.substr(1);
+  else if (taskChar==='*') taskToRun = task.substr(1);
+  promise = promise.then(runScript.bind(null,taskToRun));
 });
 promise.then(logElapsed,error=>{
   warn(error);

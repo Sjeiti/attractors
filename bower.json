@@ -1,6 +1,6 @@
 {
   "name": "Attractors",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "authors": [
     "Ron Valstar <sjeiti@gmail.com>"
   ],
@@ -18,7 +18,7 @@
     "signals": "~1.0.0",
     "classlist": "~2014.7.23",
     "three.js": "threejs#*",
-    "iddqd": "2.5.9",
+    "iddqd": "^2.5.11",
     "jszip": "~2.5.0",
     "gifshot": "~0.3.2",
     "whammy": "*",

@@ -8,8 +8,9 @@
  *   --target = Target path
  *   --html = HTML file to process and minify
  *   --injectGlob = globbing pattern for HTML templates to inject
- * Example usage: node conf/node/shopMinify --source=src --target=target/web-app --html=/project-c/index.shtml --injectGlob=\"src/project-c/_assets/angular/@(directives|partials)/**\/*.html\"
+ * Example usage: node task/minify --source=src --target=dist --html=src/index.html"
  * todo: add jshint
+ * todo: add jscs
  */
 var uglify = require('uglify-js'),
     htmlMinify = require('html-minifier').minify,
