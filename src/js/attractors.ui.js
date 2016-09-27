@@ -74,9 +74,11 @@ iddqd.ns('attractors.ui',(function(){
   }
 
   function initStats(){
-    stats = new Stats();
-    getElementById('stats').appendChild( stats.domElement );
-    signal.animate.add(stats.update.bind(stats));
+    if (location.hostname==='localhost') {
+      stats = new Stats();
+      getElementById('stats').appendChild(stats.domElement);
+      signal.animate.add(stats.update.bind(stats));
+    }
   }
 
   function initTouch(){

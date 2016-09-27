@@ -1,22 +1,36 @@
 iddqd.ns('attractors.renderer',(function(undefined){
   var three = attractors.three
-    ,iterate = three.iterate
-    ,getColor = three.getColor
-    ,point = three.point//new THREE.Vector3(0,0,0)
-    ,random = attractors.util.random
-    ,rndSize = 5
-    //,animate = attractors.animate
-    ,event = attractors.event
-    //
-    ,cameraRender
-    //
-    //
-    ,isRendering = false
-    ,cancelRenderRequest = false
+      ,iterate = three.iterate
+      ,getColor = three.getColor
+      ,point = three.point//new THREE.Vector3(0,0,0)
+      ,random = attractors.util.random
+      ,rndSize = 5
+      //,animate = attractors.animate
+      ,event = attractors.event
+      //
+      ,cameraRender
+      //
+      ,iterations = 1E4
+      ,w = 1
+      ,h = 1
+      //
+      ,calcSpace = false
+      ,calcDistance = false
+      ,calcLyapunov = false
+      ,calcSurface = false
+      //
+      ,isRendering = false
+      ,cancelRenderRequest = false
   ;
 
-  function render(w,h,iterations,calcSpace,calcDistance,calcLyapunov,calcSurface,frame,frames,start){
-    //console.log('three.render',w,h,iterations,frame,frames); // todo: remove log
+  event.COLORATION_CHANGED.add(val=>calcSpace = val==='space');
+  event.ITERATIONS_CHANGED.add(val=>iterations=val);
+  event.IMAGE_SIZE_CHANGED.add((wNew,hNew)=>{
+    w = wNew;
+    h = hNew;
+  });
+
+  function render(frame,frames,start){
     isRendering = true;
     cameraRender = three.getCameraClone();
     cameraRender.aspect = w/h;
@@ -39,7 +53,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
       ,i = 100
     ;
     while (i--) iterate(p);
-    return /*cancelRenderRequest&&Promise.reject()||*/new Promise(function(resolve,reject){
+    return new Promise(function(resolve,reject){
       requestAnimationFrame(renderCycle.bind(null
           ,resolve
           ,reject
@@ -175,7 +189,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
             }
           }
         }
-        resolve([pixels,spaces,distances,lyapunovs,surfaces]);
+        resolve({w,h,pixels,spaces,distances,lyapunovs,surfaces});
         isRendering = frame===undefined&&frames===undefined?false:frame!==frames-1;
       }
     }

@@ -153,15 +153,6 @@ iddqd.ns('attractors.three',(function(){
     var particleSystem = new THREE.Points( geometry, particlesMaterial );
     particleSystem.sortParticles = true;
     scene.add( particleSystem );
-    //
-    event.COLORATION_CHANGED.add(function(type){
-      isColorStatic = type==='static';
-      redraw();
-    });
-    /*event.COLOR_STATIC_CHANGED.add(function(checked){
-      isColorStatic = checked;
-      redraw();
-    });*/
   }
 
   function initThreejsRenderer(){
@@ -185,6 +176,11 @@ iddqd.ns('attractors.three',(function(){
     event.CONSTANTS_CHANGED.add(redraw);
     event.COLOR_BACKGROUND_CHANGED.add(onBackgroundChanged);
     event.COLOR_FOREGROUND_CHANGED.add(onForegroundChanged);
+    event.COLORATION_CHANGED.add(type=>redraw(isColorStatic = type==='static'),null,1);
+    /*event.COLORATION_CHANGED.add(type=>{
+      isColorStatic = type==='static';
+      redraw();
+    },null,1);*/
   }
 
   function drag(touchOrE,offsetX,offsetY,offsetSize){

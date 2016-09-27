@@ -1,45 +1,53 @@
 iddqd.ns('attractors.image',(function(){
 
   var event = attractors.event
-    ,util = attractors.util
-    ,wait = util.wait
-    ,getMax = util.getMax
-    ,getMin = util.getMin
-    ,hslToRgb = util.hslToRgb
-    //
-    ,coloration
-    ,foregroundColor
-    ,backgroundColor
-    ,gammaValue = 0.4
-    //
-    ,canvasBackground = document.createElement('canvas')
-    ,contextBackground = canvasBackground.getContext('2d')
-    //
-    ,canvasAttractor = document.createElement('canvas')
-    ,contextAttractor = canvasAttractor.getContext('2d')
-    //
-    ,canvasColor = document.createElement('canvas')
-    ,contextColor = canvasColor.getContext('2d')
-    //
-    ,canvasCode = document.createElement('canvas')
-    ,contextCode = canvasCode.getContext('2d')
-    //
-    ,canvasSurface = document.createElement('canvas')
-    //,contextSurface = canvasSurface.getContext('2d')
-    //
-    ,chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
+      ,util = attractors.util
+      ,wait = util.wait
+      ,getMax = util.getMax
+      ,getMin = util.getMin
+      ,hslToRgb = util.hslToRgb
+      //
+      ,lastResult
+      ,resultAndDraw = ()=>lastResult&&draw(lastResult)
+      //
+      ,coloration
+      ,foregroundColor
+      ,backgroundColor
+      ,isRadial = false
+      ,gammaValue = 0.4
+      //
+      ,canvasBackground = document.createElement('canvas')
+      ,contextBackground = canvasBackground.getContext('2d')
+      //
+      ,canvasAttractor = document.createElement('canvas')
+      ,contextAttractor = canvasAttractor.getContext('2d')
+      //
+      ,canvasColor = document.createElement('canvas')
+      ,contextColor = canvasColor.getContext('2d')
+      //
+      ,canvasCode = document.createElement('canvas')
+      ,contextCode = canvasCode.getContext('2d')
+      //
+      ,canvasSurface = document.createElement('canvas')
+      //,contextSurface = canvasSurface.getContext('2d')
+      //
+      ,chars = 'abcdefghijklmnopqrstuvwxyz 01234567890-,.'.split('')
   ;
-
+  //
   event.IMAGE_RESIZE.add(onImageResize);
   //
-  event.COLORATION_CHANGED.add(val=>console.log('clrchanged',val));
-  event.COLOR_BACKGROUND_CHANGED.add(val=>console.log('bgchanged',val));
-  event.COLOR_FOREGROUND_CHANGED.add(val=>console.log('fgchanged',val));
   event.COLORATION_CHANGED.add(val=>coloration = val);
-  event.COLOR_BACKGROUND_CHANGED.add(val=>foregroundColor = val);
-  event.COLOR_FOREGROUND_CHANGED.add(val=>backgroundColor = val);
+  event.COLOR_BACKGROUND_CHANGED.add(val=>backgroundColor = val);
+  event.COLOR_FOREGROUND_CHANGED.add(val=>foregroundColor = val);
+  event.IMAGE_RADIAL_CHANGED.add(val=>isRadial = val);
+  event.IMAGE_GAMMA_CHANGED.add(val=>gammaValue = val);
   //
-  event.IMAGE_GAMMA_CHANGED.add(onImageGammaChanged);
+  event.COLORATION_CHANGED.add(resultAndDraw);
+  event.COLOR_BACKGROUND_CHANGED.add(resultAndDraw);
+  event.COLOR_FOREGROUND_CHANGED.add(resultAndDraw);
+  event.IMAGE_RADIAL_CHANGED.add(resultAndDraw);
+  event.IMAGE_GAMMA_CHANGED.add(resultAndDraw);
+  //
   event.ANIMATION_DONE.add(onAnimationFinished);
 
   function onImageResize(w,h){
@@ -82,10 +90,6 @@ iddqd.ns('attractors.image',(function(){
     encoder.compile(false,event.ANIMATION_DRAWN_WEBM.dispatch);
   }
 
-  function onImageGammaChanged(f){
-    gammaValue = f;
-  }
-
   function colorHexSplit(hex){
     return [
       parseInt(hex.substr(1,2),16)/255
@@ -94,38 +98,42 @@ iddqd.ns('attractors.image',(function(){
     ];
   }
 
-  function draw(w,h,colorAt,colorBg,radial,result){
-    var pixels = result[0]
-      ,spaces = result[1]
-      ,distances = result[2]
-      ,lyapunovs = result[3]
-      ,surfaces = result[4]
-      ,hasSpaces = spaces!==undefined
-      ,hasDistances = distances!==undefined
-      ,hasLyapunovs = lyapunovs!==undefined
-      ,hasSurfaces = surfaces!==undefined
-      ,colorAtO = colorHexSplit(colorAt)
-      ,colorBgO = colorHexSplit(colorBg)
-      ,isBgLighter = colorBgO.reduce(function(a,b){return a+b;},0)>colorAtO.reduce(function(a,b){return a+b;},0)
-      //
-      ,imagedataAttractor = new ImageData(w,h)
-      ,dataAttractor = imagedataAttractor.data
-      //
-      ,imagedataColor = new ImageData(w,h)
-      ,dataColor = imagedataColor.data
-      //
-      ,imagedataSurface = new ImageData(w,h)
-      ,dataSurface = imagedataSurface.data
-      //
-      ,max = getMax(pixels)
-      ,maxS = hasSpaces&&getMax(spaces)
-      ,maxD = hasDistances&&getMax(distances)
-      ,minD = hasDistances&&getMin(distances)
-      ,maxL = hasLyapunovs&&getMax(lyapunovs)
-      ,minL = hasLyapunovs&&getMin(lyapunovs)
-      ,maxC = hasSurfaces&&getMax(surfaces)
-      ,minC = hasSurfaces&&getMin(surfaces)
-      ,i = pixels.length
+  //function draw(w,h,foregroundColor,backgroundColor,isRadial,result){
+  function draw(result){
+    lastResult = result;
+    var w = result.w
+        ,h = result.h
+        ,pixels = result.pixels
+        ,spaces = result.spaces
+        ,distances = result.distances
+        ,lyapunovs = result.lyapunovs
+        ,surfaces = result.surfaces
+        ,hasSpaces = spaces!==undefined&&coloration==='space' // todo
+        ,hasDistances = distances!==undefined
+        ,hasLyapunovs = lyapunovs!==undefined
+        ,hasSurfaces = surfaces!==undefined
+        ,colorAtO = colorHexSplit(foregroundColor)
+        ,colorBgO = colorHexSplit(backgroundColor)
+        ,isBgLighter = colorBgO.reduce(function(a,b){return a+b;},0)>colorAtO.reduce(function(a,b){return a+b;},0)
+        //
+        ,imagedataAttractor = new ImageData(w,h)
+        ,dataAttractor = imagedataAttractor.data
+        //
+        ,imagedataColor = new ImageData(w,h)
+        ,dataColor = imagedataColor.data
+        //
+        ,imagedataSurface = new ImageData(w,h)
+        ,dataSurface = imagedataSurface.data
+        //
+        ,max = getMax(pixels)
+        ,maxS = hasSpaces&&getMax(spaces)
+        ,maxD = hasDistances&&getMax(distances)
+        ,minD = hasDistances&&getMin(distances)
+        ,maxL = hasLyapunovs&&getMax(lyapunovs)
+        ,minL = hasLyapunovs&&getMin(lyapunovs)
+        ,maxC = hasSurfaces&&getMax(surfaces)
+        ,minC = hasSurfaces&&getMin(surfaces)
+        ,i = pixels.length
     ;
     //
     /*distances.forEach(function(val,j){
@@ -135,8 +143,7 @@ iddqd.ns('attractors.image',(function(){
     //
     onImageResize(w,h);
     //
-    setBackground(w,h,colorBg,radial);
-    //
+    setBackground(w,h,backgroundColor,isRadial);
     //
     while (i--) {
       //dataAttractor[4*i+3] = Math.pow(distances[i]/maxD,gammaValue)*255<<0;
@@ -209,7 +216,7 @@ iddqd.ns('attractors.image',(function(){
     }
     contextAttractor.putImageData(imagedataAttractor,0,0);
     contextAttractor.globalCompositeOperation = 'source-in';
-    contextAttractor.fillStyle = colorAt;
+    contextAttractor.fillStyle = foregroundColor;
     contextAttractor.fillRect(0,0,w,h);
     //
     if (hasSpaces) {

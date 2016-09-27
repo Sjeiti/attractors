@@ -1,6 +1,6 @@
 {
   "name": "Attractors",
-  "version": "1.0.32",
+  "version": "1.0.34-beta",
   "description": "A client-side strange attractor renderer. See: http://attractors.ronvalstar.nl",
   "license": "none",
   "devDependencies": {
@@ -38,8 +38,7 @@
     "version": "next-version package.json bower.json src/attractors.appcache src/js/attractors.js",
     "version:beta": "next-version package.json bower.json src/attractors.appcache src/js/attractors.js --release=beta --patch",
     "icons": "node task/icons",
-    "icomoon": "node task/icomoon",
-    "minify": "node task/minify"
+    "icomoon": "node task/icomoon"
   },
   "keywords": [
     "attractors"

@@ -7,61 +7,63 @@ iddqd.ns('attractors.ui.render',(function(){
       ,getAnimationFromTo = uiAnimate.getAnimationFromTo
       ,animate = attractors.animate
       ,setFrame = animate.setFrame
-      ,RENDER_START = event.RENDER_START
-      ,ANIMATION_START = event.ANIMATION_START
       ,util = attractors.util
       ,wait = util.wait
       ,dispatchEvent = util.dispatchEvent
       ,applyDragMove = util.applyDragMove
       ,getElementById = document.getElementById.bind(document)
+      //
+      ,RENDER_START = event.RENDER_START
+      ,ANIMATION_START = event.ANIMATION_START
+      //
       ,dispatchColorationChanged = event.COLORATION_CHANGED.dispatch
       ,dispatchBackgroundChanged = event.COLOR_BACKGROUND_CHANGED.dispatch
       ,dispatchForegroundChanged = event.COLOR_FOREGROUND_CHANGED.dispatch
+      ,dispatchRadialChanged = event.IMAGE_RADIAL_CHANGED.dispatch
+      ,dispatchGammaChanged = event.IMAGE_GAMMA_CHANGED.dispatch
+      //
+      ,dispatchIterationsChanged = event.ITERATIONS_CHANGED.dispatch
+      ,dispatchImageSizeChanged = event.IMAGE_SIZE_CHANGED.dispatch
+      //
+      ,dispatchRenderStart = RENDER_START.dispatch
+      ,dispatchRenderDone = event.RENDER_DONE.dispatch
       //
       ,classname = attractors.classname
       ,classnameRendering = classname.rendering
       //
-      ,iterations = 1E7
-      //
-      ,elmColoration = getElementById('coloration')
-      ,elmColorBg = getElementById('background-color')
-      ,elmColorFg = getElementById('attractor-color')
       ,elmRender = getElementById('render')
       ,elmRenderTime = elmRender.querySelector('.cancel span')
       ,elmRenderIndicator = elmRender.querySelector('.progress')
   ;
 
   function init(){
-    var elmGamma = getElementById('gamma')
-      ,elmGammaRange = getElementById('gammaRange')
-      ,elmIterations = getElementById('iterations')
-      ,elmIterationsRange = getElementById('iterationsRange')
+    var elmColoration = getElementById('coloration')
+        ,elmColorBg = getElementById('background-color')
+        ,elmColorFg = getElementById('attractor-color')
+        ,elmRadial = getElementById('background-radial')
+        ,elmGamma = getElementById('gamma')
+        ,elmGammaRange = getElementById('gammaRange')
+        ,elmIterations = getElementById('iterations')
+        ,elmIterationsRange = getElementById('iterationsRange')
     ;
     //
     // values that do not need a render are dispatched for image to pick up
     // coloration
-    dispatchColorationChanged(elmColoration.value);
-    elmColoration.addEventListener('change',function(e){
-      var coloration = e.currentTarget.value;
-      dispatchColorationChanged(coloration);
-      elmColorFg.parentNode.classList.toggle('hide',coloration!=='static');
-    });
+    elmColoration.addEventListener('change',()=>dispatchColorationChanged(elmColoration.value));
     // color
-    dispatchBackgroundChanged(elmColorBg.value);
-    elmColorBg.addEventListener('change',function(){
-      dispatchBackgroundChanged(elmColorBg.value);
-    });
-    dispatchForegroundChanged(elmColorFg.value);
-    elmColorFg.addEventListener('change',function(){
-      dispatchForegroundChanged(elmColorFg.value);
-    });
+    elmColorBg.addEventListener('change',()=>dispatchBackgroundChanged(elmColorBg.value));
+    elmColorFg.addEventListener('change',()=>dispatchForegroundChanged(elmColorFg.value));
     getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorBg));
     getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorFg));
+    event.COLORATION_CHANGED.add(coloration=>elmColorFg.parentNode.classList.toggle('hide',coloration!=='static'));
+    // radial
+    elmRadial.addEventListener('change',()=>dispatchRadialChanged(elmRadial.checked));
     // gamma
-    elmGamma.addEventListener('change',function(){
-      event.IMAGE_GAMMA_CHANGED.dispatch(parseFloat(elmGamma.value));
-    });
+    elmGamma.addEventListener('change',()=>dispatchGammaChanged(parseFloat(elmGamma.value)));
+    // dispatch change events for all image related elements
+    [elmColoration,elmColorBg,elmColorFg,elmRadial,elmGamma].forEach(elm=>dispatchEvent(elm,'change'));
     //
+    // gamma range
     applyDragMove(elmGammaRange,function(){
       var gammaValue = parseFloat(elmGammaRange.value);
       event.IMAGE_GAMMA_CHANGED.dispatch(gammaValue);
@@ -69,8 +71,6 @@ iddqd.ns('attractors.ui.render',(function(){
     },true);
     //
     // iterations
-    elmIterations.value = iterations;
-    elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
     applyDragMove(elmIterationsRange,function(){
       var inputValue = parseFloat(elmIterationsRange.value)
         ,max = 9
@@ -78,8 +78,7 @@ iddqd.ns('attractors.ui.render',(function(){
         ,exp = inputValue*max<<0
         ,mult = Math.max(1,10 - ((maxOne*(exp+1) - inputValue)/maxOne*10<<0))
         ,result = mult*Math.pow(10,exp);
-      iterations = result;
-      elmIterations.value = result;
+      dispatchIterationsChanged(elmIterations.value = result);
     },true);
     //
     // image size
@@ -110,6 +109,9 @@ iddqd.ns('attractors.ui.render',(function(){
       }
     }
     sizes[availWidth] = availHeight;
+    elmImageSize.addEventListener('change',()=>dispatchImageSizeChanged.apply(null,elmImageSize.value.split('-').map(s=>parseInt(s,10))));
+    dispatchEvent(elmImageSize,'change');
+    //
     // render
     elmRender.addEventListener('click',onRenderClick);
     event.RENDER_PROGRESS.add(onRenderProgress);
@@ -127,27 +129,10 @@ iddqd.ns('attractors.ui.render',(function(){
       renderer.cancelRender();
     } else {
       elmRender.classList.add(classnameRendering);
-      var size = (function(s){
-          return s.split('-').map(function(s){
-            return parseInt(s,10);
-          });
-        })(getElementById('image-size').value)
-        ,w = size[0]
-        ,h = size[1]
-        ,frames = uiAnimate.frames
+      var frames = uiAnimate.frames
         ,doAnimate = getElementById('render-animate').checked
-        ,colorAt = elmColorFg.value
-        ,colorBg = elmColorBg.value
-        ,bgRadial = getElementById('background-radial').checked
-        ,calcDistance = false//getElementById('coloring-distance').checked
-        ,calcLyapunov = false//getElementById('coloring-lyapunov').checked
-        ,calcSurface = false//getElementById('coloring-surface').checked
-        ,calcSpace = elmColoration.value==='space'//!calcDistance&&!calcLyapunov&&!calcSurface&&!elmStaticColor.checked
-        ,render = renderer.render.bind(null,w,h,iterations,calcSpace,calcDistance,calcLyapunov,calcSurface)
-        ,rendered = image.draw.bind(null,w,h,colorAt,colorBg,bgRadial)
-        ,dispatchRenderDone = event.RENDER_DONE.dispatch
-        ;
-      RENDER_START.dispatch(doAnimate);
+        ,render = renderer.render;
+      dispatchRenderStart(doAnimate);
       if (doAnimate) { // todo: maybe move to renderer
         var i = frames
             ,anim = getAnimationFromTo()
@@ -159,7 +144,7 @@ iddqd.ns('attractors.ui.render',(function(){
             .then(setFrame.bind(null,frames-i-1,frames,anim.start,anim.end))
             .then(wait)
             .then(render.bind(null,frames-i-1,frames,start))
-            .then(rendered)
+            .then(image.draw)
           ;
         }
         promise
@@ -169,7 +154,7 @@ iddqd.ns('attractors.ui.render',(function(){
         ;
       } else {
         render()
-          .then(rendered)
+          .then(image.draw)
           .then(dispatchRenderDone);
       }
     }
