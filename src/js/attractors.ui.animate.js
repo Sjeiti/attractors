@@ -130,7 +130,7 @@ iddqd.ns('attractors.ui.animate',(function(){
       //
       paths = svg.querySelectorAll('path');
       //
-      svg.classList.toggle(classnameHide,highest===0);
+      svg.classList&&svg.classList.toggle(classnameHide,highest===0);
       //
       for (i=0;i<numConstants;i++) {
         var path = paths[i]

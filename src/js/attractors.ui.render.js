@@ -11,8 +11,12 @@ iddqd.ns('attractors.ui.render',(function(){
       ,ANIMATION_START = event.ANIMATION_START
       ,util = attractors.util
       ,wait = util.wait
+      ,dispatchEvent = util.dispatchEvent
       ,applyDragMove = util.applyDragMove
       ,getElementById = document.getElementById.bind(document)
+      ,dispatchColorationChanged = event.COLORATION_CHANGED.dispatch
+      ,dispatchBackgroundChanged = event.COLOR_BACKGROUND_CHANGED.dispatch
+      ,dispatchForegroundChanged = event.COLOR_FOREGROUND_CHANGED.dispatch
       //
       ,classname = attractors.classname
       ,classnameRendering = classname.rendering
@@ -33,25 +37,37 @@ iddqd.ns('attractors.ui.render',(function(){
       ,elmIterations = getElementById('iterations')
       ,elmIterationsRange = getElementById('iterationsRange')
     ;
-    event.COLORATION_CHANGED.add(function(type){
-      console.log('type',type); // todo: remove log
-    });
     //
+    // values that do not need a render are dispatched for image to pick up
+    // coloration
+    dispatchColorationChanged(elmColoration.value);
     elmColoration.addEventListener('change',function(e){
       var coloration = e.currentTarget.value;
-      event.COLORATION_CHANGED.dispatch(coloration);
+      dispatchColorationChanged(coloration);
       elmColorFg.parentNode.classList.toggle('hide',coloration!=='static');
     });
-    //
+    // color
+    dispatchBackgroundChanged(elmColorBg.value);
+    elmColorBg.addEventListener('change',function(){
+      dispatchBackgroundChanged(elmColorBg.value);
+    });
+    dispatchForegroundChanged(elmColorFg.value);
+    elmColorFg.addEventListener('change',function(){
+      dispatchForegroundChanged(elmColorFg.value);
+    });
+    getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorBg));
+    getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorFg));
     // gamma
     elmGamma.addEventListener('change',function(){
       event.IMAGE_GAMMA_CHANGED.dispatch(parseFloat(elmGamma.value));
     });
+    //
     applyDragMove(elmGammaRange,function(){
       var gammaValue = parseFloat(elmGammaRange.value);
       event.IMAGE_GAMMA_CHANGED.dispatch(gammaValue);
       elmGamma.value = gammaValue;
     },true);
+    //
     // iterations
     elmIterations.value = iterations;
     elmIterations.addEventListener('change',function(){iterations = parseFloat(elmIterations.value);});
@@ -65,6 +81,7 @@ iddqd.ns('attractors.ui.render',(function(){
       iterations = result;
       elmIterations.value = result;
     },true);
+    //
     // image size
     var sizes = {
         16:16
@@ -93,17 +110,6 @@ iddqd.ns('attractors.ui.render',(function(){
       }
     }
     sizes[availWidth] = availHeight;
-    // color
-    event.COLOR_BACKGROUND_CHANGED.dispatch(elmColorBg.value);
-    elmColorBg.addEventListener('change',function(){
-      event.COLOR_BACKGROUND_CHANGED.dispatch(elmColorBg.value);
-    });
-    event.COLOR_FOREGROUND_CHANGED.dispatch(elmColorFg.value);
-    elmColorFg.addEventListener('change',function(){
-      event.COLOR_FOREGROUND_CHANGED.dispatch(elmColorFg.value);
-    });
-    getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorBg));
-    getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorFg));
     // render
     elmRender.addEventListener('click',onRenderClick);
     event.RENDER_PROGRESS.add(onRenderProgress);
@@ -113,7 +119,7 @@ iddqd.ns('attractors.ui.render',(function(){
 
   function onRandomizeColorClick(elm){
     elm.value = iddqd.math.color(elm.value).huey(Math.random()).toString();
-    (elm===elmColorBg&&event.COLOR_BACKGROUND_CHANGED||event.COLOR_FOREGROUND_CHANGED).dispatch(elm.value);
+    dispatchEvent(elm,'change');
   }
 
   function onRenderClick(){

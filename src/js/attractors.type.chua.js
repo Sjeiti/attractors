@@ -7,15 +7,16 @@ attractors.create(
       ,x = vec.x
       ,y = vec.y
       ,z = vec.z
+      //,h = e*x+0.5*(d-e)*(abs(x+1)-abs(x-1))
       ,h = e*x+0.5*(d-e)*(abs(x+1)-abs(x-1));
     //vec.x = c0*(y - x - this.c5);
     //vec.y = x - y + z;
     //vec.z = c1*y - c2*z;
     //this.c5 = c4*x + (c3-c4)*(abs(x+1)-abs(x-1))/2;
 
-    vec.x = x + f*(a*(y-x-h));
-    vec.y = y + f*(x - y + z);
-    vec.z = z + f*(-b*y);
+    vec.x = x + f*( a*(y - x - h) );
+    vec.y = y + f*( b*(x - y + z) );
+    vec.z = z + f*( -c*y );
 
     /*
     x = in(1);
@@ -44,5 +45,5 @@ attractors.create(
     */
     return vec;
   }
-  ,1
+  ,4
 );

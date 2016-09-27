@@ -102,6 +102,7 @@ iddqd.ns('attractors.ui.attractor',(function(){
   }
 
   function onMoveConstant(input,inputNumber,model,index,isControlAdd,dispatch) {
+    //console.log('onMoveConstant',model,index,isControlAdd,dispatch); // todo: remove log
     var value = input.value
       ,numberValue = model[index];
     inputNumber.value = model[index] = isControlAdd?numberValue + value*value*value*value*value*value*value:value;

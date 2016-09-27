@@ -6,7 +6,7 @@ iddqd.ns('attractors.three',(function(){
     ,event = attractors.event
     ,color = iddqd.math.color
     //
-    ,isFinite = Number.isFinite
+    //,isFinite = Number.isFinite||(val=>typeof val==='number'&&isFinite(val))
     //
     ,random = attractors.util.random
     ,rndSize = 5
@@ -272,7 +272,7 @@ iddqd.ns('attractors.three',(function(){
       ,clr
       ,p = new THREE.Vector3(random(rndSize),random(rndSize),random(rndSize))
       ,i = 100
-      ,t = Date.now();
+      /*,t = Date.now()*/;
     // dry run
     while (i--) iterate(p);
     // wet run
@@ -303,7 +303,7 @@ iddqd.ns('attractors.three',(function(){
     }
     positionAttr.needsUpdate = true;
     colorAttr.needsUpdate = true;
-    console.log('redraw',Date.now()-t); // todo: remove log
+    //console.log('redraw',Date.now()-t); // todo: remove log
   }
 
   function getColor(x,y,z){

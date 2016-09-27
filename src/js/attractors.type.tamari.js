@@ -1,6 +1,9 @@
+/**
+ * http://www.bentamari.com/attractors.html
+ */
 attractors.create(
   'Tamari'
-  ,[1.013,-0.011,0.02,0.96,0,0.01,1,0.05,0.05,0.0005]
+  ,[1.013,-0.011,0.02,0.96,0,0.01,1,0.05,0.05,0.01]
   ,function(vec,a,b,c,d,e,f,g,u,i,k){
     if (this.c5===undefined) this.c5 = -0.76;
     var sin = Math.sin
@@ -30,5 +33,5 @@ attractors.create(
     */
     return vec;
   }
-  ,4
+  ,140
 );

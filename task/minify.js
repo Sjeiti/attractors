@@ -16,6 +16,7 @@ var uglify = require('uglify-js'),
     htmlMinify = require('html-minifier').minify,
     htmlparser = require('htmlparser2'),
     ngAnnotate,
+    transpile,
     commander = require('commander')
         .usage('[options] <files ...>')
         .option('--source [source]', 'Source path')
@@ -83,9 +84,10 @@ read(sourceHTML)
             .then(source=>{
               var resolved = Promise.resolve(source);
               buildComment.processes.forEach(process=>{
-                if (process==='annotate') resolved = resolved.then(source=>ngAnnotate(source,ngAnnotateOptions).src,warn);
-                else if (process==='inject') resolved = resolved.then(inject,warn);
-                else if (process==='minify') resolved = resolved.then(source=>uglify.minify(source,uglifyOptions).code,warn);
+                if (process==='annotate')       resolved = resolved.then(source=>ngAnnotate(source,ngAnnotateOptions).src,warn);
+                else if (process==='inject')    resolved = resolved.then(inject,warn);
+                else if (process==='transpile') resolved = resolved.then(source=>transpile.transform(source,{presets: ['es2015']}).code,warn);
+                else if (process==='minify')    resolved = resolved.then(source=>uglify.minify(source,uglifyOptions).code,warn);
               });
               return resolved;
             })
@@ -138,6 +140,7 @@ function parseBuildComments(htmlSource){
               ,processes = matchTarget&&matchTarget[1].substr(1).split(':');
           //
           if (processes&&processes.indexOf('annotate')!==-1) ngAnnotate = require('ng-annotate');
+          if (processes&&processes.indexOf('transpile')!==-1) transpile = require('babel-core');//require('es6-transpiler');
           //
           if (isEndBuild) {
             if (current) {

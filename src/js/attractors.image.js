@@ -7,6 +7,9 @@ iddqd.ns('attractors.image',(function(){
     ,getMin = util.getMin
     ,hslToRgb = util.hslToRgb
     //
+    ,coloration
+    ,foregroundColor
+    ,backgroundColor
     ,gammaValue = 0.4
     //
     ,canvasBackground = document.createElement('canvas')
@@ -28,6 +31,14 @@ iddqd.ns('attractors.image',(function(){
   ;
 
   event.IMAGE_RESIZE.add(onImageResize);
+  //
+  event.COLORATION_CHANGED.add(val=>console.log('clrchanged',val));
+  event.COLOR_BACKGROUND_CHANGED.add(val=>console.log('bgchanged',val));
+  event.COLOR_FOREGROUND_CHANGED.add(val=>console.log('fgchanged',val));
+  event.COLORATION_CHANGED.add(val=>coloration = val);
+  event.COLOR_BACKGROUND_CHANGED.add(val=>foregroundColor = val);
+  event.COLOR_FOREGROUND_CHANGED.add(val=>backgroundColor = val);
+  //
   event.IMAGE_GAMMA_CHANGED.add(onImageGammaChanged);
   event.ANIMATION_DONE.add(onAnimationFinished);
 

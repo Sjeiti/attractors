@@ -60,6 +60,7 @@ iddqd.ns('attractors',(function(){
         else if (len===7) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6]);};
         else if (len===8) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7]);};
         else if (len===9) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8]);};
+        else if (len===10) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9]);};
         return fn;
       })(constants)
     ;
@@ -81,7 +82,7 @@ iddqd.ns('attractors',(function(){
 
   return iddqd.extend(init,{
     create: create
-    ,version: '1.0.30'
+    ,version: '1.0.32'
     ,get list() { return list; } // todo this works... but not as you'd expect (extend and getters on object literals)
     //,get attractor() { return attractor; }
   });

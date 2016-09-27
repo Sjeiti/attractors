@@ -20,6 +20,7 @@ iddqd.ns('attractors.event',{
   //
   ,IMAGE_RESIZE: new signals.Signal()
   ,IMAGE_DRAWN: new signals.Signal()
+  ,IMAGE_RADIAL_CHANGED: new signals.Signal()
   ,IMAGE_GAMMA_CHANGED: new signals.Signal()
   //
   ,COLOR_BACKGROUND_CHANGED: new signals.Signal()
