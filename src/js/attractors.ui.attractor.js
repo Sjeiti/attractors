@@ -35,7 +35,7 @@ iddqd.ns('attractors.ui.attractor',(function(){
       fragment.appendChild(option);
     });
     elmType.appendChild(fragment);
-    elmType.addEventListener('change',onTypeChange);
+    elmType.addEventListener('change',e=>event.TYPE_CHANGED.dispatch(e.target.value));
     event.TYPE_CHANGED.add(onTypeChanged);
     // constants
     redrawConstants();
@@ -53,15 +53,10 @@ iddqd.ns('attractors.ui.attractor',(function(){
     getElementById('centerAxis').addEventListener('click',center.bind(null,0,0,0));
   }
 
-  function onTypeChange(e){
-    var index = e.target.value;
-    event.TYPE_CHANGED.dispatch(index);
-    attractor = attractors.attractor;
-    redrawConstants();
-  }
-
   function onTypeChanged(index){
     elmType.value = index;
+    attractor = attractors.attractor;
+    redrawConstants();
   }
 
   function onInputChange(e){
