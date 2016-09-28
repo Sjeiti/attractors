@@ -1,6 +1,1 @@
-{
-    "directory": "src/vendor",
-    "overrides": {
-		"es5-shim": { "main":["es5-shim.min.js"] }
-	}
-}
+{"directory": "src/vendor"}
