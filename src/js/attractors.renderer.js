@@ -23,7 +23,7 @@ iddqd.ns('attractors.renderer',(function(undefined){
       ,cancelRenderRequest = false
   ;
 
-  event.COLORATION_CHANGED.add(val=>calcSpace = val==='space');
+  event.COLORATION_CHANGED.add(val=>{calcSpace = val==='space';});
   event.ITERATIONS_CHANGED.add(val=>iterations=val);
   event.IMAGE_SIZE_CHANGED.add((wNew,hNew)=>{
     w = wNew;

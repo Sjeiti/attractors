@@ -1,8 +1,9 @@
 {
   "name": "Attractors",
-  "version": "1.0.34-beta",
+  "version": "1.0.36-beta",
   "description": "A client-side strange attractor renderer. See: http://attractors.ronvalstar.nl",
-  "license": "none",
+  "url": "https://github.com/Sjeiti/attractors.git",
+  "license": "MIT",
   "devDependencies": {
     "adm-zip": "^0.4.7",
     "autoprefixer": "^6.3.1",
@@ -17,6 +18,7 @@
     "gm": "^1.21.1",
     "html-minifier": "^3.0.3",
     "htmlparser2": "^3.9.1",
+    "jscs": "^3.0.7",
     "jshint": "^2.9.1",
     "less": "^2.5.3",
     "less-plugin-glob": "^1.1.1",
@@ -30,7 +32,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "build": "node task/build +less \"task/copy --source=src/ --target=dist/ *.* img/* fonts/* style/*.css\" \"*jshint src/js/\" task/minify",
+    "build": "node task/build +less \"task/copy --source=src/ --target=dist/ *.* img/* fonts/* style/*.css\" \"*jshint src/js/\" \"*jscs src/js/\" task/minify",
     "serve": "node task/serve --root=src",
     "serve:dist": "node task/serve --root=dist --port=8283",
     "less": "node task/less --source=screen.less --target=screen.css --cwd=src/style/",

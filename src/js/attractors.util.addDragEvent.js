@@ -57,7 +57,7 @@ iddqd.ns('attractors.util.addDragEvent',(function() {
    * @param {Event} e
    */
   function onEnd(e){
-  	if (!e.touches||e.touches.length===0) {
+    if (!e.touches||e.touches.length===0) {
       removeOldMoves();
       isDragging = false;
     }

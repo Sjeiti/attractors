@@ -1,4 +1,4 @@
-iddqd.ns('attractors.animate',(function() {
+iddqd.ns('attractors.animate',(function(){
 
   var three = attractors.three
 			,event = attractors.event

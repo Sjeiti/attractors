@@ -5,9 +5,9 @@ attractors.create(
     var x = vec.x
       ,y = vec.y
       ,z = vec.z;
-    vec.x = x + e*( - a*x - y*y - z*z + a*c);
-    vec.y = y + e*( - y + x*y - b*x*z + d);
-    vec.z = z + e*( - z + b*x*y + x*z);
+    vec.x = x + e*( -a*x - y*y - z*z + a*c);
+    vec.y = y + e*( -y + x*y - b*x*z + d);
+    vec.z = z + e*( -z + b*x*y + x*z);
     return vec;
   }
 );

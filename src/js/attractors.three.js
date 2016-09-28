@@ -1,6 +1,6 @@
 /* globals THREE, Detector, iddqd, TouchEvent */
 iddqd.ns('attractors.three',(function(){
-  if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+  if (!Detector.webgl) Detector.addGetWebGLMessage();
 
   var signal = iddqd.signal
     ,event = attractors.event
@@ -176,7 +176,7 @@ iddqd.ns('attractors.three',(function(){
     event.CONSTANTS_CHANGED.add(redraw);
     event.COLOR_BACKGROUND_CHANGED.add(onBackgroundChanged);
     event.COLOR_FOREGROUND_CHANGED.add(onForegroundChanged);
-    event.COLORATION_CHANGED.add(type=>redraw(isColorStatic = type==='static'),null,1);
+    event.COLORATION_CHANGED.add(type=>redraw(isColorStatic = type==='static'));
     /*event.COLORATION_CHANGED.add(type=>{
       isColorStatic = type==='static';
       redraw();

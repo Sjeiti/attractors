@@ -1,20 +1,23 @@
 iddqd.ns('attractors',(function(){
   var list = []
-    ,attractor
-    ,event;
+    ,attractor;
 
+  /**
+   * Init all the things
+   */
   function init(){
-    //
     initCurrentAttractor();
-    //
-    event = attractors.event;
     attractors.three.init();
     attractors.animate();
     attractors.ui();
     attractors.location();
-    event.TYPE_CHANGED.add(onTypeChanged,null,1);
+    attractors.event.TYPE_CHANGED.add(index=>attractor=list[index],null,1);
   }
 
+  /**
+   * Initialises the first attractor.
+   * Looks at location.hash or simply takes the first from the array.
+   */
   function initCurrentAttractor(){
     var hash = location.hash;
     if (hash!=='') {
@@ -33,42 +36,44 @@ iddqd.ns('attractors',(function(){
     if (attractor===undefined) attractor = list[0];
   }
 
-  Object.defineProperty(init, 'attractor', {
-    get: function () { return attractor;}
-    //,set: function (fn) { attractor = fn;}
-  });
-
+  /**
+   * Attractor initialisation method
+   * @param {String} name
+   * @param {Number[]} constants
+   * @param {Function} iterate
+   * @param {Number} scale
+   */
   function create(name,constants,iterate,scale){
     var defaultConstants = constants.slice(0)
-      ,maxConstant = (function(max){
-        defaultConstants.forEach(function(i){
-          var abs = Math.abs(i);
-          if (abs>max) max = abs;
-        });
-        return max;
-      })(0)
-      ,creation = (function(c){
-        var len = c.length
-          ,fn = function(){};
-        if (len===0) fn = function(v){iterate(v);};
-        else if (len===1) fn = function(v){iterate(v,c[0]);};
-        else if (len===2) fn = function(v){iterate(v,c[0],c[1]);};
-        else if (len===3) fn = function(v){iterate(v,c[0],c[1],c[2]);};
-        else if (len===4) fn = function(v){iterate(v,c[0],c[1],c[2],c[3]);};
-        else if (len===5) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4]);};
-        else if (len===6) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5]);};
-        else if (len===7) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6]);};
-        else if (len===8) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7]);};
-        else if (len===9) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8]);};
-        else if (len===10) fn = function(v){iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9]);};
-        return fn;
-      })(constants)
+        ,maxConstant = (function(max){
+          defaultConstants.forEach(function(i){
+            var abs = Math.abs(i);
+            if (abs>max) max = abs;
+          });
+          return max;
+        })(0)
+        ,creation = (function(c){
+          var len = c.length
+              ,fn = function(){};
+          if (len===0)       fn = v=>iterate(v);
+          else if (len===1)  fn = v=>iterate(v,c[0]);
+          else if (len===2)  fn = v=>iterate(v,c[0],c[1]);
+          else if (len===3)  fn = v=>iterate(v,c[0],c[1],c[2]);
+          else if (len===4)  fn = v=>iterate(v,c[0],c[1],c[2],c[3]);
+          else if (len===5)  fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4]);
+          else if (len===6)  fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4],c[5]);
+          else if (len===7)  fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6]);
+          else if (len===8)  fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7]);
+          else if (len===9)  fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8]);
+          else if (len===10) fn = v=>iterate(v,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9]);
+          return fn;
+        })(constants)
     ;
     scale = scale||200;
-    Object.defineProperty(creation, 'name', { get: function(){return name;}});
-    Object.defineProperty(creation, 'constants', { get: function(){return constants;}});
-    Object.defineProperty(creation, 'scale', { get: function(){return scale;}});
-    Object.defineProperty(creation, 'constantSize', { get: function(){return maxConstant;}});
+    Object.defineProperty(creation, 'name',         { get: ()=>name });
+    Object.defineProperty(creation, 'constants',    { get: ()=>constants });
+    Object.defineProperty(creation, 'scale',        { get: ()=>scale });
+    Object.defineProperty(creation, 'constantSize', { get: ()=>maxConstant });
     constants.reset = resetConstants;
     function resetConstants(){
       for (var i=0,l=constants.length;i<l;i++) constants[i] = defaultConstants[i];
@@ -76,14 +81,15 @@ iddqd.ns('attractors',(function(){
     list.push(creation);
   }
 
-  function onTypeChanged(index){
-    attractor = list[index];
-  }
+  Object.defineProperty(init, 'attractor', {
+    get: ()=>attractor
+  });
+  Object.defineProperty(init, 'list', {
+    get: ()=>list
+  });
 
   return iddqd.extend(init,{
     create: create
-    ,version: '1.0.34-beta'
-    ,get list() { return list; } // todo this works... but not as you'd expect (extend and getters on object literals)
-    //,get attractor() { return attractor; }
+    ,version: '1.0.36-beta'
   });
 })());

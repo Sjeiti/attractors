@@ -182,7 +182,7 @@ iddqd.ns('attractors.ui.animate',(function(){
   }
 
   function getFrames(){
-  	return parseInt(elmFrames.value,10);
+    return parseInt(elmFrames.value,10);
   }
 
   return returnValue;

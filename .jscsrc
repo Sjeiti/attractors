@@ -1,14 +1,11 @@
 {
-	"esnext":true
-	,"disallowCommaBeforeLineBreak":true
-	,"disallowEmptyBlocks":true
+	"disallowEmptyBlocks":true
 	,"disallowKeywordsOnNewLine": ["else"]
 	,"disallowMixedSpacesAndTabs": true
 	,"disallowMultipleLineBreaks": true
 	,"disallowMultipleLineStrings": true
 	,"disallowNewlineBeforeBlockStatements": true
 	,"disallowOperatorBeforeLineBreak": true
-	,"disallowPaddingNewlinesInBlocks": true
 	,"disallowQuotedKeysInObjects": true
 	,"disallowSpaceAfterObjectKeys": true
 	,"disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"]
@@ -27,9 +24,7 @@
 	,"disallowTrailingWhitespace": true
 	,"disallowYodaConditions": true
 	,"requireCurlyBraces": [
-		"for"
-		,"while"
-		,"do"
+		"do"
 		,"try"
 		,"catch"
 		,"case"

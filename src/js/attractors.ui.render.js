@@ -55,7 +55,7 @@ iddqd.ns('attractors.ui.render',(function(){
     elmColorFg.addEventListener('change',()=>dispatchForegroundChanged(elmColorFg.value));
     getElementById('randomize-background-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorBg));
     getElementById('randomize-foreground-color').addEventListener('click',onRandomizeColorClick.bind(null,elmColorFg));
-    event.COLORATION_CHANGED.add(coloration=>elmColorFg.parentNode.classList.toggle('hide',coloration!=='static'));
+    event.COLORATION_CHANGED.add(coloration=>{elmColorFg.parentNode.classList.toggle('hide',coloration!=='static');});
     // radial
     elmRadial.addEventListener('change',()=>dispatchRadialChanged(elmRadial.checked));
     // gamma

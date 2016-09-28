@@ -188,8 +188,8 @@ iddqd.ns('attractors.image',(function(){
           ,clr = 0
         ;
         if (px<pixels.length&&py<pixels.length) {
-          var dx = surfaces[i] - surfaces[px];
-          var dy = surfaces[i] - surfaces[py];
+          var dx = surfaces[i] - surfaces[px]
+              ,dy = surfaces[i] - surfaces[py];
           if (!isNaN(dx)&&!isNaN(dy)) {
             clr = Math.max(0,255-(dx*dy*50<<0));
           }
