@@ -19,7 +19,7 @@
     "html-minifier": "^3.0.3",
     "htmlparser2": "^3.9.1",
     "jscs": "^3.0.7",
-    "jshint": "^2.9.1",
+    "jshint": "^2.13.6",
     "less": "^2.5.3",
     "less-plugin-glob": "^1.1.1",
     "mkdirp": "^0.5.1",
